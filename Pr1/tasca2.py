@@ -4,8 +4,8 @@ import os
 import string
 import sys
 
-def init():
-	f=open('places.dat','w+')
+def init(nameinfo):
+	f=open(nameinfo,'w+')
 	for i in range(0,1001):
 		f.write('XXXXXXX')
 		if i != 1000:
@@ -114,7 +114,7 @@ def main():
 			print "Ocupar plaça concreta"
 			pl=demanaPl()
 			if not pl:
-				print "Plaça incorrecta!"
+				print "Plaça incorrecta o ja està ocupada!"
 			else:
 				mat=demanaMat()
 				if not mat or comprovaVehicle(mat) != -1:
@@ -177,9 +177,10 @@ def main():
 		raw_input()
 	f.close()
 
+saveInfoname='places.dat'
 #Inicialització principal
-if not os.path.isfile('places.dat'):
-	init()
+if not os.path.isfile(saveInfoname):
+	init(saveInfoname)
 
 f=open('places.dat','r+')
 
@@ -189,4 +190,3 @@ except KeyboardInterrupt:
 	print "\nTancant programa..."
 	f.close()
 	sys.exit(1)
-
