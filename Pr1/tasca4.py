@@ -30,7 +30,7 @@ def demanaPl():
 def intMat(matricula,carcotxe,posicio=-1):
     global f
     global formatStruct
-    emptyMat = 'XXXXXXX'
+    global emptyMat
     if posicio==-1:
         for i in range(1001):
             f.seek(i*(formatStruct.size+1))
@@ -51,22 +51,27 @@ def intMat(matricula,carcotxe,posicio=-1):
             return False
 
 def delMat(matricula):
-	global f
-	for i in range(1001):
-		f.seek(i*8)
-		if f.read(7) == matricula:
-			f.seek(i*8)
-			f.write('XXXXXXX')
-			return True
-	return False
+    global f
+    global formatStruct
+    global sizeMat
+    global sizeMarca
+    global sizeCol
+    for i in range(1001):
+        f.seek(i*(formatStruct.size+1))
+        if formatStruct.unpack(f.read(24))[0] == matricula:
+            f.seek(i*(formatStruct.size+1))
+            f.write('X'*sizeMat+'0'*sizeMarca+'0'*sizeCol)
+            return True
+    return False
 
 def estatPl(posicio):
-	global f
-	f.seek(posicio*8)
-	if f.read(1) == 'X':
-		return False
-	else:
-		return True
+    global f
+    global emptyMat
+    f.seek(posicio*(formatStruct.size+1))
+    if formatStruct.unpack(f.read(24))[0] == emptyMat:
+        return False
+    else:
+        return True
 
 
 def llistaBuides():
@@ -210,7 +215,7 @@ def main():
     f.close()
 
 saveInfoname='places2.dat'
-
+emptyMat='XXXXXXX'
 sizeMat=7
 sizeMarca=10
 sizeCol=7
