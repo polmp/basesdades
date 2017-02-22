@@ -109,9 +109,9 @@ def optionsProg():
 	print "7. Sortir"
 
 def main():
-    while True:
-        optionsProg()
-        opt=raw_input('Introdueix opcio: ')
+	while True:
+	optionsProg()
+	opt=raw_input('Introdueix opcio: ')
 		if opt=='1':
 			print "Ocupar plaça concreta"
 			pl=demanaPl()
