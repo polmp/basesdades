@@ -18,9 +18,9 @@ def demanaPl():
 		if pl in range(0,1001):
 			return pl
 		else:
-			return False
+			return -1
 	except: #No s'ha pogut convertir a int
-		return False
+		return -1
 
 def intMat(matricula,posicio=-1):
 	global f
@@ -73,22 +73,24 @@ def demanaMat():
 	else:
 		return mat
 
-def comprovaMatricula(matricula):
-	isCorrect=True
-	for numb,character in enumerate(matricula):
-		if numb < 4:
-			if character not in string.digits:
-				isCorrect=False
-				break
-		elif numb > 3 and numb < 7:
-			if character not in string.letters:
-				isCorrect=False
-				break
-		else:
-			isCorrect=False
-			break
-	return isCorrect
+def comprovaMatricula(matricula):  	#(comprova que la matricula sigui correcte i retorna matricula)
+							# 0000XXX
+	if (( len(matricula) == 7 )):
 
+		num = matricula[0:4]
+		lletr = matricula[5:7]
+
+		#comprova num i lletr
+		if (num.isdigit() and lletr.isalpha()):
+			return True
+
+		else:
+			print "Mal format de matricula. Ex: 1234QWE"
+			return False
+
+	else:
+		print "La matrícula entrada no es vàlida!"
+		return False
 
 def comprovaVehicle(matricula):
 	for i in range(1001):
@@ -107,29 +109,29 @@ def optionsProg():
 	print "7. Sortir"
 
 def main():
-	while True:
-		optionsProg()
-		opt=raw_input('Introdueix opcio: ')
+    while True:
+        optionsProg()
+        opt=raw_input('Introdueix opcio: ')
 		if opt=='1':
 			print "Ocupar plaça concreta"
 			pl=demanaPl()
-			if not pl:
+			if pl == -1:
 				print "Plaça incorrecta o ja està ocupada!"
 			else:
 				mat=demanaMat()
 				if not mat or comprovaVehicle(mat) != -1:
-					print "Matrícula incorrecta o ja està afegida!"
+					pass
 				else:
 					if intMat(mat,pl):
 						print "Matrícula afegida correctament"
 					else:
 						print "No s'ha pogut afegir la matrícula"
 
-		elif opt=='2':
-			mat=demanaMat()
-			if not mat or comprovaVehicle(mat) != -1:
-				print "Matrícula incorrecta o ja està afegida!"
-			else:
+        elif opt=='2':
+            mat=demanaMat()
+            if not mat or comprovaVehicle(mat) != -1:
+                pass
+            else:
 				if intMat(mat):
 					print "Matrícula afegida correctament"
 				else:
@@ -138,7 +140,7 @@ def main():
 		elif opt=='3':
 			mat=demanaMat()
 			if not mat:
-				print "Matrícula incorrecta!"
+				pass
 			else:
 				if delMat(mat):
 					print "Matrícula eliminada correctament"
@@ -147,7 +149,7 @@ def main():
 
 		elif opt=='4':
 			pl=demanaPl()
-			if not pl:
+			if pl == -1:
 				print "Plaça incorrecta!"
 			else:
 				if estatPl(pl):
@@ -164,7 +166,7 @@ def main():
 		elif opt=='6':
 			mat=demanaMat()
 			if not mat:
-				print "Matrícula incorrecta"
+				pass
 			else:
 				posicio=comprovaVehicle(mat)
 				if posicio != -1:
