@@ -182,7 +182,7 @@ saveInfoname='places.dat'
 if not os.path.isfile(saveInfoname):
 	init(saveInfoname)
 
-f=open('places.dat','r+')
+f=open(saveInfoname,'r+')
 
 try:
 	main()
