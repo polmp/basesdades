@@ -18,14 +18,14 @@ def init(nameinfo):
     f.close()
 
 def demanaPl():
-	try:
-		pl=input('Introdueix la plaça [0-1000]: ')
-		if pl in range(0,1001):
-			return pl
-		else:
-			return False
-	except: #No s'ha pogut convertir a int
-		return False
+    try:
+        pl=input('Introdueix la plaça [0-1000]: ')
+        if pl in range(0,1001):
+            return pl
+        else:
+            return -1
+    except: #No s'ha pogut convertir a int
+        return -1
 
 def intMat(matricula,carcotxe,posicio=-1):
     global f
@@ -74,6 +74,19 @@ def estatPl(posicio):
         return True
 
 
+def matrPl(posicio):
+    global f
+    global emptyMat
+    f.seek(posicio*(formatStruct.size+1))
+    tupl=formatStruct.unpack(f.read(formatStruct.size))
+
+    if tupl[0] == emptyMat:
+        return False
+    else:
+        return mostDetalls(tupl)
+
+
+
 def llistaBuides():
 	a=[]
 	for i in range(1001):
@@ -86,7 +99,7 @@ def demanaMat():
 	if not comprovaMatricula(mat):
 		return False
 	else:
-		return mat
+		return mat.upper()
 
 def demanaColMarca():
     global sizeMarca
@@ -98,7 +111,7 @@ def demanaColMarca():
     while len(colcotxe) < sizeCol:
         colcotxe+='0'
 
-    return [colcotxe, marccotxe] if (colcotxe[:colcotxe.find('0')][:sizeCol].isalpha() and len(colcotxe) <= sizeMarca) and (marccotxe[:marccotxe.find('0')][:sizeMarca].isalpha() and len(marccotxe) <= sizeMarca) else False
+    return [colcotxe.upper(), marccotxe.upper()] if (colcotxe[:colcotxe.find('0')][:sizeCol].isalpha() and len(colcotxe) <= sizeMarca) and (marccotxe[:marccotxe.find('0')][:sizeMarca].isalpha() and len(marccotxe) <= sizeMarca) else False
 
 def comprovaMatricula(matricula):
 	isCorrect=True
@@ -129,6 +142,28 @@ def comprovaVehicle(matricula):
             return [i,values[1],values[2]]
     return -1
 
+
+
+def mostDetalls(tupl):
+
+    global a
+    a = "Matricula " + tupl[0] + ", Color "
+
+    if tupl[1].find('0') != -1:
+        a += tupl[1][:tupl[1].find('0')]
+    else:
+        a += tupl[1]
+
+    a += ", Marca " 
+
+    if tupl[2].find('0') != -1:
+        a += tupl[2][:tupl[2].find('0')]
+    else:
+        a += tupl[2]
+
+    return a 
+
+
 def optionsProg():
 	print "1. Ocupar plaça concreta"
 	print "2. Ocupar primera plaça buida"
@@ -136,7 +171,7 @@ def optionsProg():
 	print "4. Consultar estat de plaça"
 	print "5. Llistar places buides"
 	print "6. Comprova vehicle"
-	print "7. Sortir"
+	print "q. Sortir"
 
 def main():
     while True:
@@ -187,11 +222,11 @@ def main():
 
         elif opt=='4':
 			pl=demanaPl()
-			if not pl:
+			if pl==-1:
 				print "Plaça incorrecta!"
 			else:
 				if estatPl(pl):
-					print "La plaça "+str(pl)+" està ocupada!"
+					print "La plaça "+str(pl)+" està ocupada pel cotxe: "+str(matrPl(pl))
 				else:
 					print "La plaça "+str(pl)+" està buida!"
 
@@ -212,7 +247,7 @@ def main():
 				else:
 					print "El vehicle no està al parquing"
 
-        elif opt=='7':
+        elif opt=='q':
 			break
         raw_input()
     f.close()
