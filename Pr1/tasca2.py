@@ -99,6 +99,11 @@ def comprovaVehicle(matricula):
 			return i
 	return -1
 
+def retMatr(pos): #retorna la plaça que ocupa matr
+	global f
+	f.seek(pos*8)
+	return f.read(7)
+
 def optionsProg():
 	print "1. Ocupar plaça concreta"
 	print "2. Ocupar primera plaça buida"
@@ -110,32 +115,38 @@ def optionsProg():
 
 def main():
 	while True:
-	optionsProg()
-	opt=raw_input('Introdueix opcio: ')
+		optionsProg()
+		opt=raw_input('Introdueix opcio: ')
 		if opt=='1':
 			print "Ocupar plaça concreta"
 			pl=demanaPl()
 			if pl == -1:
-				print "Plaça incorrecta o ja està ocupada!"
+				print "Plaça incorrecta"
 			else:
-				mat=demanaMat()
-				if not mat or comprovaVehicle(mat) != -1:
-					pass
-				else:
-					if intMat(mat,pl):
-						print "Matrícula afegida correctament"
+				if not estatPl(pl):
+					mat=demanaMat()
+					if not mat or comprovaVehicle(mat) != -1:
+						pass
 					else:
-						print "No s'ha pogut afegir la matrícula"
+						if intMat(mat,pl):
+							print "Matrícula afegida correctament"
+						else:
+							print "No s'ha pogut afegir la matrícula"
+				else:
+					print "Plaça ocupada per el vehicle "+retMatr(pl)
 
-        elif opt=='2':
-            mat=demanaMat()
-            if not mat or comprovaVehicle(mat) != -1:
-                pass
-            else:
+		elif opt=='2':
+			mat=demanaMat()
+			if not mat or comprovaVehicle(mat) != -1:
+				pass
+			else:
 				if intMat(mat):
 					print "Matrícula afegida correctament"
 				else:
-					print "No s'ha pogut afegit la matrícula"
+					if len(llistaBuides()) == 0:
+						print "No hi ha llocs buits"
+					else:
+						print "No s'ha pogut afegit la matrícula"
 
 		elif opt=='3':
 			mat=demanaMat()
@@ -153,7 +164,7 @@ def main():
 				print "Plaça incorrecta!"
 			else:
 				if estatPl(pl):
-					print "La plaça "+str(pl)+" està ocupada!"
+					print "La plaça "+str(pl)+" està ocupada per el cotxe "+str(retMatr(pl))
 				else:
 					print "La plaça "+str(pl)+" està buida!"
 
