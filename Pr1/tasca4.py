@@ -118,12 +118,15 @@ def comprovaMatricula(matricula):
 
 
 def comprovaVehicle(matricula):
+    """
+    Retorna la posició, el color i la marca
+    """
     global f
     for i in range(1001):
         f.seek(i*(formatStruct.size+1))
         values=formatStruct.unpack(f.read(24))
         if values[0] == matricula:
-            return i
+            return [i,values[1],values[2]]
     return -1
 
 def optionsProg():
@@ -203,9 +206,9 @@ def main():
 			if not mat:
 				print "Matrícula incorrecta"
 			else:
-				posicio=comprovaVehicle(mat)
-				if posicio != -1:
-					print "El vehicle està en la posició "+str(posicio)
+				infovehicle=comprovaVehicle(mat)
+				if infovehicle != -1:
+					print "Informació del vehicle "+str(infovehicle)
 				else:
 					print "El vehicle no està al parquing"
 
@@ -219,7 +222,7 @@ emptyMat='XXXXXXX'
 sizeMat=7
 sizeMarca=10
 sizeCol=7
-formatStruct=struct.Struct(str(sizeMat)+'s '+str(sizeMarca)+'s '+str(sizeCol)+'s') #Definim un format on -> Matricula -> 7 caràcters | Marca -> 10 caràcters | Color -> 7 caràcters
+formatStruct=struct.Struct(str(sizeMat)+'s '+str(sizeCol)+'s '+str(sizeMarca)+'s') #Definim un format on -> Matricula -> 7 caràcters | Marca -> 10 caràcters | Color -> 7 caràcters
 
 #Inicialització principal
 if not os.path.isfile(saveInfoname):
