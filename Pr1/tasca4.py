@@ -171,46 +171,46 @@ def optionsProg():
 	print "4. Consultar estat de plaça"
 	print "5. Llistar places buides"
 	print "6. Comprova vehicle"
+	print "7. Llistar totes les places"
 	print "q. Sortir"
 
 def main():
-    while True:
-        optionsProg()
-        opt=raw_input('Introdueix opcio: ')
-        if opt=='1':
-            print "Ocupar plaça concreta"
-            pl=demanaPl()
-            if not pl:
-                print "Plaça incorrecta"
-            else:
-                mat=demanaMat()
-                if not mat or comprovaVehicle(mat) != -1:
-                    print "Matrícula incorrecta o ja està afegida!"
-                else:
-                    carcotxe=demanaColMarca()
-                    if not carcotxe:
-                        print "Paràmetres incorrectes!"
-                    else:
-                        if intMat(mat,carcotxe,pl):
-                            print "Cotxe afegit correctament"
-                        else:
-                            print "No s'ha pogut afegir el cotxe"
+	while True:
+		optionsProg()
+		opt=raw_input('Introdueix opcio: ')
+		if opt=='1':
+			print "Ocupar plaça concreta"
+			pl=demanaPl()
+			if not pl:
+				print "Plaça incorrecta"
+			else:
+				mat=demanaMat()
+				if not mat or comprovaVehicle(mat) != -1:
+					print "Matrícula incorrecta o ja està afegida!"
+				else:
+					carcotxe=demanaColMarca()
+					if not carcotxe:
+						print "Paràmetres incorrectes!"
+					else:
+						if intMat(mat,carcotxe,pl):
+							print "Cotxe afegit correctament"
+						else:
+							print "No s'ha pogut afegir el cotxe"
+		elif opt=='2':
+			mat=demanaMat()
+			if not mat or comprovaVehicle(mat) != -1:
+				print "Matrícula incorrecta o ja està afegida!"
+			else:
+				carcotxe=demanaColMarca()
+				if not carcotxe:
+					print "Paràmetres incorrectes!"
+				else:
+					if intMat(mat,carcotxe):
+						print "Cotxe afegit correctament"
+					else:
+						print "No s'ha pogut afegir el cotxe"
 
-        elif opt=='2':
-            mat=demanaMat()
-            if not mat or comprovaVehicle(mat) != -1:
-                print "Matrícula incorrecta o ja està afegida!"
-            else:
-                carcotxe=demanaColMarca()
-                if not carcotxe:
-                    print "Paràmetres incorrectes!"
-                else:
-                    if intMat(mat,carcotxe):
-                        print "Cotxe afegit correctament"
-                    else:
-                        print "No s'ha pogut afegir el cotxe"
-
-        elif opt=='3':
+		elif opt=='3':
 			mat=demanaMat()
 			if not mat:
 				print "Matrícula incorrecta!"
@@ -220,7 +220,7 @@ def main():
 				else:
 					print "No s'ha pogut trobar la matrícula!"
 
-        elif opt=='4':
+		elif opt=='4':
 			pl=demanaPl()
 			if pl==-1:
 				print "Plaça incorrecta!"
@@ -230,13 +230,13 @@ def main():
 				else:
 					print "La plaça "+str(pl)+" està buida!"
 
-        elif opt=='5':
+		elif opt=='5':
 			if len(llistaBuides()) == 0:
 				print "No hi ha llocs buits"
 			else:
 				print 'Llista de llocs buits:\n'+str(llistaBuides())
 
-        elif opt=='6':
+		elif opt=='6':
 			mat=demanaMat()
 			if not mat:
 				print "Matrícula incorrecta"
@@ -246,11 +246,21 @@ def main():
 					print "Informació del vehicle "+str(infovehicle)
 				else:
 					print "El vehicle no està al parquing"
+		elif opt=='7':
+			global emptyMat
+			print "\nLlistat de cotxes\n---------------"
+			for i in range(1001):
+				f.seek(i*(formatStruct.size+1))
+				tupl = formatStruct.unpack(f.read(formatStruct.size))
+				if tupl[0] != emptyMat:
+					print "\t" + str(i) + "\t" + mostDetalls(tupl)
 
-        elif opt=='q':
+			print "---------------"
+
+		elif opt=='q':
 			break
-        raw_input()
-    f.close()
+		raw_input()
+	f.close()
 
 saveInfoname='places2.dat'
 emptyMat='XXXXXXX'
