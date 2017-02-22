@@ -165,14 +165,16 @@ def mostDetalls(tupl):
 
 
 def optionsProg():
-	print "1. Ocupar plaça concreta"
-	print "2. Ocupar primera plaça buida"
-	print "3. Sortir del pàrquing"
-	print "4. Consultar estat de plaça"
-	print "5. Llistar places buides"
-	print "6. Comprova vehicle"
-	print "7. Llistar totes les places"
-	print "q. Sortir"
+	print " --------------------------------" 
+	print "| 1. Ocupar plaça concreta       |"
+	print "| 2. Ocupar primera plaça buida  |"
+	print "| 3. Sortir del pàrquing         |"
+	print "| 4. Consultar estat de plaça    |" 
+	print "| 5. Llistar places buides       |"
+	print "| 6. Comprova vehicle            |"
+	print "| 7. Llistar totes les places    |"
+	print "| q. Sortir                      |"
+	print " --------------------------------"
 
 def main():
 	while True:
