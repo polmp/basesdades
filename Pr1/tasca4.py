@@ -34,7 +34,7 @@ def intMat(matricula,carcotxe,posicio=-1):
     if posicio==-1:
         for i in range(1001):
             f.seek(i*(formatStruct.size+1))
-            values=formatStruct.unpack(f.read(24))
+            values=formatStruct.unpack(f.read(formatStruct.size))
             if values[0] == emptyMat:
                 f.seek(i*(formatStruct.size+1))
                 f.write(matricula+carcotxe[0]+carcotxe[1])
@@ -42,7 +42,7 @@ def intMat(matricula,carcotxe,posicio=-1):
 
     else:
         f.seek(posicio*(formatStruct.size+1))
-        values=formatStruct.unpack(f.read(24))
+        values=formatStruct.unpack(f.read(formatStruct.size))
         if values[0] == emptyMat:
             f.seek(posicio*(formatStruct.size+1))
             f.write(matricula+carcotxe[0]+carcotxe[1])
@@ -58,7 +58,7 @@ def delMat(matricula):
     global sizeCol
     for i in range(1001):
         f.seek(i*(formatStruct.size+1))
-        if formatStruct.unpack(f.read(24))[0] == matricula:
+        if formatStruct.unpack(f.read(formatStruct.size))[0] == matricula:
             f.seek(i*(formatStruct.size+1))
             f.write('X'*sizeMat+'0'*sizeMarca+'0'*sizeCol)
             return True
@@ -68,7 +68,7 @@ def estatPl(posicio):
     global f
     global emptyMat
     f.seek(posicio*(formatStruct.size+1))
-    if formatStruct.unpack(f.read(24))[0] == emptyMat:
+    if formatStruct.unpack(f.read(formatStruct.size))[0] == emptyMat:
         return False
     else:
         return True
@@ -124,7 +124,7 @@ def comprovaVehicle(matricula):
     global f
     for i in range(1001):
         f.seek(i*(formatStruct.size+1))
-        values=formatStruct.unpack(f.read(24))
+        values=formatStruct.unpack(f.read(formatStruct.size))
         if values[0] == matricula:
             return [i,values[1],values[2]]
     return -1
