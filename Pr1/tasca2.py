@@ -71,7 +71,7 @@ def demanaMat():
 	if not comprovaMatricula(mat):
 		return False
 	else:
-		return mat
+		return mat.upper()
 
 def comprovaMatricula(matricula):  	#(comprova que la matricula sigui correcte i retorna matricula)
 							# 0000XXX
@@ -111,7 +111,8 @@ def optionsProg():
 	print "4. Consultar estat de plaça"
 	print "5. Llistar places buides"
 	print "6. Comprova vehicle"
-	print "7. Sortir"
+	print "7. Mostra tots els cotxes per pantalla"
+	print "8. Sortir"
 
 def main():
 	while True:
@@ -138,7 +139,7 @@ def main():
 		elif opt=='2':
 			mat=demanaMat()
 			if not mat or comprovaVehicle(mat) != -1:
-				pass
+				print "Matrícula incorrecta o ja existeix"
 			else:
 				if intMat(mat):
 					print "Matrícula afegida correctament"
@@ -186,6 +187,16 @@ def main():
 					print "El vehicle no està al parquing"
 
 		elif opt=='7':
+			print "\nLlistat de cotxes\n---------------"
+			for i in range(1001):
+				f.seek(i*8)
+				mat = f.read(7)
+				if mat[0] != "X":
+					print "\t" + str(i) + "\t" + mat
+
+			print "---------------"
+
+		elif opt=='8':
 			break
 		raw_input()
 	f.close()
