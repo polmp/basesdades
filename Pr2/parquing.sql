@@ -50,7 +50,8 @@ SELECT * from parquing where matricula = '1234ABC';
 SELECT * FROM parquing where color = 'Verd';
 
 /* COTXES ENTRATS QUE TENEN MES DE UN DIA */
-SELECT * FROM parquing where (julianday(CURRENT_TIMESTAMP) - julianday(data))>1 ORDER BY plasa;
+SELECT * FROM parquing where (julianday(CURRENT_TIMESTAMP) - julianday(data))>1 
+		ORDER BY plasa;
 
 
 --DROP TABLE IF EXISTS Testing;
