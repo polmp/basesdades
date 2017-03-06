@@ -60,9 +60,9 @@ SELECT nom, email, poblacio, dataNaixement FROM usuaris WHERE poblacio = 'Manres
 
 SELECT email FROM usuaris WHERE cognom = "Albets";
 
-
 --3. Visualitzar els amics (nom i cognom) de l’usuari ”Pere”, ”Garcia”(estat=Acceptada)
-
+--En funció del email
+SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email1=email where email2="pere@email.com" and estat="Acceptada" UNION SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email2=email where email1="pere@email.com" and estat="Acceptada";
 
 --4. Obtenir els amics de l’usaris ”Pere””Garcia”que no són amics de l’usuari ”Jordi””Alba”
 --5. Obtenir el nombre total de peticions d’amistat rebutjades
