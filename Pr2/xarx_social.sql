@@ -45,8 +45,6 @@ INSERT INTO amistats ( email1, email2, estat )
 INSERT INTO amistats ( email1, email2, estat )
 			VALUES ( 'pere@email.com', 'alba@email.com', 'Acceptada' );
 INSERT INTO amistats ( email1, email2, estat )
-			VALUES ( 'berto@email.com', 'alba@email.com', 'Acceptada' );
-INSERT INTO amistats ( email1, email2, estat )
 			VALUES ( 'berto@email.com', 'pere@email.com', 'Acceptada' );
 
 
