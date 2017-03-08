@@ -4,14 +4,14 @@ import os
 import string
 import sys
 import struct
-
+NUMPLACES=3
 def init(nameinfo):
     global formatStruct
     global sizeMat
     global sizeMarca
     global sizeCol
     f=open(nameinfo,'w+')
-    for i in range(0,1001):
+    for i in range(0,NUMPLACES):
         f.write('X'*sizeMat+'0'*sizeMarca+'0'*sizeCol)
         if i != 1000:
             f.write(' ')
@@ -20,7 +20,7 @@ def init(nameinfo):
 def demanaPl():
     try:
         pl=input('Introdueix la plaça [0-1000]: ')
-        if pl in range(0,1001):
+        if pl in range(0,NUMPLACES):
             return pl
         else:
             return -1
@@ -32,7 +32,7 @@ def intMat(matricula,carcotxe,posicio=-1):
     global formatStruct
     global emptyMat
     if posicio==-1:
-        for i in range(1001):
+        for i in range(NUMPLACES):
             f.seek(i*(formatStruct.size+1))
             values=formatStruct.unpack(f.read(formatStruct.size))
             if values[0] == emptyMat:
@@ -41,14 +41,17 @@ def intMat(matricula,carcotxe,posicio=-1):
                 return True
 
     else:
-        f.seek(posicio*(formatStruct.size+1))
-        values=formatStruct.unpack(f.read(formatStruct.size))
-        if values[0] == emptyMat:
-            f.seek(posicio*(formatStruct.size+1))
-            f.write(matricula+carcotxe[0]+carcotxe[1])
-            return True
-        else:
-            return False
+    	if posicio > NUMPLACES:
+    		return False
+    	else:
+			f.seek(posicio*(formatStruct.size+1))
+			values=formatStruct.unpack(f.read(formatStruct.size))
+			if values[0] == emptyMat:
+				f.seek(posicio*(formatStruct.size+1))
+				f.write(matricula+carcotxe[0]+carcotxe[1])
+				return True
+			else:
+				return False
 
 def delMat(matricula):
     global f
@@ -56,7 +59,7 @@ def delMat(matricula):
     global sizeMat
     global sizeMarca
     global sizeCol
-    for i in range(1001):
+    for i in range(NUMPLACES):
         f.seek(i*(formatStruct.size+1))
         if formatStruct.unpack(f.read(formatStruct.size))[0] == matricula:
             f.seek(i*(formatStruct.size+1))
@@ -89,7 +92,7 @@ def matrPl(posicio):
 
 def llistaBuides():
 	a=[]
-	for i in range(1001):
+	for i in range(NUMPLACES):
 		if not estatPl(i):
 			a.append(i)
 	return a
@@ -135,7 +138,7 @@ def comprovaVehicle(matricula):
     Retorna la posició, el color i la marca
     """
     global f
-    for i in range(1001):
+    for i in range(NUMPLACES):
         f.seek(i*(formatStruct.size+1))
         values=formatStruct.unpack(f.read(formatStruct.size))
         if values[0] == matricula:
@@ -251,7 +254,7 @@ def main():
 		elif opt=='7':
 			global emptyMat
 			print "\nLlistat de cotxes\n---------------"
-			for i in range(1001):
+			for i in range(NUMPLACES):
 				f.seek(i*(formatStruct.size+1))
 				tupl = formatStruct.unpack(f.read(formatStruct.size))
 				if tupl[0] != emptyMat:
