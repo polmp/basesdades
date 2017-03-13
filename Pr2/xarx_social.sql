@@ -72,12 +72,15 @@ SELECT email FROM usuaris WHERE cognom = "Albets";
 --En funció del email
 SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email1=email where email2="pere@email.com" and estat="Acceptada" UNION SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email2=email where email1="pere@email.com" and estat="Acceptada";
 
---4. Obtenir els amics de l’usaris ”Pere””Garcia”que no són amics de l’usuari ”Jordi””Alba”
+--4. Obtenir els amics de l’usaris ”Berto”””que no són amics de l’usuari ”Alba"
 */
-SELECT email2 as AmicsPere from amistats where email1='pere@email.com' UNION SELECT email1 as AmicsPere from amistats where email2='pere@email.com';
-SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com';
+SELECT email2 from amistats where email1='alba@email.com' UNION SELECT email1 from amistats where email2='alba@email.com';
+SELECT email2 from amistats where email1='berto@email.com' UNION SELECT email1 from amistats where email2='berto@email.com';
 
-SELECT email2 from amistats where email1='pere@email.com' UNION SELECT email1 from amistats where email2='pere@email.com' not in (SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com');
+SELECT email2 from amistats where email1='berto@email.com' UNION SELECT email1 from amistats where email2='berto@email.com' EXCEPT SELECT email2 from amistats where email1='alba@email.com' UNION SELECT email1 from amistats where email2='alba@email.com';
+--SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com';
+
+--SELECT email2 from amistats where email1='pere@email.com' UNION SELECT email1 from amistats where email2='pere@email.com' not in (SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com');
 
 
 --5. Obtenir el nombre total de peticions d’amistat rebutjades
