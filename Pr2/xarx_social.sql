@@ -61,7 +61,7 @@ INSERT INTO amistats ( email1, email2, estat )
 SELECT * FROM usuaris;
 SELECT * from amistats;
 
-
+*/
 --1. Obtenir les dades dels usuaris (excepte pwd) que viuen a Manresa
 SELECT nom, email, poblacio, dataNaixement FROM usuaris WHERE poblacio = 'Manresa';
 
@@ -73,21 +73,20 @@ SELECT email FROM usuaris WHERE cognom = "Albets";
 SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email1=email where email2="pere@email.com" and estat="Acceptada" UNION SELECT nom,cognom FROM usuaris INNER JOIN amistats ON email2=email where email1="pere@email.com" and estat="Acceptada";
 
 --4. Obtenir els amics de l’usaris ”Berto”””que no són amics de l’usuari ”Alba"
-*/
+
+
 SELECT email2 from amistats where email1='alba@email.com' UNION SELECT email1 from amistats where email2='alba@email.com';
 SELECT email2 from amistats where email1='berto@email.com' UNION SELECT email1 from amistats where email2='berto@email.com';
 
 SELECT email2 from amistats where email1='berto@email.com' UNION SELECT email1 from amistats where email2='berto@email.com' EXCEPT SELECT email2 from amistats where email1='alba@email.com' UNION SELECT email1 from amistats where email2='alba@email.com';
---SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com';
-
---SELECT email2 from amistats where email1='pere@email.com' UNION SELECT email1 from amistats where email2='pere@email.com' not in (SELECT email2 as AmicsCarles from amistats where email1='carles@email.com' UNION SELECT email1 as AmicsCarles from amistats where email2='carles@email.com');
 
 
 --5. Obtenir el nombre total de peticions d’amistat rebutjades
---SELECT count(estat) from amistats group by estat having estat like "%Rebutjada%";
+SELECT count(estat) from amistats group by estat having estat like "%Rebutjada%";
 
 --6. Obtenir les dades (noms,cognoms) d’amics que viuen a Manresa
---SELECT * FROM amistats LEFT JOIN usuaris ON email1=email or email2=email;
+SELECT * FROM amistats LEFT JOIN usuaris ON email1=email or email2=email;
 
 --7. Obtenir, per cada usuari, el nombre de peticions rebutjades
---8. Obtenir els usuaris que no són amics de ”Ana”, ”Vilella”
+SELECT email1,count(Rebutjat) as "NombreRebutjats" from (SELECT email1,count(estat) as "Rebutjat" from amistats group by email1,email2 having estat like "%Rebutjada%" UNION ALL SELECT email2,count(estat) from amistats group by email1,email2 having estat like "%Rebutjada%") group by email1;
+--8. Obtenir els usuaris que no són amics de ”Alba”, ”Vilella”
