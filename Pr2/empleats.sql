@@ -20,9 +20,8 @@ CREATE TABLE IF NOT EXISTS feina (
 );
 
 CREATE TABLE IF NOT EXISTS empresa (
-	id_empleat INTEGER,
-	ciutat varchar(30),
-	FOREIGN KEY(id_empleat) REFERENCES empleat(id_empleat)
+	id_empresa INTEGER PRIMARY KEY,
+	ciutat varchar(30)
 );
 
 CREATE TABLE IF NOT EXISTS manager (
@@ -75,7 +74,9 @@ INSERT INTO manager VALUES (3,100);
 --SELECT ciutat as "Ciutat ID Empleat 1" from empleat where id_empleat=1;
 
 --Ex7: Apuja el sou de tots els empleats coordinadors un 10%
-SELECT id_empleat,salari from feina;
-UPDATE feina set salari=salari*1.10 where id_empleat in (SELECT manager.id_empleat from manager,empleat where manager.id_empleat=empleat.id_empleat);
-SELECT id_empleat,salari from feina;
+--SELECT id_empleat,salari from feina;
+--UPDATE feina set salari=salari*1.10 where id_empleat in (SELECT manager.id_empleat from manager,empleat where manager.id_empleat=empleat.id_empleat);
+--SELECT id_empleat,salari from feina;
+
+--Ex8: Troba el nom de tots els empleats que viuen a la mateixa ciutat on treballen
 
