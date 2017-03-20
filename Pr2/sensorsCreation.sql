@@ -1,6 +1,9 @@
 .mode column
 .header on
 
+DROP TABLE IF EXISTS sensors;
+DROP TABLE IF EXISTS calib_temp; 
+DROP TABLE IF EXISTS calib_light;
 /*
 sqlite3 sensors.bd < sensorsCreation.sql >out.txt
 */
@@ -69,40 +72,51 @@ SELECT * FROM calib_light;
 SELECT * FROM calib_temp;
 */
 
--- 1. rite a query (using the SELECT statement) that will compute times
--- and ids when any sensor’s light reading was above 550. Show both the query 
+-- 1. Write a query (using the SELECT statement) that will compute times
+-- and ids when any sensor’s light reading was above 550. Show both the query
 -- and the first few lines of the result.
 
---SELECT * FROM sensors WHERE light > 550;
+--SELECT nodeid,result_time FROM sensors WHERE light > 550;
+--SELECT nodeid,result_time FROM sensors WHERE light > 550 limit 2;
 
 --2. Write a query that will compute the average light reading at sensor 1 between 6 PM and 9
 -- PM (inclusive of 6:00:00 PM and 9:00:00 PM). Show the query and the result.
+
 
 /*SELECT *,cast( (strftime('%H',result_time)) as int) as HORES, 
 						cast( (strftime('%M',result_time)) as int) as MINUTS,
 						cast( (strftime('%S',result_time)) as int) as SEGONS 
 	from sensors WHERE ((HORES BETWEEN 18 AND 21) OR (HORES = 21 AND MINUTS = 0 AND SEGONS = 0));
-*/
+	*/
+
+--SELECT nodeid,llum from (SELECT nodeid,avg(light) as llum,cast(strftime('%H',result_time) as int) as hora from sensors where hora >= 18 and hora <= 21 group by nodeid) where nodeid=1;
+
 
 --NOMES LES HORES DE 18 A 21
 /*SELECT * from sensors WHERE (( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00);
 */
 
---AVERAGE LIGHT AND TEMP, GROUP BY NODE
+--3. Write a single query that computes the average temperature and light reading at every sensor between 6 PM and 9 PM, 
+--but exclude any sensors whose maximum voltage was greater than 418 during that time period. Show both the query and the result.
+
+--SELECT nodeid, MitjanaLlum, MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,avg(temp) as MitjanaTemp,cast(strftime('%H',result_time) as int) as hora,max(voltage) as maximvol from sensors where hora >= 18 and hora <= 21 group by nodeid having maximvol < 418);
+
 /*
 SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
 							) GROUP BY nodeid;
 */
+
 -- 3. Write a single query that computes the average temperature and light reading at every
 -- sensor between 6 PM and 9 PM, but exclude any sensors whose maximum voltage was
 -- greater than 418 during that time period. Show both the query and the result.
 
-SELECT *, light,temp, nodeid, voltage, max(voltage) from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
+/*SELECT *, light,temp, nodeid, voltage, max(voltage) from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
 							) GROUP BY nodeid 
 							;--EXCEPT SELECT avg(light), avg(temp), nodeid, max(voltage) FROM sensors WHERE voltage > 418 GROUP BY nodeid;
+							*/
 
 
 --SELECT avg(light), avg(temp), nodeid, max(voltage) FROM sensors WHERE voltage > 418 GROUP BY nodeid;
@@ -116,9 +130,7 @@ SELECT *, light,temp, nodeid, voltage, max(voltage) from sensors WHERE ((( (cast
 -- 4. Write a query that computes the average calibrated temperature readings from sensor 2 during each hour, inclusive, between 6 PM and 9 PM (i.e., your
 -- answer should consist of 4 rows of calibrated temperatures.)
 
-SELECT *, light,temp, nodeid, voltage/*, max(voltage)*/ from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
-							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
-							);-- GROUP BY nodeid 
+
 
 
 
