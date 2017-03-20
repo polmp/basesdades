@@ -128,11 +128,26 @@ SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H
 --SELECT *, light,temp, nodeid, voltage from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20) OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00));
 
 
+SELECT strftime("%H",result_time),temp,avg(temp)+temp,/*calib_temp.calib*/nodeid from sensors--,calib_temp 
+			where ( nodeid = 2 and 
+				--time(result_time) between "18" and "21" 
+
+				(( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
+							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
+
+				) group by strftime("%H",result_time);
+
 --5. Write a query that computes all the epochs during which the results from sensors 1 and 2 arrived more than 1 second apart. 
 --Show the query and the result.
 
 
-SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 where s1.nodeid != s2.nodeid and s1.epoch == s2.epoch and (time(s1.result_time) > time(s2.result_time,'+1 second') or time(s2.result_time) > time(s1.result_time,'+1 second')) and (s1.nodeid==1 or s2.nodeid==1) and (s1.nodeid==2 or s2.nodeid=2);
+SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 
+	where s1.nodeid != s2.nodeid 
+		and s1.epoch == s2.epoch 
+		and (time(s1.result_time) > time(s2.result_time,'+1 second') 
+		or time(s2.result_time) > time(s1.result_time,'+1 second')) 
+		and (s1.nodeid==1 or s2.nodeid==1) 
+		and (s1.nodeid==2 or s2.nodeid=2);
 
 
 
