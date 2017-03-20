@@ -97,10 +97,6 @@ SELECT * FROM calib_temp;
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00);
 */
 
---3. Write a single query that computes the average temperature and light reading at every sensor between 6 PM and 9 PM, 
---but exclude any sensors whose maximum voltage was greater than 418 during that time period. Show both the query and the result.
-
-
 --AVERAGE LIGHT AND TEMP, GROUP BY NODE
 /*
 SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
@@ -125,8 +121,6 @@ SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H
 -- Versio 2
 
 --SELECT nodeid,MitjanaLlum,MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps,avg(temp) as MitjanaTemp, max(voltage) as maxvoltatge from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having maxvoltatge < 418);
-
-
 
 
 
