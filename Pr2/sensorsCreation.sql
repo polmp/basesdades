@@ -87,9 +87,9 @@ SELECT * FROM calib_temp;
 						cast( (strftime('%M',result_time)) as int) as MINUTS,
 						cast( (strftime('%S',result_time)) as int) as SEGONS 
 	from sensors WHERE ((HORES BETWEEN 18 AND 21) OR (HORES = 21 AND MINUTS = 0 AND SEGONS = 0));
-	*/
+*/
 
---SELECT nodeid,llum from (SELECT nodeid,avg(light) as llum,cast(strftime('%H',result_time) as int) as hora from sensors where hora >= 18 and hora <= 21 group by nodeid) where nodeid=1;
+--SELECT nodeid,MitjanaLlum from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having nodeid=1);
 
 
 --NOMES LES HORES DE 18 A 21
@@ -100,14 +100,13 @@ SELECT * FROM calib_temp;
 --3. Write a single query that computes the average temperature and light reading at every sensor between 6 PM and 9 PM, 
 --but exclude any sensors whose maximum voltage was greater than 418 during that time period. Show both the query and the result.
 
---SELECT nodeid, MitjanaLlum, MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,avg(temp) as MitjanaTemp,cast(strftime('%H',result_time) as int) as hora,max(voltage) as maximvol from sensors where hora >= 18 and hora <= 21 group by nodeid having maximvol < 418);
 
+--AVERAGE LIGHT AND TEMP, GROUP BY NODE
 /*
 SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
 							) GROUP BY nodeid;
 */
-
 -- 3. Write a single query that computes the average temperature and light reading at every
 -- sensor between 6 PM and 9 PM, but exclude any sensors whose maximum voltage was
 -- greater than 418 during that time period. Show both the query and the result.
@@ -122,6 +121,10 @@ SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H
 --SELECT avg(light), avg(temp), nodeid, max(voltage) FROM sensors WHERE voltage > 418 GROUP BY nodeid;
 
 --SELECT * FROM sensors GROUP BY nodeid EXCEPT SELECT * FROM sensors WHERE LIGHT > 800;
+
+-- Versio 2
+
+--SELECT nodeid,MitjanaLlum,MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps,avg(temp) as MitjanaTemp, max(voltage) as maxvoltatge from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having maxvoltatge < 418);
 
 
 
