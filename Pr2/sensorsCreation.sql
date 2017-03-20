@@ -123,12 +123,16 @@ SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H
 --SELECT nodeid,MitjanaLlum,MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps,avg(temp) as MitjanaTemp, max(voltage) as maxvoltatge from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having maxvoltatge < 418);
 
 
-
 -- 4. Write a query that computes the average calibrated temperature readings from sensor 2 during each hour, inclusive, between 6 PM and 9 PM (i.e., your
 -- answer should consist of 4 rows of calibrated temperatures.)
+--SELECT *, light,temp, nodeid, voltage from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20) OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00));
 
 
+--5. Write a query that computes all the epochs during which the results from sensors 1 and 2 arrived more than 1 second apart. 
+--Show the query and the result.
 
+
+SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 where s1.nodeid != s2.nodeid and s1.epoch == s2.epoch and (time(s1.result_time) > time(s2.result_time,'+1 second') or time(s2.result_time) > time(s1.result_time,'+1 second')) and (s1.nodeid==1 or s2.nodeid==1) and (s1.nodeid==2 or s2.nodeid=2);
 
 
 
