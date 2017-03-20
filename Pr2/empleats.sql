@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS manager (
 	FOREIGN KEY(id_empleat) REFERENCES empleat(id_empleat)
 );
 
-INSERT INTO empleat VALUES (1,'Carrer Hola','Valladolid');
+INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (1,'Carrer Hola','Madrid');
 INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (2,'Carrer Pio','Madrid');
-INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (3,'Carrer Adeu','Badajoz');
+INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (3,'Carrer Adeu','Murcia');
 INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (4,'Carrer Huehue','Sevilla');
 INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (5,'Carrer Pole','Granada');
 
@@ -48,8 +48,8 @@ INSERT INTO empresa VALUES (10,'Barcelona');
 INSERT INTO empresa VALUES (11,'Galicia');
 INSERT INTO empresa VALUES (12,'Murcia');
 
-INSERT INTO manager VALUES (1,100);
-INSERT INTO manager VALUES (3,100);
+INSERT INTO manager VALUES (1,2);
+INSERT INTO manager VALUES (4,5);
 
 --Ex1: Obtenir els identificadors i ciutat de residència dels empleats que treballen per l’empresa ”Bank Newton”
 --SELECT id_empleat,ciutat from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) where id_empresa=10;
@@ -61,11 +61,11 @@ INSERT INTO manager VALUES (3,100);
 --SELECT id_empleat from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat and id_empresa!=10);
 
 --Ex4: Trobar tots els treballadors que guanyen més que cada empleat de ”Bank Newton”
+--FALTA
 --SELECT */*id_empleat,carrer,ciutat,salari*/ from  (SELECT max(salari) from feina);
 --(SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat and id_empresa=10) where max(salari) from empleat;
 
 --Ex5: Troba el maxim
---FALTA
 --SELECT id_empresa,NombreEmpleats from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa) where NombreEmpleats = (SELECT max(NombreEmpleats) from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa));
 
 --Ex6: Modifica la ciutat de residència de l'empleat 1 a 'Barcelona'
@@ -79,4 +79,12 @@ INSERT INTO manager VALUES (3,100);
 --SELECT id_empleat,salari from feina;
 
 --Ex8: Troba el nom de tots els empleats que viuen a la mateixa ciutat on treballen
+--SELECT id_empleat,ciutat from (SELECT * from empleat,feina,empresa where empleat.id_empleat = feina.id_empleat and feina.id_empresa=empresa.id_empresa and empleat.ciutat = empresa.ciutat);
 
+--Ex9: Troba tots els empleats que viuen a la mateixa ciutat que els seus coordinadors.
+--SELECT e1.id_empleat,e1.carrer,e1.ciutat from empleat as e1, empleat as e2,feina,manager where e1.id_empleat != e2.id_empleat and e2.id_empleat == manager.id_empleat_coordinador and e1.ciutat==e2.ciutat group by e1.id_empleat;
+
+--Ex10: Elimina a 'feina' totes les tuples corresponents a empleats que treballin a ”Bank Newton”
+-- On id_empresa de Bank Newton -> 10
+--DELETE FROM feina where id_empresa=10;
+--SELECT * from feina;
