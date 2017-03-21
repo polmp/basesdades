@@ -135,3 +135,9 @@ SELECT * from (SELECT * from usuaris INNER JOIN amistats on email=email1 UNION S
 */
 --8. Obtenir els usuaris que no són amics de ”Alba”, ”Vilella”
 
+	SELECT email  
+	FROM amistats,usuaris
+	WHERE ((amistats.email1 == 'alba@email.com' OR amistats.email2 == 'alba@email.com') AND estat!='Acceptada')
+		AND ((usuaris.email = amistats.email1) OR (usuaris.email = amistats.email2)) 
+		AND usuaris.email != 'alba@email.com'
+	;
