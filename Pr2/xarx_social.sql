@@ -56,9 +56,10 @@ INSERT INTO amistats ( email1, email2, estat )
 			VALUES ( 'antoni@email.com', 'berto@email.com', 'Acceptada' );
 INSERT INTO amistats ( email1, email2, estat )
 			VALUES ( 'carles@email.com', 'antoni@email.com', 'Acceptada' );
-/*INSERT INTO amistats ( email1, email2, estat )
-			VALUES ( 'antoni@email.com', 'alba@email.com', 'Acceptada' );*/
-
+INSERT INTO amistats ( email1, email2, estat )
+			VALUES ('antoni@email.com', 'alba@email.com', 'Rebutjada' );
+INSERT INTO amistats ( email1, email2, estat )
+			VALUES ('antoni@email.com', 'pere@email.com', 'Acceptada' );
 /*
 SELECT * FROM usuaris;
 SELECT * from amistats;
@@ -89,7 +90,6 @@ SELECT * from amistats;
 --4. Obtenir els amics de l’usaris ”Berto”””que no són amics de l’usuari ”Alba"
 SELECT * from (SELECT * from usuaris INNER JOIN amistats on email=email1 UNION SELECT * from usuaris INNER JOIN amistats on email=email2) where email1='alba@email.com' or email2='alba@email.com' or email1='berto@email.com' or email2='berto@email.com';
 
-	--Millorat pero encara no em funca.
 	SELECT nom, cognom 
 	FROM usuaris, amistats
 	WHERE ((amistats.email1 == 'pere@email.com' OR amistats.email2=='pere@email.com') AND estat=='Acceptada')
