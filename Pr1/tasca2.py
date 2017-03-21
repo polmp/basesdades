@@ -73,21 +73,16 @@ def demanaMat():
 	else:
 		return mat.upper()
 
-def comprovaMatricula(matricula):  	#(comprova que la matricula sigui correcte i retorna matricula)
-							# 0000XXX
+def comprovaMatricula(matricula):  	#(comprova que la matricula sigui correcte i retorna matricula) # 0000XXX
 	if (( len(matricula) == 7 )):
-
 		num = matricula[0:4]
 		lletr = matricula[5:7]
-
 		#comprova num i lletr
 		if (num.isdigit() and lletr.isalpha()):
 			return True
-
 		else:
 			print "Mal format de matricula. Ex: 1234QWE"
 			return False
-
 	else:
 		print "La matrícula entrada no es vàlida!"
 		return False
