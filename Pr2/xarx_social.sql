@@ -116,6 +116,14 @@ SELECT count(estat) from amistats group by estat having estat like "%Rebutjada%"
 
 --6. Obtenir les dades (noms,cognoms) d’amics que viuen a Manresa
 
+	--Jabal Added
+	SELECT * 
+	FROM amistats, usuaris as u1,usuaris as u2
+	WHERE (amistats.email1 == u1.email AND amistats.email2 == u2.email)
+		AND amistats.estat == 'Acceptada'
+		AND u1.poblacio == 'Manresa'
+		AND u2.poblacio == 'Manresa'
+	;
 
 --7. Obtenir, per cada usuari, el nombre de peticions rebutjades
 SELECT email1,count(Rebutjat) as "NombreRebutjats" from (SELECT email1,count(estat) as "Rebutjat" from amistats group by email1,email2 having estat like "%Rebutjada%" UNION ALL SELECT email2,count(estat) from amistats group by email1,email2 having estat like "%Rebutjada%") group by email1;
