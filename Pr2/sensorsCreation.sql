@@ -150,6 +150,11 @@ SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors a
 		and (s1.nodeid==2 or s2.nodeid=2);
 
 
+--6. Write a query that determines epochs during which one or two of the sensors did not return results. Show your query and the first few results, sorted in by epoch number. 
+--You may wish to use a nested query – that is, a SELECT statement within the FROM clause of another SELECT statement.
+
+SELECT epoch,nodeid,light,temp from sensors group by epoch having count(epoch) < 3;
+
 
 
 
