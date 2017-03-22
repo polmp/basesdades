@@ -1,0 +1,29 @@
+sqlite> SELECT plasa FROM parquing where matricula is not null;
+4
+5
+6
+7
+
+sqlite> SELECT plasa FROM parquing where matricula is null;
+0
+1
+2
+3
+8
+9
+10
+.
+.
+.
+.
+.
+
+sqlite> SELECT * from parquing where matricula = '1234ABC';
+1234ABC|4|Vermell|Seat|2016-12-12 10:13:02
+
+sqlite> SELECT * FROM parquing where color = 'Verd';
+1234ABE|6|Verd|Seat|2017-03-22 07:21:50
+1234ACD|7|Verd|BMW|2017-03-22 07:21:50
+
+sqlite> SELECT * FROM parquing where (julianday(CURRENT_TIMESTAMP) - julianday(data))>1 and matricula is not null ORDER BY plasa;
+1234ABC|4|Vermell|Seat|2016-12-12 10:13:02

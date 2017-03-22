@@ -1,0 +1,11 @@
+
+PLACES OCUPADES: SELECT plasa FROM parquing where matricula is not null;
+
+PLACES BUIDES: SELECT plasa FROM parquing where matricula is null;
+
+COTXE APARCAT AL PARQUING: SELECT * from parquing where matricula = '1234ABC';
+
+COTXE PER COLORS: SELECT * FROM parquing where color = 'Verd';
+
+COTXES ENTRATS QUE TENEN MES DE UN DIA:
+SELECT * FROM parquing where (julianday(CURRENT_TIMESTAMP) - julianday(data))>1 and matricula is not null ORDER BY plasa;

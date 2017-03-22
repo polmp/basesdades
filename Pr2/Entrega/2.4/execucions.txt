@@ -1,0 +1,106 @@
+1. sqlite> SELECT nodeid,result_time FROM sensors WHERE light > 550;
+1|2015-03-05 09:10:18
+1|2015-03-05 10:20:10
+1|2015-03-05 10:30:11
+1|2015-03-05 11:33:15
+1|2015-03-05 11:40:23
+1|2015-03-05 12:42:28
+1|2017-03-22 08:05:29
+1|2017-03-22 08:05:29
+1|2017-03-22 08:05:29
+2|2015-03-05 09:10:18
+2|2015-03-05 10:20:10
+2|2015-03-05 10:30:11
+2|2015-03-05 11:33:15
+2|2015-03-05 11:40:23
+2|2015-03-05 12:42:28
+2|2017-03-22 08:05:29
+2|2017-03-22 08:05:29
+2|2017-03-22 08:05:29
+3|2015-03-05 09:10:18
+3|2015-03-05 10:20:10
+3|2015-03-05 10:30:11
+3|2015-03-05 11:33:15
+3|2015-03-05 11:40:23
+3|2015-03-05 12:42:28
+3|2017-03-22 08:05:29
+3|2017-03-22 08:05:29
+3|2017-03-22 08:05:29
+3|2015-03-05 20:20:10
+3|2015-03-05 20:59:11
+3|2015-03-05 21:00:00
+3|2015-03-05 21:40:23
+3|2015-03-05 18:42:28
+1|2015-03-05 20:20:10
+1|2015-03-05 20:59:11
+1|2015-03-05 21:00:00
+1|2015-03-05 21:40:23
+1|2015-03-05 18:42:28
+2|2015-03-05 20:20:10
+2|2015-03-05 20:59:11
+2|2015-03-05 21:00:00
+2|2015-03-05 21:40:23
+2|2015-03-05 18:42:28
+sqlite> SELECT nodeid,result_time FROM sensors WHERE light > 550 limit 2;
+1|2015-03-05 09:10:18
+1|2015-03-05 10:20:10
+
+2. sqlite> SELECT nodeid,MitjanaLlum from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having nodeid=1);
+
+nodeid      MitjanaLlum
+----------  -----------
+1           558.25     
+
+3. sqlite> SELECT nodeid,MitjanaLlum,MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps,avg(temp) as MitjanaTemp, max(voltage) as maxvoltatge from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having maxvoltatge < 418);
+
+nodeid      MitjanaLlum  MitjanaTemp
+----------  -----------  -----------
+1           558.25       4.5        
+2           658.25       4.5        
+
+4. sqlite> SELECT strftime("%H",result_time),temp,avg(temp)+temp,/*calib_temp.calib*/nodeid from sensors--,calib_temp 
+			where ( nodeid = 2 and 
+				--time(result_time) between "18" and "21" 
+
+				(( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
+							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
+
+				) group by strftime("%H",result_time);
+
+strftime("%H",result_time)  temp        avg(temp)+temp  nodeid    
+--------------------------  ----------  --------------  ----------
+18                          12          24.0            2         
+20                          2           3.0             2         
+21                          4           8.0             2         
+
+5. sqlite> SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 where s1.nodeid != s2.nodeid and s1.epoch == s2.epoch and (time(s1.result_time) > time(s2.result_time,'+1 second') or time(s2.result_time) > time(s1.result_time,'+1 second')) and (s1.nodeid==1 or s2.nodeid==1) and (s1.nodeid==2 or s2.nodeid=2);
+
+nodeid      nodeid      result_time          result_time          epoch     
+----------  ----------  -------------------  -------------------  ----------
+1           2           2015-03-05 10:20:10  2015-03-05 20:20:10  653       
+1           2           2015-03-05 10:30:11  2015-03-05 20:59:11  683       
+1           2           2015-03-05 11:33:15  2015-03-05 21:00:00  712       
+1           2           2015-03-05 11:40:23  2015-03-05 21:40:23  715       
+1           2           2015-03-05 12:42:28  2015-03-05 18:42:28  725       
+2           1           2015-03-05 10:20:10  2015-03-05 20:20:10  653       
+2           1           2015-03-05 10:30:11  2015-03-05 20:59:11  683       
+2           1           2015-03-05 11:33:15  2015-03-05 21:00:00  712       
+2           1           2015-03-05 11:40:23  2015-03-05 21:40:23  715       
+2           1           2015-03-05 12:42:28  2015-03-05 18:42:28  725       
+1           2           2015-03-05 20:20:10  2015-03-05 10:20:10  653       
+1           2           2015-03-05 20:59:11  2015-03-05 10:30:11  683       
+1           2           2015-03-05 21:00:00  2015-03-05 11:33:15  712       
+1           2           2015-03-05 21:40:23  2015-03-05 11:40:23  715       
+1           2           2015-03-05 18:42:28  2015-03-05 12:42:28  725       
+2           1           2015-03-05 20:20:10  2015-03-05 10:20:10  653       
+2           1           2015-03-05 20:59:11  2015-03-05 10:30:11  683       
+2           1           2015-03-05 21:00:00  2015-03-05 11:33:15  712       
+2           1           2015-03-05 21:40:23  2015-03-05 11:40:23  715       
+2           1           2015-03-05 18:42:28  2015-03-05 12:42:28  725    
+
+6. sqlite> SELECT epoch,nodeid,light,temp from sensors group by epoch having count(epoch) < 3;
+
+epoch       nodeid      light       temp      
+----------  ----------  ----------  ----------
+732         1           568         13        
+734         2           568         16        

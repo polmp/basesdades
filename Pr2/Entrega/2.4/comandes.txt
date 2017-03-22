@@ -1,0 +1,46 @@
+-- 1. Write a query (using the SELECT statement) that will compute times
+-- and ids when any sensor’s light reading was above 550. Show both the query
+-- and the first few lines of the result.
+
+SELECT nodeid,result_time FROM sensors WHERE light > 550;
+SELECT nodeid,result_time FROM sensors WHERE light > 550 limit 2;
+
+--2. Write a query that will compute the average light reading at sensor 1 between 6 PM and 9
+-- PM (inclusive of 6:00:00 PM and 9:00:00 PM). Show the query and the result.
+
+SELECT nodeid,MitjanaLlum from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having nodeid=1);
+
+-- 3. Write a single query that computes the average temperature and light reading at every
+-- sensor between 6 PM and 9 PM, but exclude any sensors whose maximum voltage was
+-- greater than 418 during that time period. Show both the query and the result.
+
+SELECT nodeid,MitjanaLlum,MitjanaTemp from (SELECT nodeid,avg(light) as MitjanaLlum,time(result_time) as temps,avg(temp) as MitjanaTemp, max(voltage) as maxvoltatge from sensors where temps between '18:00:00' and '21:00:00' group by nodeid having maxvoltatge < 418);
+
+-- 4. Write a query that computes the average calibrated temperature readings from sensor 2 during each hour, inclusive, between 6 PM and 9 PM (i.e., your
+-- answer should consist of 4 rows of calibrated temperatures.)
+
+SELECT strftime("%H",result_time),temp,avg(temp)+temp,/*calib_temp.calib*/nodeid from sensors--,calib_temp 
+			where ( nodeid = 2 and 
+				--time(result_time) between "18" and "21" 
+
+				(( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
+							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
+
+				) group by strftime("%H",result_time);
+
+--5. Write a query that computes all the epochs during which the results from sensors 1 and 2 arrived more than 1 second apart. 
+--Show the query and the result.
+
+SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 
+	where s1.nodeid != s2.nodeid 
+		and s1.epoch == s2.epoch 
+		and (time(s1.result_time) > time(s2.result_time,'+1 second') 
+		or time(s2.result_time) > time(s1.result_time,'+1 second')) 
+		and (s1.nodeid==1 or s2.nodeid==1) 
+		and (s1.nodeid==2 or s2.nodeid=2);
+
+
+--6. Write a query that determines epochs during which one or two of the sensors did not return results. Show your query and the first few results, sorted in by epoch number. 
+--You may wish to use a nested query – that is, a SELECT statement within the FROM clause of another SELECT statement.
+
+SELECT epoch,nodeid,light,temp from sensors group by epoch having count(epoch) < 3;

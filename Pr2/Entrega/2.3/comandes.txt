@@ -1,0 +1,46 @@
+--Ex1: Obtenir els identificadors i ciutat de residència dels empleats que treballen per l’empresa ”Bank Newton”
+
+SELECT id_empleat,ciutat from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) where id_empresa=10;
+
+--Ex2: Obtenir totes les dades dels empeleats que treballen per ”Bank Newton" i guanyen més de 10000
+
+SELECT id_empleat,carrer,ciutat,salari from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat and id_empresa=10) where salari > 10000;
+
+--Ex3: Obtenir els identificadors dels treballadors que no treballen a ”Bank Newton”
+
+SELECT id_empleat from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat and id_empresa!=10);
+
+--Ex4: Trobar tots els treballadors que guanyen més que cada empleat de ”Bank Newton”
+
+
+--Ex5: Troba el maxim
+
+SELECT id_empresa,NombreEmpleats from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa) where NombreEmpleats = (SELECT max(NombreEmpleats) from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa));
+
+--Ex6: Modifica la ciutat de residència de l'empleat 1 a 'Barcelona'
+
+UPDATE empleat set ciutat = 'Barcelona' where id_empleat=1;
+SELECT ciutat as "Ciutat ID Empleat 1" from empleat where id_empleat=1;
+
+--Ex7: Apuja el sou de tots els empleats coordinadors un 10%
+
+SELECT id_empleat,salari from feina;
+
+UPDATE feina set salari=salari*1.10 where id_empleat in (SELECT manager.id_empleat from manager,empleat where manager.id_empleat=empleat.id_empleat);
+
+SELECT id_empleat,salari from feina;
+
+--Ex8: Troba el nom de tots els empleats que viuen a la mateixa ciutat on treballen
+
+SELECT id_empleat,ciutat from (SELECT * from empleat,feina,empresa where empleat.id_empleat = feina.id_empleat and feina.id_empresa=empresa.id_empresa and empleat.ciutat = empresa.ciutat);
+
+--Ex9: Troba tots els empleats que viuen a la mateixa ciutat que els seus coordinadors.
+
+SELECT e1.id_empleat,e1.carrer,e1.ciutat from empleat as e1, empleat as e2,feina,manager where e1.id_empleat != e2.id_empleat and e2.id_empleat == manager.id_empleat_coordinador and e1.ciutat==e2.ciutat group by e1.id_empleat;
+
+--Ex10: Elimina a 'feina' totes les tuples corresponents a empleats que treballin a ”Bank Newton”
+-- On id_empresa de Bank Newton -> 10
+
+DELETE FROM feina where id_empresa=10;
+
+SELECT * from feina;

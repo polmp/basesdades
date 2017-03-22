@@ -1,0 +1,56 @@
+1. sqlite> SELECT nom, email, poblacio, dataNaixement 
+   ...> FROM usuaris 
+   ...> WHERE poblacio = 'Manresa';
+
+Alba|alba@email.com|Manresa|1969-05-02
+Berto|berto@email.com|Manresa|1997-12-02
+Antoni|antoni@email.com|Manresa|1930-04-5
+
+2. sqlite> SELECT email 
+   ...> FROM usuaris 
+   ...> WHERE cognom = "Albets";
+
+carles@email.com
+
+3. sqlite> SELECT nom, cognom FROM amistats,usuaris WHERE ((amistats.email1 == 'pere@email.com' OR amistats.email2 == 'pere@email.com') AND estat='Acceptada') AND ((usuaris.email = amistats.email1) OR (usuaris.email = amistats.email2)) AND usuaris.email != 'pere@email.com';
+
+Alba|Dominguez
+Berto|Row
+Antoni|Josep
+
+4. sqlite> SELECT nom, cognom FROM usuaris, amistats WHERE ((amistats.email1 == 'pere@email.com' OR amistats.email2=='pere@email.com') AND estat=='Acceptada') AND (usuaris.email = amistats.email1 OR usuaris.email = amistats.email2) AND usuaris.email != 'pere@email.com' EXCEPT SELECT nom,cognom FROM usuaris,amistats WHERE ((amistats.email1=='alba@email.com' OR amistats.email2=='alba@email.com') AND estat=='Acceptada') AND (usuaris.email = amistats.email1 OR usuaris.email = amistats.email2);
+
+nom         cognom    
+----------  ----------
+Antoni      Josep  
+
+5. sqlite> SELECT count(estat) FROM amistats GROUP BY estat HAVING estat LIKE "%Rebutjada%";
+
+count(estat)
+------------
+3    
+
+6. sqlite> SELECT u1.nom,u1.cognom,u2.nom,u2.cognom FROM amistats, usuaris as u1,usuaris as u2 WHERE (amistats.email1 == u1.email AND amistats.email2 == u2.email) AND amistats.estat == 'Acceptada' AND u1.poblacio == 'Manresa' AND u2.poblacio == 'Manresa';
+
+nom         cognom      nom         cognom    
+----------  ----------  ----------  ----------
+Alba        Dominguez   Berto       Row       
+Antoni      Josep       Berto       Row  
+
+7. sqlite> SELECT email1,count(Rebutjat) as "NombreRebutjats" from (SELECT email1,count(estat) as "Rebutjat" from amistats group by email1,email2 having estat like "%Rebutjada%" UNION ALL SELECT email2,count(estat) from amistats group by email1,email2 having estat like "%Rebutjada%") group by email1;
+
+email1          NombreRebutjats
+--------------  ---------------
+alba@email.com  2              
+antoni@email.c  1              
+carles@email.c  2              
+pere@email.com  1     
+
+8. sqlite> SELECT email FROM amistats,usuaris WHERE ((amistats.email1 == 'alba@email.com' OR amistats.email2 == 'alba@email.com') AND estat!='Acceptada') AND ((usuaris.email = amistats.email1) OR (usuaris.email = amistats.email2)) AND usuaris.email != 'alba@email.com';
+
+email           
+----------------
+carles@email.com
+antoni@email.com
+         
+
