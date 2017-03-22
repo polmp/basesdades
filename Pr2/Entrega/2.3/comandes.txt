@@ -11,7 +11,7 @@ SELECT id_empleat,carrer,ciutat,salari from (SELECT * from empleat,feina where e
 SELECT id_empleat from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat and id_empresa!=10);
 
 --Ex4: Trobar tots els treballadors que guanyen més que cada empleat de ”Bank Newton”
-
+SELECT * from feina where salari > (SELECT max(salari) from feina where id_empresa=10);
 
 --Ex5: Troba el maxim
 

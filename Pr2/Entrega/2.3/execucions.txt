@@ -19,7 +19,12 @@ id_empleat
 4         
 5         
 
-4. 
+4. sqlite> SELECT * from feina where salari > (SELECT max(salari) from feina where id_empresa=10);
+id_empleat  id_empresa  salari    
+----------  ----------  ----------
+4           11          11000     
+5           11          10500     
+
 
 5. sqlite> SELECT id_empresa,NombreEmpleats from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa) where NombreEmpleats = (SELECT max(NombreEmpleats) from (SELECT id_empresa,count(id_empleat) as "NombreEmpleats" from (SELECT * from empleat,feina where empleat.id_empleat=feina.id_empleat) group by id_empresa));
 

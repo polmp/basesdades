@@ -1,11 +1,6 @@
 .mode column
 .header on
 
-DROP TABLE IF EXISTS empleat;
-DROP TABLE IF EXISTS feina;
-DROP TABLE IF EXISTS empresa;
-DROP TABLE IF EXISTS manager;
-
 CREATE TABLE IF NOT EXISTS empleat (
 	id_empleat INTEGER PRIMARY KEY,
 	carrer varchar(30),
@@ -36,11 +31,11 @@ INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (3,'Carrer Adeu','Murcia')
 INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (4,'Carrer Huehue','Sevilla');
 INSERT INTO empleat (id_empleat,carrer,ciutat) VALUES (5,'Carrer Pole','Granada');
 
-INSERT INTO feina VALUES (1,10,15000);
+INSERT INTO feina VALUES (1,10,9000);
 INSERT INTO feina VALUES (2,10,9500);
-INSERT INTO feina VALUES (3,12,3000);
-INSERT INTO feina VALUES (4,11,1200);
-INSERT INTO feina VALUES (5,11,1200);
+INSERT INTO feina VALUES (3,12,7000);
+INSERT INTO feina VALUES (4,11,11000);
+INSERT INTO feina VALUES (5,11,10500);
 
 --Empresa 10: Bank newton
 
