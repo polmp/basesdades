@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 
 def getTupleDB(txt):
 	try:
@@ -15,6 +16,42 @@ def getTupleDB(txt):
 			infusuari=i.split(',')
 			info.append(tuple(infusuari))
 		return info
+
+def findByPlace(cursor,place):
+	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
+	return cursor.fetchall()
+
+def showExecution(title,values,valuestoshow):
+	print title
+	print "------------------"
+	for row in values:
+		for value in valuestoshow:
+			print row[value]
+		print "------------------"
+
+def menu():
+	print "1. Buscar usuaris per ciutat"
+	print "2. Visualitzar amics d'una persona"
+	print "q. Sortir"
+
+def main(cursor):
+	while True:
+		menu()
+		sel=raw_input()
+		if sel=='1':
+			ciutat = raw_input("Escriu la ciutat: ")
+			if ciutat != '':
+
+				result=findByPlace(cursor,ciutat)
+				if len(result) > 0:
+					showExecution("Usuaris amb residencia "+ciutat+":",result,[1,2])
+		elif sel == '2':
+			email=raw_input("Escriu el seu email: ")
+			find
+
+		elif sel == 'q':
+			break
+		raw_input()
 
 db=sqlite3.connect('xarxsoc.bd')
 cur=db.cursor()
@@ -45,8 +82,16 @@ cur.executescript("""
 cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
 #Afegint amistats
 cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
-
 db.commit()
+
+try:
+	main(cur)
+
+except KeyboardInterrupt:
+	print "Sortint..."
+	sys.exit(0)
+
+
 
 
 
