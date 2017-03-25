@@ -22,12 +22,17 @@ def findByPlace(cursor,place):
 	return cursor.fetchall()
 
 def showExecution(title,values,valuestoshow):
-	print title
-	print "------------------"
-	for row in values:
-		for value in valuestoshow:
-			print row[value]
+	if len(values) > 0:
+ 		print title
 		print "------------------"
+		for row in values:
+			for value in valuestoshow:
+				print row[value]
+			print "------------------"
+	else:
+		print "No s'han trobat resultats!"
+		return 0
+	return 0
 
 def menu():
 	print "1. Buscar usuaris per ciutat"
@@ -43,8 +48,7 @@ def main(cursor):
 			if ciutat != '':
 
 				result=findByPlace(cursor,ciutat)
-				if len(result) > 0:
-					showExecution("Usuaris amb residencia "+ciutat+":",result,[1,2])
+				showExecution("Usuaris amb residencia "+ciutat+":",result,[1,2])
 		elif sel == '2':
 			email=raw_input("Escriu el seu email: ")
 			find
