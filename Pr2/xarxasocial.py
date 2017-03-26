@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sqlite3
 import sys
 
@@ -29,13 +30,37 @@ def findFriends(cursor,email):
 		AND usuaris.email != :email""",{"email":email})
 	return cursor.fetchall()
 
+def findFriendsByPlace(cursor,place):
+	cursor.execute(""" SELECT * 
+	FROM amistats, usuaris as u1,usuaris as u2
+	WHERE (amistats.email1 == u1.email AND amistats.email2 == u2.email)
+		AND amistats.estat == 'Acceptada'
+		AND u1.poblacio == :ciutat
+		AND u2.poblacio == :ciutat """,{'ciutat':place})
+	return cursor.fetchall()
+
+def findTotal(cursor):
+	cursor.execute("""
+	SELECT count(estat) 
+	FROM amistats 
+	GROUP BY estat 
+	HAVING estat LIKE "%Rebutjada%";
+	""")
+	return cursor.fetchall()[0][0]
+
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
  		print title
 		print "------------------"
 		for row in values:
 			for value in valuestoshow:
-				print row[value]
+				if type(value) is list:
+					joint=''
+					for indval in value:
+						joint+=row[indval]+" "
+					print joint
+				else:
+					print row[value]
 			print "------------------"
 	else:
 		print "No s'han trobat resultats!"
@@ -47,6 +72,8 @@ def showExecution(title,values,valuestoshow):
 def menu():
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
+	print "3. Veure total d'amistats rebutjades"
+	print "4. Obtenir amics que viuen a una ciutat concreta"
 	print "q. Sortir"
 
 def main(cursor):
@@ -55,13 +82,20 @@ def main(cursor):
 		sel=raw_input()
 		if sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ")
-			if ciutat != '':
-				result=findByPlace(cursor,ciutat)
-				showExecution("Usuaris amb residencia "+ciutat,result,[1,2])
+			result=findByPlace(cursor,ciutat)
+			showExecution("Usuaris amb residencia "+ciutat,result,[[1,2]])
 		elif sel == '2':
 			email=raw_input("Escriu el seu email: ")
 			result=findFriends(cursor,email)
-			showExecution("Amics de "+email,result,[0,1])
+			showExecution("Amics de "+email,result,[[0,1]])
+		elif sel == '3':
+			print "El nombre total de peticions rebujades és de "+str(findTotal(cursor))
+
+		elif sel == '4':
+			ciutat=raw_input("Escriu la ciutat: ")
+			result=findFriendsByPlace(cursor,ciutat)
+			showExecution("Amics que viuen a "+ciutat,result,[[4,5],[10,11]])
+
 
 		elif sel == 'q':
 			break
