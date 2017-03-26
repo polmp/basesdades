@@ -3,20 +3,14 @@ import sqlite3
 import sys
 
 def getTupleDB(txt):
-	try:
-		arxiu=open(txt)
-	except:
-		print "No s'ha pogut obrir l'arxiu"
-		arxiu.close()
-		return []
-	else:
+	with open(txt) as arxiu:
 		dades=arxiu.read()
 		arxiu.close()
 		info=[]
 		for i in dades.split('\n'):
 			infusuari=i.split(',')
 			info.append(tuple(infusuari))
-		return info
+	return info
 
 def findByPlace(cursor,place):
 	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
