@@ -21,6 +21,14 @@ def findByPlace(cursor,place):
 	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
 	return cursor.fetchall()
 
+def findFriends(cursor,email):
+	cursor.execute("""SELECT nom, cognom  
+	FROM amistats,usuaris
+	WHERE ((amistats.email1 == :email OR amistats.email2 == :email) AND estat='Acceptada')
+		AND ((usuaris.email = amistats.email1) OR (usuaris.email = amistats.email2)) 
+		AND usuaris.email != :email""",{"email":email})
+	return cursor.fetchall()
+
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
  		print title
@@ -34,6 +42,8 @@ def showExecution(title,values,valuestoshow):
 		return 0
 	return 0
 
+
+
 def menu():
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
@@ -46,12 +56,12 @@ def main(cursor):
 		if sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ")
 			if ciutat != '':
-
 				result=findByPlace(cursor,ciutat)
-				showExecution("Usuaris amb residencia "+ciutat+":",result,[1,2])
+				showExecution("Usuaris amb residencia "+ciutat,result,[1,2])
 		elif sel == '2':
 			email=raw_input("Escriu el seu email: ")
-			find
+			result=findFriends(cursor,email)
+			showExecution("Amics de "+email,result,[0,1])
 
 		elif sel == 'q':
 			break
@@ -90,9 +100,11 @@ db.commit()
 
 try:
 	main(cur)
+	db.close()
 
 except KeyboardInterrupt:
 	print "Sortint..."
+	db.close()
 	sys.exit(0)
 
 
