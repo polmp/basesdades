@@ -63,7 +63,7 @@ def addUser(email,nom,cognom,poblacio,data,contrasenya):
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
  		print title
-		print "------------------"
+		print "----------------------------------"
 		for row in values:
 			for value in valuestoshow:
 				if type(value) is list:
@@ -73,24 +73,48 @@ def showExecution(title,values,valuestoshow):
 					print joint
 				else:
 					print str(row[value])
-			print "------------------"
+			print "----------------------------------"
 	else:
 		print "No s'han trobat resultats!"
 		return 0
 	return 0
 
-def introdueixParametre(nompar):
+def checkdate(date):
+	pole=date.split('-')
+	if len(pole) == 3:
+		try:
+			int(pole[0])
+			int(pole[1])
+			int(pole[2])
+		except:
+			return False
+		else:
+			return True
+	else:
+		return False
+
+def introdueixParametre(nompar,funcio=None):
 	if nompar != 'password':
 		variable=raw_input("Introdueix el parametre "+nompar+": ")
 	else:
 		variable=getpass.getpass("Introdueix el "+nompar+": ")
+
 	try:
 		assert variable!= '',nompar
 	except AssertionError:
 		print "Afegeix el parametre "+nompar+" correctament"
 		return False
 	else:
-		return True
+		if funcio is not None:
+			condicio = funcio(variable)
+			if condicio:
+				return True
+			else:
+				return False
+
+		else:
+			return True
+		
 
 
 
@@ -146,9 +170,9 @@ def main(cursor):
 			while not cognom:
 				cognom=introdueixParametre('cognom')
 
-			data=introdueixParametre('data')
+			data=introdueixParametre('data',checkdate)
 			while not data:
-				data=introdueixParametre('data')
+				data=introdueixParametre('data',checkdate)
 
 			password=introdueixParametre('password')
 			while not password:
@@ -166,45 +190,46 @@ def main(cursor):
 			break
 		raw_input()
 
-db=sqlite3.connect('xarxsoc.bd')
-cur=db.cursor()
+if __name__=='__main__':
+	db=sqlite3.connect('xarxsoc.bd')
+	cur=db.cursor()
 
-"""
-CREACIO DE TAULES
-"""
+	"""
+	CREACIO DE TAULES
+	"""
 
-cur.executescript("""
-	CREATE TABLE IF NOT EXISTS usuaris (
-	email varchar(30) PRIMARY KEY,
-	nom varchar(10) not null,
-	cognom varchar(12),
-	poblacio varchar(12),
-	dataNaixement DATETIME,
-	pwd varchar(30) not null);
+	cur.executescript("""
+		CREATE TABLE IF NOT EXISTS usuaris (
+		email varchar(30) PRIMARY KEY,
+		nom varchar(10) not null,
+		cognom varchar(12),
+		poblacio varchar(12),
+		dataNaixement DATETIME,
+		pwd varchar(30) not null);
 
 
-	CREATE TABLE IF NOT EXISTS amistats (
-	email1 varchar(30) not null,
-	email2 varchar(30) not null,
-	estat varchar(12) not null,
-	PRIMARY KEY (email1,email2));
+		CREATE TABLE IF NOT EXISTS amistats (
+		email1 varchar(30) not null,
+		email2 varchar(30) not null,
+		estat varchar(12) not null,
+		PRIMARY KEY (email1,email2));
 
-	""")
+		""")
 
-#Afegint usuaris
-cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
-#Afegint amistats
-cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
-db.commit()
+	#Afegint usuaris
+	cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
+	#Afegint amistats
+	cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
+	db.commit()
 
-try:
-	main(cur)
-	db.close()
+	try:
+		main(cur)
+		db.close()
 
-except KeyboardInterrupt:
-	print "Sortint..."
-	db.close()
-	sys.exit(0)
+	except KeyboardInterrupt:
+		print "Sortint..."
+		db.close()
+		sys.exit(0)
 
 
 
