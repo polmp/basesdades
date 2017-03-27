@@ -42,6 +42,21 @@ def findTotal(cursor):
 	""")
 	return cursor.fetchall()[0][0]
 
+def findRebByUser(cursor):
+	cursor.execute("""SELECT email1,count(Rebutjat) as "NombreRebutjats" from (SELECT email1,count(estat) as "Rebutjat" from amistats group by email1,email2 having estat like "%Rebutjada%" UNION ALL SELECT email2,count(estat) from amistats group by email1,email2 having estat like "%Rebutjada%") group by email1;""")
+	return cursor.fetchall()
+
+def findNotFriendsOf(cursor,mail):
+	cursor.execute(""" SELECT email  
+	FROM amistats,usuaris
+	WHERE ((amistats.email1 == :email OR amistats.email2 == :email) AND estat!='Acceptada')
+		AND ((usuaris.email = amistats.email1) OR (usuaris.email = amistats.email2)) 
+		AND usuaris.email != :email
+	;""",{'email':mail})
+	return cursor.fetchall()
+
+
+
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
  		print title
@@ -51,10 +66,10 @@ def showExecution(title,values,valuestoshow):
 				if type(value) is list:
 					joint=''
 					for indval in value:
-						joint+=row[indval]+" "
+						joint+=str(row[indval])+" "
 					print joint
 				else:
-					print row[value]
+					print str(row[value])
 			print "------------------"
 	else:
 		print "No s'han trobat resultats!"
@@ -68,6 +83,8 @@ def menu():
 	print "2. Visualitzar amics d'una persona"
 	print "3. Veure total d'amistats rebutjades"
 	print "4. Obtenir amics que viuen a una ciutat concreta"
+	print "5. Obtenir peticions rebutjades per usuari"
+	print "6. Obtenir amics que no son amic de X persona"
 	print "q. Sortir"
 
 def main(cursor):
@@ -90,6 +107,14 @@ def main(cursor):
 			result=findFriendsByPlace(cursor,ciutat)
 			showExecution("Amics que viuen a "+ciutat,result,[[4,5],[10,11]])
 
+		elif sel == '5':
+			result=findRebByUser(cursor)
+			showExecution("Total amistats rebujades",result,[[0,1]])
+
+		elif sel == '6':
+			email=raw_input("Escriu el seu email: ")
+			result=findNotFriendsOf(cursor,email)
+			showExecution("Amics que no son de "+email,result,[[0]])
 
 		elif sel == 'q':
 			break
