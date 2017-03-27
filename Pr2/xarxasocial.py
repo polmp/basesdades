@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 import sys
+import getpass
 
 def getTupleDB(txt):
 	with open(txt) as arxiu:
@@ -55,6 +56,8 @@ def findNotFriendsOf(cursor,mail):
 	;""",{'email':mail})
 	return cursor.fetchall()
 
+def addUser(email,nom,cognom,poblacio,data,contrasenya):
+	pass
 
 
 def showExecution(title,values,valuestoshow):
@@ -76,6 +79,19 @@ def showExecution(title,values,valuestoshow):
 		return 0
 	return 0
 
+def introdueixParametre(nompar):
+	if nompar != 'password':
+		variable=raw_input("Introdueix el parametre "+nompar+": ")
+	else:
+		variable=getpass.getpass("Introdueix el "+nompar+": ")
+	try:
+		assert variable!= '',nompar
+	except AssertionError:
+		print "Afegeix el parametre "+nompar+" correctament"
+		return False
+	else:
+		return True
+
 
 
 def menu():
@@ -85,6 +101,7 @@ def menu():
 	print "4. Obtenir amics que viuen a una ciutat concreta"
 	print "5. Obtenir peticions rebutjades per usuari"
 	print "6. Obtenir amics que no son amic de X persona"
+	print "7. Afegir usuari"
 	print "q. Sortir"
 
 def main(cursor):
@@ -115,6 +132,35 @@ def main(cursor):
 			email=raw_input("Escriu el seu email: ")
 			result=findNotFriendsOf(cursor,email)
 			showExecution("Amics que no son de "+email,result,[[0]])
+
+		elif sel == '7':
+			email=introdueixParametre('email')
+			while not email:
+				email=introdueixParametre('email')
+
+			nom=introdueixParametre('nom')
+			while not nom:
+				nom=introdueixParametre('nom')
+
+			cognom=introdueixParametre('cognom')
+			while not cognom:
+				cognom=introdueixParametre('cognom')
+
+			data=introdueixParametre('data')
+			while not data:
+				data=introdueixParametre('data')
+
+			password=introdueixParametre('password')
+			while not password:
+				data=introdueixParametre('password')
+
+			print "Usuari afegit corretament"
+
+
+
+
+
+
 
 		elif sel == 'q':
 			break
