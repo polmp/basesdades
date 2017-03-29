@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS Cataleg(
 	NumPag INTEGER,
 	NumExemp INTEGER);
 
-CREATE TABLE IF NOT EXISTS Producte(CodiProd INTEGER PRIMARY KEY,Descripcio VARCHAR);
+CREATE TABLE IF NOT EXISTS Producte(
+	CodiProd INTEGER PRIMARY KEY,
+	Descripcio VARCHAR);
 
 CREATE TABLE IF NOT EXISTS Magatzem(
 	NomMag VARCHAR,
@@ -65,7 +67,7 @@ CREATE TABLE IF NOT EXISTS Comandes(
 	NomMag VARCHAR, -- Referencia magatzem
 
 	/*FALTA Un paràmetre enviament NumEnviament INT*/
-	FOREIGN KEY(DniClient) REFERENCES ClientReal(DniClient),
+	FOREIGN KEY(DniClient) REFERENCES ClientReal(DniClient), --Ref clientreal
 	FOREIGN KEY(NomMag) REFERENCES Magatzem(NomMag), --Ref magatzem
 	FOREIGN KEY(NumCataleg) REFERENCES Cataleg(NumCataleg) --Ref cataleg
 );
@@ -107,6 +109,16 @@ CREATE TABLE IF NOT EXISTS Inventari(
 	FOREIGN KEY (CodiProd) REFERENCES Producte(CodiProd),
 	FOREIGN KEY (NomMag) REFERENCES Magatzem(NomMag)
 ); --Relació Producte - Magatzem
+
+CREATE TABLE IF NOT EXISTS ComandesProducte(
+	NumCom INT,
+	CodiProd INT,
+	quantitat_producte INT,
+	PRIMARY KEY(NumCom,CodiProd),
+	FOREIGN KEY(NumCom) REFERENCES Comandes(NumCom),
+	FOREIGN KEY(CodiProd) REFERENCES Producte(CodiProd)
+); -- Relació Producte-Comanda
+
 /*
 Empreses_Magatzem(NomMag VARCHAR PRIMARY KEY,NomEmpr VARCHAR PRIMARY KEY); -- Relació Magatzem - Empresa
 
