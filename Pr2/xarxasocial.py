@@ -93,8 +93,8 @@ def checkdate(date):
 	else:
 		return False
 
-def introdueixParametre(nompar,funcio=None):
-	if nompar != 'password':
+def comprovaParametre(nompar,hidefield=False,funcio=None):
+	if not hidefield:
 		variable=raw_input("Introdueix el parametre "+nompar+": ")
 	else:
 		variable=getpass.getpass("Introdueix el "+nompar+": ")
@@ -106,14 +106,17 @@ def introdueixParametre(nompar,funcio=None):
 		return False
 	else:
 		if funcio is not None:
-			condicio = funcio(variable)
-			if condicio:
+			if funcio(variable):
 				return True
 			else:
 				return False
+		return True
 
-		else:
-			return True
+def introdueixParametre(nompar,hidefield=False,funcio=None):
+	par=comprovaParametre(nompar,hidefield,funcio)
+	while not par:
+		par=comprovaParametre(nompar,hidefield,funcio)
+	return par
 		
 
 
@@ -159,32 +162,11 @@ def main(cursor):
 
 		elif sel == '7':
 			email=introdueixParametre('email')
-			while not email:
-				email=introdueixParametre('email')
-
 			nom=introdueixParametre('nom')
-			while not nom:
-				nom=introdueixParametre('nom')
-
 			cognom=introdueixParametre('cognom')
-			while not cognom:
-				cognom=introdueixParametre('cognom')
-
-			data=introdueixParametre('data',checkdate)
-			while not data:
-				data=introdueixParametre('data',checkdate)
-
-			password=introdueixParametre('password')
-			while not password:
-				data=introdueixParametre('password')
-
+			data=introdueixParametre('data',False,checkdate)
+			password=introdueixParametre('password',True)
 			print "Usuari afegit corretament"
-
-
-
-
-
-
 
 		elif sel == 'q':
 			break
