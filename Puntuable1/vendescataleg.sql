@@ -65,11 +65,13 @@ CREATE TABLE IF NOT EXISTS Comandes(
 	Data DATETIME,
 	DniClient VARCHAR,--Referencia ClientReal
 	NomMag VARCHAR, -- Referencia magatzem
-
+	DniConductor VARCHAR,
 	/*FALTA Un paràmetre enviament NumEnviament INT*/
 	FOREIGN KEY(DniClient) REFERENCES ClientReal(DniClient), --Ref clientreal
 	FOREIGN KEY(NomMag) REFERENCES Magatzem(NomMag), --Ref magatzem
-	FOREIGN KEY(NumCataleg) REFERENCES Cataleg(NumCataleg) --Ref cataleg
+	FOREIGN KEY(NumCataleg) REFERENCES Cataleg(NumCataleg), --Ref cataleg
+	FOREIGN KEY(DniConductor) REFERENCES Conductor(DniConductor) --Per la relacio 1:1:n entre Magatzem-Conductor-Comandes
+
 );
 
 CREATE TABLE IF NOT EXISTS Xec(
@@ -118,6 +120,9 @@ CREATE TABLE IF NOT EXISTS ComandesProducte(
 	FOREIGN KEY(NumCom) REFERENCES Comandes(NumCom),
 	FOREIGN KEY(CodiProd) REFERENCES Producte(CodiProd)
 ); -- Relació Producte-Comanda
+
+
+
 
 /*
 Empreses_Magatzem(NomMag VARCHAR PRIMARY KEY,NomEmpr VARCHAR PRIMARY KEY); -- Relació Magatzem - Empresa
