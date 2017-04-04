@@ -134,14 +134,14 @@ def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 
 def update_row(db,cursor,email,parametertoupdate):
 	sentencesql= ''' UPDATE usuaris set '''
-	for parameter in sorted(parametertoupdate.keys()):
+	for parameter in parametertoupdate.keys():
 		sentencesql+=parameter+'='+'?'
-		if parameter != sorted(parametertoupdate.keys())[-1]:
+		if parameter != parametertoupdate.keys()[-1]:
 			sentencesql+=','
 		else:
 			sentencesql+=" where email='"+str(email)+"'"
 	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
-	cur.execute(sentencesql,tuple(sorted(parametertoupdate.values())))
+	cur.execute(sentencesql,tuple(parametertoupdate.values()))
 	db.commit()
 	
 
