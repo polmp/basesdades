@@ -141,7 +141,7 @@ def update_row(db,cursor,email,parametertoupdate):
 		else:
 			sentencesql+=" where email='"+str(email)+"'"
 	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
-	cur.execute(sentencesql,tuple(parametertoupdate.values()))
+	cur.execute(sentencesql,tuple(sorted(parametertoupdate.values())))
 	db.commit()
 	
 
@@ -218,17 +218,17 @@ def main(db,cursor):
 				if cognom != '':
 					infotoupdate['cognom'] = cognom
 				print "Paràmetre actual de ciutat: "+str(dades[3])
-				ciutat=introdueixParametre('ciutat',False,True)
-				if ciutat != '':
-					infotoupdate['ciutat'] = ciutat
+				poblacio=introdueixParametre('poblacio',False,True)
+				if poblacio != '':
+					infotoupdate['poblacio'] = poblacio
 				print "Paràmetre actual de data: "+str(dades[4])
-				data=introdueixParametre('data',False,True,checkdate)
-				if data != '':
-					infotoupdate['data'] = data
+				dataNaixement=introdueixParametre('dataNaixement',False,True,checkdate)
+				if dataNaixement != '':
+					infotoupdate['dataNaixement'] = dataNaixement
 				print "Paràmetre actual de password: OCULT"
 				password=introdueixParametre('password',True,True)
 				if password != '':
-					infotoupdate['password'] = password
+					infotoupdate['pwd'] = password
 				if len(infotoupdate) > 0:
 					update_row(db,cursor,email,infotoupdate)
 				else:
