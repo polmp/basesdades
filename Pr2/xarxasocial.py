@@ -6,8 +6,9 @@ import os
 import re
 
 def create_backup(cursor,filetxt):
-	cursor.fetchall('SELECT * from usuaris')
-	print cursor
+	data = '\n'.join(cursor.iterdump())
+	with open(filetxt,'w') as f:
+		f.write(data)
 
 def getTupleDB(txt):
 	with open(txt) as arxiu:
@@ -99,11 +100,11 @@ def checkdate(date):
 	else:
 		return False
 
-def checkTxt(txtfile):
+def checkSql(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
 		if (not i.isalpha()) & (not i.isdigit()):
 			return False
-	return txtfile[txtfile.find('.')+1:] == 'txt'
+	return txtfile[txtfile.find('.')+1:] == 'sql'
 
 def comprovaParametre(nompar,hidefield=False,funcio=None):
 	if not hidefield:
@@ -119,10 +120,10 @@ def comprovaParametre(nompar,hidefield=False,funcio=None):
 	else:
 		if funcio is not None:
 			if funcio(variable):
-				return True
+				return variable
 			else:
 				return False
-		return True
+		return variable
 
 
 
@@ -132,9 +133,6 @@ def introdueixParametre(nompar,hidefield=False,funcio=None):
 		par=comprovaParametre(nompar,hidefield,funcio)
 	return par
 		
-
-
-
 def menu():
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
@@ -179,13 +177,16 @@ def main(db,cursor):
 			email=introdueixParametre('email')
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
+			ciutat=introdueixParametre('ciutat')
 			data=introdueixParametre('data',False,checkdate)
 			password=introdueixParametre('password',True)
+			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
+			db.commit()
 			print "Usuari afegit corretament"
 
 		elif sel == '8':
-			nomarxiu=introdueixParametre('nomarxiu',False,checkTxt)
-			if os.path.isfile(nom):
+			nomarxiu=introdueixParametre('nomarxiu',False,checkSql)
+			if os.path.isfile(nomarxiu):
 				print "L'arxiu ja existeix! Vols continuar [s/n]"
 				if (raw_input()) == 's':
 					create_backup(db,nomarxiu)
@@ -197,30 +198,28 @@ def main(db,cursor):
 		raw_input()
 
 if __name__=='__main__':
-	db=sqlite3.connect('xarxsoc.bd')
-	cur=db.cursor()
-
-	"""
-	CREACIO DE TAULES
 	"""
 
-	cur.executescript("""
-		CREATE TABLE IF NOT EXISTS usuaris (
-		email varchar(30) PRIMARY KEY,
-		nom varchar(10) not null,
-		cognom varchar(12),
-		poblacio varchar(12),
-		dataNaixement DATETIME,
-		pwd varchar(30) not null);
+	#CREACIO DE TAULES
+
+	# cur.executescript("""
+	#	CREATE TABLE IF NOT EXISTS usuaris (
+	#	email varchar(30) PRIMARY KEY,
+	#	nom varchar(10) not null,
+	#	cognom varchar(12),
+	#	poblacio varchar(12),
+	#	dataNaixement DATETIME,
+	#	pwd varchar(30) not null);
 
 
-		CREATE TABLE IF NOT EXISTS amistats (
-		email1 varchar(30) not null,
-		email2 varchar(30) not null,
-		estat varchar(12) not null,
-		PRIMARY KEY (email1,email2));
+	#	CREATE TABLE IF NOT EXISTS amistats (
+	#	email1 varchar(30) not null,
+	#	email2 varchar(30) not null,
+	#	estat varchar(12) not null,
+	#	PRIMARY KEY (email1,email2));
 
-		""")
+	#	""")
+	"""
 
 	#Afegint usuaris
 	cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
@@ -228,8 +227,29 @@ if __name__=='__main__':
 	cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
 	db.commit()
 
-	data = '\n'.join(db.iterdump())
-	print data
+	"""
+
+
+	db=sqlite3.connect('xarxsoc.bd')
+	cur=db.cursor()
+	if len(sys.argv) == 1:
+		print "Executant en mode normal"
+
+	elif len(sys.argv) == 2:
+		print "Carregant arxiu "+sys.argv[1]
+		if not os.path.isfile(sys.argv[1]):
+			print "L'arxiu no existeix!"
+			sys.exit(1)
+		else:
+			with open(sys.argv[1]) as f:
+				scriptsql=f.read()
+			try:
+				cur.executescript(scriptsql)
+			except sqlite3.OperationalError as e:
+				print "Error! "+str(e)
+				sys.exit(1)
+
+
 	try:
 		main(db,cur)
 		db.close()
