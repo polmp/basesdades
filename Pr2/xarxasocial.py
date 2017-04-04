@@ -106,17 +106,18 @@ def checkSql(txtfile):
 			return False
 	return txtfile[txtfile.find('.')+1:] == 'sql'
 
-def comprovaParametre(nompar,hidefield=False,funcio=None):
+def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	if not hidefield:
 		variable=raw_input("Introdueix el parametre "+nompar+": ")
 	else:
 		variable=getpass.getpass("Introdueix el "+nompar+": ")
 
-	try:
-		assert variable!= '',nompar
-	except AssertionError:
-		print "Afegeix el parametre "+nompar+" correctament"
-		return False
+	if len(variable) == 0:
+		if can_be_empty:
+			return ''
+		else:
+			print "Esta a false no se perq"
+			return False
 	else:
 		if funcio is not None:
 			if funcio(variable):
@@ -127,10 +128,12 @@ def comprovaParametre(nompar,hidefield=False,funcio=None):
 
 
 
-def introdueixParametre(nompar,hidefield=False,funcio=None):
-	par=comprovaParametre(nompar,hidefield,funcio)
+def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
+	par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	while not par:
-		par=comprovaParametre(nompar,hidefield,funcio)
+		if par == '':
+			break
+		par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	return par
 		
 def menu():
@@ -141,7 +144,8 @@ def menu():
 	print "5. Obtenir peticions rebutjades per usuari"
 	print "6. Obtenir amics que no son amic de X persona"
 	print "7. Afegir usuari"
-	print "8. Crear copia de seguretat"
+	print "8. Editar usuari"
+	print "9. Crear copia de seguretat"
 	print "q. Sortir"
 
 def main(db,cursor):
@@ -178,20 +182,43 @@ def main(db,cursor):
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
 			ciutat=introdueixParametre('ciutat')
-			data=introdueixParametre('data',False,checkdate)
+			data=introdueixParametre('data',False,False,checkdate)
 			password=introdueixParametre('password',True)
 			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
 			db.commit()
 			print "Usuari afegit corretament"
-
 		elif sel == '8':
-			nomarxiu=introdueixParametre('nomarxiu',False,checkSql)
+			infotoupdate={}
+			print "Primer introdueix el email del usuari"
+			email=introdueixParametre('email')
+			print "Si no vols modificar un paràmetre deixa el camp buit"
+			nom=introdueixParametre('nom',False,True)
+			print "Paràmetre actual"
+			if nom != '':
+				infotoupdate['nom'] = nom
+			cognom=introdueixParametre('cognom')
+			if cognom != '':
+				infotoupdate['cognom'] = cognom
+			ciutat=introdueixParametre('ciutat',False,True)
+			if ciutat != '':
+				infotoupdate['ciutat'] = ciutat
+			data=introdueixParametre('data',False,True,checkdate)
+			if data != '':
+				infotoupdate['data'] = data
+			password=introdueixParametre('password',True,True)
+			if password != '':
+				infotoupdate['password'] = password
+			print str(infotoupdate)
+
+		elif sel == '9':
+			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
 			if os.path.isfile(nomarxiu):
 				print "L'arxiu ja existeix! Vols continuar [s/n]"
 				if (raw_input()) == 's':
 					create_backup(db,nomarxiu)
 			else:
 				create_backup(db,nomarxiu)
+				print "Backup guardada a "+nomarxiu+" correctament"
 
 		elif sel == 'q':
 			break
