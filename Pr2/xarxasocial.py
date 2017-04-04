@@ -190,24 +190,35 @@ def main(db,cursor):
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
 			email=introdueixParametre('email')
-			print "Si no vols modificar un paràmetre deixa el camp buit"
-			nom=introdueixParametre('nom',False,True)
-			print "Paràmetre actual"
-			if nom != '':
-				infotoupdate['nom'] = nom
-			cognom=introdueixParametre('cognom')
-			if cognom != '':
-				infotoupdate['cognom'] = cognom
-			ciutat=introdueixParametre('ciutat',False,True)
-			if ciutat != '':
-				infotoupdate['ciutat'] = ciutat
-			data=introdueixParametre('data',False,True,checkdate)
-			if data != '':
-				infotoupdate['data'] = data
-			password=introdueixParametre('password',True,True)
-			if password != '':
-				infotoupdate['password'] = password
-			print str(infotoupdate)
+			cursor.execute('SELECT * from usuaris where email = ?',(email,))
+			dades=cursor.fetchone()
+			if dades is None:
+				print "L'usuari no existeix!"
+			else:
+				print "----------------------"
+				print "Si no vols modificar un paràmetre deixa el camp buit"
+				print "----------------------"
+				print "Paràmetre actual de nom: "+str(dades[1])
+				nom=introdueixParametre('nom',False,True)
+				if nom != '':
+					infotoupdate['nom'] = nom
+				print "Paràmetre actual de cognom: "+str(dades[2])
+				cognom=introdueixParametre('cognom')
+				if cognom != '':
+					infotoupdate['cognom'] = cognom
+				print "Paràmetre actual de ciutat: "+str(dades[3])
+				ciutat=introdueixParametre('ciutat',False,True)
+				if ciutat != '':
+					infotoupdate['ciutat'] = ciutat
+				print "Paràmetre actual de data: "+str(dades[4])
+				data=introdueixParametre('data',False,True,checkdate)
+				if data != '':
+					infotoupdate['data'] = data
+				print "Paràmetre actual de password: OCULT"
+				password=introdueixParametre('password',True,True)
+				if password != '':
+					infotoupdate['password'] = password
+				print str(infotoupdate)
 
 		elif sel == '9':
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
