@@ -63,9 +63,6 @@ def findNotFriendsOf(cursor,mail):
 	;""",{'email':mail})
 	return cursor.fetchall()
 
-def addUser(email,nom,cognom,poblacio,data,contrasenya):
-	pass
-
 
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
@@ -134,6 +131,20 @@ def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 			break
 		par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	return par
+
+def update_row(db,cursor,email,parametertoupdate):
+	sentencesql= ''' UPDATE usuaris set '''
+	for parameter in sorted(parametertoupdate.keys()):
+		sentencesql+=parameter+'='+'?'
+		if parameter != sorted(parametertoupdate.keys())[-1]:
+			sentencesql+=','
+		else:
+			sentencesql+=" where email='"+str(email)+"'"
+	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
+	cur.execute(sentencesql,tuple(parametertoupdate.values()))
+	db.commit()
+	
+
 		
 def menu():
 	print "1. Buscar usuaris per ciutat"
@@ -195,15 +206,15 @@ def main(db,cursor):
 			if dades is None:
 				print "L'usuari no existeix!"
 			else:
-				print "----------------------"
+				print "------------------------------------------------------------------"
 				print "Si no vols modificar un paràmetre deixa el camp buit"
-				print "----------------------"
+				print "------------------------------------------------------------------"
 				print "Paràmetre actual de nom: "+str(dades[1])
 				nom=introdueixParametre('nom',False,True)
 				if nom != '':
 					infotoupdate['nom'] = nom
 				print "Paràmetre actual de cognom: "+str(dades[2])
-				cognom=introdueixParametre('cognom')
+				cognom=introdueixParametre('cognom',False,True)
 				if cognom != '':
 					infotoupdate['cognom'] = cognom
 				print "Paràmetre actual de ciutat: "+str(dades[3])
@@ -218,12 +229,15 @@ def main(db,cursor):
 				password=introdueixParametre('password',True,True)
 				if password != '':
 					infotoupdate['password'] = password
-				print str(infotoupdate)
+				if len(infotoupdate) > 0:
+					update_row(db,cursor,email,infotoupdate)
+				else:
+					print "No has afegit parametres per editar!"
 
 		elif sel == '9':
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
 			if os.path.isfile(nomarxiu):
-				print "L'arxiu ja existeix! Vols continuar [s/n]"
+				print "L'arxiu ja existeix! Vols continuar? [s/n]"
 				if (raw_input()) == 's':
 					create_backup(db,nomarxiu)
 			else:
