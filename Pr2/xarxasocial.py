@@ -116,7 +116,6 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 		if can_be_empty:
 			return ''
 		else:
-			print "Esta a false no se perq"
 			return False
 	else:
 		if funcio is not None:
