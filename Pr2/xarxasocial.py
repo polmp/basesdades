@@ -2,6 +2,12 @@
 import sqlite3
 import sys
 import getpass
+import os
+import re
+
+def create_backup(cursor,filetxt):
+	cursor.fetchall('SELECT * from usuaris')
+	print cursor
 
 def getTupleDB(txt):
 	with open(txt) as arxiu:
@@ -93,6 +99,12 @@ def checkdate(date):
 	else:
 		return False
 
+def checkTxt(txtfile):
+	for i in txtfile[:txtfile.find('.')]:
+		if (not i.isalpha()) & (not i.isdigit()):
+			return False
+	return txtfile[txtfile.find('.')+1:] == 'txt'
+
 def comprovaParametre(nompar,hidefield=False,funcio=None):
 	if not hidefield:
 		variable=raw_input("Introdueix el parametre "+nompar+": ")
@@ -112,6 +124,8 @@ def comprovaParametre(nompar,hidefield=False,funcio=None):
 				return False
 		return True
 
+
+
 def introdueixParametre(nompar,hidefield=False,funcio=None):
 	par=comprovaParametre(nompar,hidefield,funcio)
 	while not par:
@@ -129,9 +143,10 @@ def menu():
 	print "5. Obtenir peticions rebutjades per usuari"
 	print "6. Obtenir amics que no son amic de X persona"
 	print "7. Afegir usuari"
+	print "8. Crear copia de seguretat"
 	print "q. Sortir"
 
-def main(cursor):
+def main(db,cursor):
 	while True:
 		menu()
 		sel=raw_input()
@@ -167,6 +182,15 @@ def main(cursor):
 			data=introdueixParametre('data',False,checkdate)
 			password=introdueixParametre('password',True)
 			print "Usuari afegit corretament"
+
+		elif sel == '8':
+			nomarxiu=introdueixParametre('nomarxiu',False,checkTxt)
+			if os.path.isfile(nom):
+				print "L'arxiu ja existeix! Vols continuar [s/n]"
+				if (raw_input()) == 's':
+					create_backup(db,nomarxiu)
+			else:
+				create_backup(db,nomarxiu)
 
 		elif sel == 'q':
 			break
@@ -204,8 +228,10 @@ if __name__=='__main__':
 	cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
 	db.commit()
 
+	data = '\n'.join(db.iterdump())
+	print data
 	try:
-		main(cur)
+		main(db,cur)
 		db.close()
 
 	except KeyboardInterrupt:
