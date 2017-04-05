@@ -247,7 +247,8 @@ def main(db,cursor):
 			if not result:
 				print "La taula no existeix"
 			else:
-				showExecution("Tota la taula",result)
+				if taula == 'usuaris': #Hot fix
+					showExecution("Tota la taula",result,[[0,1,2,3,4]])
 		elif sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ").title()
 			result=findByPlace(cursor,ciutat)
