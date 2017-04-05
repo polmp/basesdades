@@ -196,7 +196,7 @@ def main(db,cursor):
 			showExecution("Amics que no son de "+email,result,[[0]])
 
 		elif sel == '7':
-			email=introdueixParametre('email')
+			email=introdueixParametre('email',False,False,checkemail)
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
 			ciutat=introdueixParametre('ciutat')
@@ -288,7 +288,6 @@ if __name__=='__main__':
 
 	"""
 
-
 	db=sqlite3.connect('xarxsoc.bd')
 	cur=db.cursor()
 	if len(sys.argv) == 1:
@@ -300,13 +299,17 @@ if __name__=='__main__':
 			print "L'arxiu no existeix!"
 			sys.exit(1)
 		else:
-			with open(sys.argv[1]) as f:
-				scriptsql=f.read()
-			try:
-				cur.executescript(scriptsql)
-			except sqlite3.OperationalError as e:
-				print "Error! "+str(e)
-				sys.exit(1)
+			print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
+			if (raw_input()) == 's':
+				cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
+					DROP TABLE IF EXISTS amistats;""")
+				with open(sys.argv[1]) as f:
+					scriptsql=f.read()
+				try:
+					cur.executescript(scriptsql)
+				except sqlite3.OperationalError as e:
+					print "Error! "+str(e)
+					sys.exit(1)
 
 
 	try:
