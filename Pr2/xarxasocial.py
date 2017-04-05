@@ -139,9 +139,11 @@ def check_sql_syntax(filesql):
 	curs=db_temporal.cursor()
 	try:
 		curs.executescript(contingut_sql)
+		db_temporal.close()
 		return True
 	except sqlite3.OperationalError as e:
 		print "Error! "+str(e)
+		db_temporal.close()
 		return False
 
 
