@@ -4,6 +4,7 @@ import sys
 import getpass
 import os
 import re
+import datetime
 
 def create_backup(cursor,filetxt):
 	data = '\n'.join(cursor.iterdump())
@@ -84,15 +85,11 @@ def showExecution(title,values,valuestoshow):
 	return 0
 
 def checkdate(date):
-
 	try:
-		if re.match('^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)\d\d$',date):
-			return True
-		else:
-			return False
-
-	except:
-			return False
+		datetime.datetime.strptime(date, '%Y/%m/%d')
+		return True
+	except ValueError:
+		return False
 
 
 def checkemail(email):
@@ -107,7 +104,7 @@ def checkemail(email):
 
 def checkSql(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
-		if (not i.isalpha()) & (not i.isdigit()):
+		if (not i.isalpha()) & (not i.isdigit()) & (i!='_'):
 			return False
 	return txtfile[txtfile.find('.')+1:] == 'sql'
 
@@ -130,6 +127,25 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 				return False
 		return variable
 
+def restore_BD(cursor,filetorestore):
+	if not os.path.isfile(filetorestore):
+			print "L'arxiu no existeix!"
+			return False
+	else:
+		print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
+		if (raw_input()) == 's':
+			cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
+					DROP TABLE IF EXISTS amistats;""")
+			with open(filetorestore) as f:
+				scriptsql=f.read()
+			try:
+				cur.executescript(scriptsql)
+				return True
+			except sqlite3.OperationalError as e:
+				print "Error! "+str(e)
+				return False
+		else:
+			return False
 
 
 def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
@@ -164,6 +180,7 @@ def menu():
 	print "7. Afegir usuari"
 	print "8. Editar usuari"
 	print "9. Crear copia de seguretat"
+	print "10. Restaurar copia de seguretat"
 	print "q. Sortir"
 
 def main(db,cursor):
@@ -200,6 +217,7 @@ def main(db,cursor):
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
 			ciutat=introdueixParametre('ciutat')
+			print "Format data: YYYY/MM/DD"
 			data=introdueixParametre('data',False,False,checkdate)
 			password=introdueixParametre('password',True)
 			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
@@ -230,6 +248,7 @@ def main(db,cursor):
 				if poblacio != '':
 					infotoupdate['poblacio'] = poblacio
 				print "Paràmetre actual de data: "+str(dades[4])
+				print "Format data: YYYY/MM/DD"
 				dataNaixement=introdueixParametre('dataNaixement',False,True,checkdate)
 				if dataNaixement != '':
 					infotoupdate['dataNaixement'] = dataNaixement
@@ -251,6 +270,14 @@ def main(db,cursor):
 			else:
 				create_backup(db,nomarxiu)
 				print "Backup guardada a "+nomarxiu+" correctament"
+
+		elif sel == '10':
+			print "Introdueix el nom de la base de dades (nom.sql)"
+			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
+			if restore_BD(cursor,nomarxiu):
+				print "Restaurat correctament!"
+			else:
+				print "No s'ha pogut restaurar!"
 
 		elif sel == 'q':
 			break
@@ -301,15 +328,7 @@ if __name__=='__main__':
 		else:
 			print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
 			if (raw_input()) == 's':
-				cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
-					DROP TABLE IF EXISTS amistats;""")
-				with open(sys.argv[1]) as f:
-					scriptsql=f.read()
-				try:
-					cur.executescript(scriptsql)
-				except sqlite3.OperationalError as e:
-					print "Error! "+str(e)
-					sys.exit(1)
+				restore_BD(cur,sys.argv[1])
 
 
 	try:
