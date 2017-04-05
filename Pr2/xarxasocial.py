@@ -84,18 +84,26 @@ def showExecution(title,values,valuestoshow):
 	return 0
 
 def checkdate(date):
-	pole=date.split('-')
-	if len(pole) == 3:
-		try:
-			int(pole[0])
-			int(pole[1])
-			int(pole[2])
-		except:
-			return False
-		else:
+
+	try:
+		if re.match('^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)\d\d$',date):
 			return True
-	else:
-		return False
+		else:
+			return False
+
+	except:
+			return False
+
+
+def checkemail(email):
+
+	try:
+		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
+			return True
+		else:
+			return False
+	except:
+			return False
 
 def checkSql(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
@@ -163,11 +171,11 @@ def main(db,cursor):
 		menu()
 		sel=raw_input()
 		if sel=='1':
-			ciutat = raw_input("Escriu la ciutat: ")
+			ciutat = raw_input("Escriu la ciutat: ").title()
 			result=findByPlace(cursor,ciutat)
 			showExecution("Usuaris amb residencia "+ciutat,result,[[1,2]])
 		elif sel == '2':
-			email=raw_input("Escriu el seu email: ")
+			email=raw_input("Escriu el seu email: ").lower()
 			result=findFriends(cursor,email)
 			showExecution("Amics de "+email,result,[[0,1]])
 		elif sel == '3':
@@ -183,7 +191,7 @@ def main(db,cursor):
 			showExecution("Total amistats rebujades",result,[[0,1]])
 
 		elif sel == '6':
-			email=raw_input("Escriu el seu email: ")
+			email=raw_input("Escriu el seu email: ").lower()
 			result=findNotFriendsOf(cursor,email)
 			showExecution("Amics que no son de "+email,result,[[0]])
 
@@ -200,7 +208,7 @@ def main(db,cursor):
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
-			email=introdueixParametre('email')
+			email=introdueixParametre('email',False,False,checkemail)
 			cursor.execute('SELECT * from usuaris where email = ?',(email,))
 			dades=cursor.fetchone()
 			if dades is None:
