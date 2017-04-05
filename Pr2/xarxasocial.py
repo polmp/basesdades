@@ -47,6 +47,17 @@ def findFriendsByPlace(cursor,place):
 		AND u2.poblacio == :ciutat """,{'ciutat':place})
 	return cursor.fetchall()
 
+def showUsersTable(cursor,taula):
+	cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+	taules=cursor.fetchall()
+	taules_new=[str(taula_1[0]) for taula_1 in taules]
+	if taula in taules_new:
+		cursor.execute("SELECT * from {tal};".format(tal=taula))
+		return cursor.fetchall()
+	else:
+		return False
+
+
 def findTotal(cursor):
 	cursor.execute("""
 	SELECT count(estat) 
@@ -70,19 +81,25 @@ def findNotFriendsOf(cursor,mail):
 	return cursor.fetchall()
 
 
-def showExecution(title,values,valuestoshow):
+def showExecution(title,values,valuestoshow='all'):
 	if len(values) > 0:
  		print title
 		print "----------------------------------"
 		for row in values:
-			for value in valuestoshow:
-				if type(value) is list:
-					joint=''
-					for indval in value:
-						joint+=str(row[indval])+" "
-					print joint
-				else:
-					print str(row[value])
+			if valuestoshow == 'all':
+				hf=''
+				for valors in row:
+					hf+=str(valors)+"   "
+				print hf
+			else:
+				for value in valuestoshow:
+					if type(value) is list:
+						joint=''
+						for indval in value:
+							joint+=str(row[indval])+" "
+						print joint
+					else:
+						print str(row[value])
 			print "----------------------------------"
 	else:
 		print "No s'han trobat resultats!"
@@ -147,6 +164,8 @@ def check_sql_syntax(filesql):
 		return False
 
 
+
+
 def restore_BD(cursor,filetorestore):
 	if not os.path.isfile(filetorestore):
 			print "L'arxiu no existeix!"
@@ -204,6 +223,7 @@ def email_exists_in_db(cursor,email):
 		return True
 	
 def menu():
+	print "0. Mostrar tots els usuaris"
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
 	print "3. Veure total d'amistats rebutjades"
@@ -220,7 +240,15 @@ def main(db,cursor):
 	while True:
 		menu()
 		sel=raw_input()
-		if sel=='1':
+		if sel=='0':
+			print "Introdueix quina taula vols consultar"
+			taula=introdueixParametre('taula')
+			result=showUsersTable(cursor,taula)
+			if not result:
+				print "La taula no existeix"
+			else:
+				showExecution("Tota la taula",result)
+		elif sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ").title()
 			result=findByPlace(cursor,ciutat)
 			showExecution("Usuaris amb residencia "+ciutat,result,[[1,2]])
