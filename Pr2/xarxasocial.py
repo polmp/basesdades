@@ -86,7 +86,7 @@ def showExecution(title,values,valuestoshow):
 
 def checkdate(date):
 	try:
-		datetime.datetime.strptime(date, '%Y/%m/%d')
+		datetime.datetime.strptime(date, '%Y-%m-%d')
 		return True
 	except ValueError:
 		return False
@@ -217,7 +217,7 @@ def main(db,cursor):
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
 			ciutat=introdueixParametre('ciutat')
-			print "Format data: YYYY/MM/DD"
+			print "Format data: YYYY-MM-DD"
 			data=introdueixParametre('data',False,False,checkdate)
 			password=introdueixParametre('password',True)
 			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
@@ -248,7 +248,7 @@ def main(db,cursor):
 				if poblacio != '':
 					infotoupdate['poblacio'] = poblacio
 				print "Paràmetre actual de data: "+str(dades[4])
-				print "Format data: YYYY/MM/DD"
+				print "Format data: YYYY-MM-DD"
 				dataNaixement=introdueixParametre('dataNaixement',False,True,checkdate)
 				if dataNaixement != '':
 					infotoupdate['dataNaixement'] = dataNaixement
@@ -322,13 +322,10 @@ if __name__=='__main__':
 
 	elif len(sys.argv) == 2:
 		print "Carregant arxiu "+sys.argv[1]
-		if not os.path.isfile(sys.argv[1]):
-			print "L'arxiu no existeix!"
-			sys.exit(1)
+		if restore_BD(cur,sys.argv[1]):
+			print "Restaurat correctament!"
 		else:
-			print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
-			if (raw_input()) == 's':
-				restore_BD(cur,sys.argv[1])
+			print "No s'ha pogut restaurar!"
 
 
 	try:
