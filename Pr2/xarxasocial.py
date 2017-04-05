@@ -7,9 +7,14 @@ import re
 import datetime
 
 def create_backup(cursor,filetxt):
+	if os.path.isfile(filetxt):
+		print "L'arxiu existeix! Segur que vols continuar? (Es borrarà el seu contingut) [s/n]"
+		if (raw_input()) != 's':
+			return False
 	data = '\n'.join(cursor.iterdump())
 	with open(filetxt,'w') as f:
 		f.write(data)
+	return True
 
 def getTupleDB(txt):
 	with open(txt) as arxiu:
@@ -145,6 +150,7 @@ def restore_BD(cursor,filetorestore):
 				print "Error! "+str(e)
 				return False
 		else:
+			print "Restauració cancelada"
 			return False
 
 
@@ -177,8 +183,6 @@ def email_exists_in_db(cursor,email):
 	else:
 		return True
 	
-
-		
 def menu():
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
@@ -274,14 +278,13 @@ def main(db,cursor):
 					print "No has afegit parametres per editar!"
 
 		elif sel == '9':
+			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
-			if os.path.isfile(nomarxiu):
-				print "L'arxiu ja existeix! Vols continuar? [s/n]"
-				if (raw_input()) == 's':
-					create_backup(db,nomarxiu)
-			else:
-				create_backup(db,nomarxiu)
+			if create_backup(db,nomarxiu):
 				print "Backup guardada a "+nomarxiu+" correctament"
+			else:
+				print "No s'ha creat la còpia de seguretat"
+				
 
 		elif sel == '10':
 			print "Introdueix el nom de la base de dades (nom.sql)"
