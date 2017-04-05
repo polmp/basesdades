@@ -164,9 +164,18 @@ def update_row(db,cursor,email,parametertoupdate):
 			sentencesql+=','
 		else:
 			sentencesql+=" where email='"+str(email)+"'"
-	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
+	print "Executant..."
+	print sentencesql
 	cur.execute(sentencesql,tuple(parametertoupdate.values()))
 	db.commit()
+
+def email_exists_in_db(cursor,email):
+	cursor.execute('SELECT * from usuaris where email = ?',(email,))
+	dades=cursor.fetchone()
+	if dades is None:
+		return False
+	else:
+		return True
 	
 
 		
@@ -214,24 +223,27 @@ def main(db,cursor):
 
 		elif sel == '7':
 			email=introdueixParametre('email',False,False,checkemail)
-			nom=introdueixParametre('nom')
-			cognom=introdueixParametre('cognom')
-			ciutat=introdueixParametre('ciutat')
-			print "Format data: YYYY-MM-DD"
-			data=introdueixParametre('data',False,False,checkdate)
-			password=introdueixParametre('password',True)
-			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
-			db.commit()
-			print "Usuari afegit corretament"
+			if email_exists_in_db(cursor,email):
+				print "L'usuari ja existeix!"
+			else:
+				nom=introdueixParametre('nom')
+				cognom=introdueixParametre('cognom')
+				ciutat=introdueixParametre('ciutat')
+				print "Format data: YYYY-MM-DD"
+				data=introdueixParametre('data',False,False,checkdate)
+				password=introdueixParametre('password',True)
+				cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
+				db.commit()
+				print "Usuari afegit corretament"
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
 			email=introdueixParametre('email',False,False,checkemail)
-			cursor.execute('SELECT * from usuaris where email = ?',(email,))
-			dades=cursor.fetchone()
-			if dades is None:
+			if not email_exists_in_db(cursor,email):
 				print "L'usuari no existeix!"
 			else:
+				cursor.execute('SELECT * from usuaris where email = ?',(email,))
+				dades=cursor.fetchone()
 				print "------------------------------------------------------------------"
 				print "Si no vols modificar un paràmetre deixa el camp buit"
 				print "------------------------------------------------------------------"
