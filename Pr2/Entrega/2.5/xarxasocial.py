@@ -4,21 +4,17 @@ import sys
 import getpass
 import os
 import re
+import datetime
 
 def create_backup(cursor,filetxt):
+	if os.path.isfile(filetxt):
+		print "L'arxiu existeix! Segur que vols continuar? (Es borrarà el seu contingut) [s/n]"
+		if (raw_input()) != 's':
+			return False
 	data = '\n'.join(cursor.iterdump())
 	with open(filetxt,'w') as f:
 		f.write(data)
-
-def getTupleDB(txt):
-	with open(txt) as arxiu:
-		dades=arxiu.read()
-		arxiu.close()
-		info=[]
-		for i in dades.split('\n'):
-			infusuari=i.split(',')
-			info.append(tuple(infusuari))
-	return info
+	return True
 
 def findByPlace(cursor,place):
 	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
@@ -40,6 +36,17 @@ def findFriendsByPlace(cursor,place):
 		AND u1.poblacio == :ciutat
 		AND u2.poblacio == :ciutat """,{'ciutat':place})
 	return cursor.fetchall()
+
+def showUsersTable(cursor,taula):
+	cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+	taules=cursor.fetchall()
+	taules_new=[str(taula_1[0]) for taula_1 in taules]
+	if taula in taules_new:
+		cursor.execute("SELECT * from {tal};".format(tal=taula))
+		return cursor.fetchall()
+	else:
+		return False
+
 
 def findTotal(cursor):
 	cursor.execute("""
@@ -64,19 +71,25 @@ def findNotFriendsOf(cursor,mail):
 	return cursor.fetchall()
 
 
-def showExecution(title,values,valuestoshow):
+def showExecution(title,values,valuestoshow='all'):
 	if len(values) > 0:
  		print title
 		print "----------------------------------"
 		for row in values:
-			for value in valuestoshow:
-				if type(value) is list:
-					joint=''
-					for indval in value:
-						joint+=str(row[indval])+" "
-					print joint
-				else:
-					print str(row[value])
+			if valuestoshow == 'all':
+				hf=''
+				for valors in row:
+					hf+=str(valors)+"   "
+				print hf
+			else:
+				for value in valuestoshow:
+					if type(value) is list:
+						joint=''
+						for indval in value:
+							joint+=str(row[indval])+" "
+						print joint
+					else:
+						print str(row[value])
 			print "----------------------------------"
 	else:
 		print "No s'han trobat resultats!"
@@ -84,19 +97,14 @@ def showExecution(title,values,valuestoshow):
 	return 0
 
 def checkdate(date):
-
 	try:
-		if re.match('^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[012])[/](19|20)\d\d$',date):
-			return True
-		else:
-			return False
-
-	except:
-			return False
+		datetime.datetime.strptime(date, '%Y-%m-%d')
+		return True
+	except ValueError:
+		return False
 
 
 def checkemail(email):
-
 	try:
 		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
 			return True
@@ -107,7 +115,7 @@ def checkemail(email):
 
 def checkSql(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
-		if (not i.isalpha()) & (not i.isdigit()):
+		if (not i.isalpha()) & (not i.isdigit()) & (i!='_'):
 			return False
 	return txtfile[txtfile.find('.')+1:] == 'sql'
 
@@ -131,6 +139,49 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 		return variable
 
 
+def check_sql_syntax(filesql):
+	with open(filesql) as f:
+		contingut_sql=f.read()
+	db_temporal=sqlite3.connect(':memory:')
+	curs=db_temporal.cursor()
+	try:
+		curs.executescript(contingut_sql)
+		db_temporal.close()
+		return True
+	except sqlite3.OperationalError as e:
+		print "Error! "+str(e)
+		db_temporal.close()
+		return False
+
+
+
+
+def restore_BD(cursor,filetorestore):
+	if not os.path.isfile(filetorestore):
+			print "L'arxiu no existeix!"
+			return False
+	else:
+		print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
+		if (raw_input()) == 's':
+			#Comprovacio inicial execucio arxiu
+			if check_sql_syntax(filetorestore):
+				cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
+					DROP TABLE IF EXISTS amistats;""")
+				with open(filetorestore) as f:
+					scriptsql=f.read()
+				try:
+					cur.executescript(scriptsql)
+					return True
+				except sqlite3.OperationalError as e:
+					print "Error! "+str(e)
+					return False
+			else:
+				print "Sintaxi del SQL no és correcta!"
+				return False
+		else:
+			print "Restauració cancelada"
+			return False
+
 
 def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
@@ -148,13 +199,21 @@ def update_row(db,cursor,email,parametertoupdate):
 			sentencesql+=','
 		else:
 			sentencesql+=" where email='"+str(email)+"'"
-	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
+	print "Executant..."
+	print sentencesql
 	cur.execute(sentencesql,tuple(parametertoupdate.values()))
 	db.commit()
-	
 
-		
+def email_exists_in_db(cursor,email):
+	cursor.execute('SELECT * from usuaris where email = ?',(email,))
+	dades=cursor.fetchone()
+	if dades is None:
+		return False
+	else:
+		return True
+	
 def menu():
+	print "0. Mostrar tots els usuaris"
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
 	print "3. Veure total d'amistats rebutjades"
@@ -164,13 +223,23 @@ def menu():
 	print "7. Afegir usuari"
 	print "8. Editar usuari"
 	print "9. Crear copia de seguretat"
+	print "10. Restaurar copia de seguretat"
 	print "q. Sortir"
 
 def main(db,cursor):
 	while True:
 		menu()
 		sel=raw_input()
-		if sel=='1':
+		if sel=='0':
+			print "Introdueix quina taula vols consultar"
+			taula=introdueixParametre('taula')
+			result=showUsersTable(cursor,taula)
+			if not result:
+				print "La taula no existeix"
+			else:
+				if taula == 'usuaris': #Hot fix
+					showExecution("Tota la taula",result,[[0,1,2,3,4]])
+		elif sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ").title()
 			result=findByPlace(cursor,ciutat)
 			showExecution("Usuaris amb residencia "+ciutat,result,[[1,2]])
@@ -196,24 +265,28 @@ def main(db,cursor):
 			showExecution("Amics que no son de "+email,result,[[0]])
 
 		elif sel == '7':
-			email=introdueixParametre('email')
-			nom=introdueixParametre('nom')
-			cognom=introdueixParametre('cognom')
-			ciutat=introdueixParametre('ciutat')
-			data=introdueixParametre('data',False,False,checkdate)
-			password=introdueixParametre('password',True)
-			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
-			db.commit()
-			print "Usuari afegit corretament"
+			email=introdueixParametre('email',False,False,checkemail)
+			if email_exists_in_db(cursor,email):
+				print "L'usuari ja existeix!"
+			else:
+				nom=introdueixParametre('nom')
+				cognom=introdueixParametre('cognom')
+				ciutat=introdueixParametre('ciutat')
+				print "Format data: YYYY-MM-DD"
+				data=introdueixParametre('data',False,False,checkdate)
+				password=introdueixParametre('password',True)
+				cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
+				db.commit()
+				print "Usuari afegit corretament"
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
 			email=introdueixParametre('email',False,False,checkemail)
-			cursor.execute('SELECT * from usuaris where email = ?',(email,))
-			dades=cursor.fetchone()
-			if dades is None:
+			if not email_exists_in_db(cursor,email):
 				print "L'usuari no existeix!"
 			else:
+				cursor.execute('SELECT * from usuaris where email = ?',(email,))
+				dades=cursor.fetchone()
 				print "------------------------------------------------------------------"
 				print "Si no vols modificar un paràmetre deixa el camp buit"
 				print "------------------------------------------------------------------"
@@ -230,6 +303,7 @@ def main(db,cursor):
 				if poblacio != '':
 					infotoupdate['poblacio'] = poblacio
 				print "Paràmetre actual de data: "+str(dades[4])
+				print "Format data: YYYY-MM-DD"
 				dataNaixement=introdueixParametre('dataNaixement',False,True,checkdate)
 				if dataNaixement != '':
 					infotoupdate['dataNaixement'] = dataNaixement
@@ -243,52 +317,27 @@ def main(db,cursor):
 					print "No has afegit parametres per editar!"
 
 		elif sel == '9':
+			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
-			if os.path.isfile(nomarxiu):
-				print "L'arxiu ja existeix! Vols continuar? [s/n]"
-				if (raw_input()) == 's':
-					create_backup(db,nomarxiu)
-			else:
-				create_backup(db,nomarxiu)
+			if create_backup(db,nomarxiu):
 				print "Backup guardada a "+nomarxiu+" correctament"
+			else:
+				print "No s'ha creat la còpia de seguretat"
+				
+
+		elif sel == '10':
+			print "Introdueix el nom de la base de dades (nom.sql)"
+			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
+			if restore_BD(cursor,nomarxiu):
+				print "Restaurat correctament!"
+			else:
+				print "No s'ha pogut restaurar!"
 
 		elif sel == 'q':
 			break
 		raw_input()
 
 if __name__=='__main__':
-	"""
-
-	#CREACIO DE TAULES
-
-	# cur.executescript("""
-	#	CREATE TABLE IF NOT EXISTS usuaris (
-	#	email varchar(30) PRIMARY KEY,
-	#	nom varchar(10) not null,
-	#	cognom varchar(12),
-	#	poblacio varchar(12),
-	#	dataNaixement DATETIME,
-	#	pwd varchar(30) not null);
-
-
-	#	CREATE TABLE IF NOT EXISTS amistats (
-	#	email1 varchar(30) not null,
-	#	email2 varchar(30) not null,
-	#	estat varchar(12) not null,
-	#	PRIMARY KEY (email1,email2));
-
-	#	""")
-	"""
-
-	#Afegint usuaris
-	cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
-	#Afegint amistats
-	cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
-	db.commit()
-
-	"""
-
-
 	db=sqlite3.connect('xarxsoc.bd')
 	cur=db.cursor()
 	if len(sys.argv) == 1:
@@ -296,17 +345,10 @@ if __name__=='__main__':
 
 	elif len(sys.argv) == 2:
 		print "Carregant arxiu "+sys.argv[1]
-		if not os.path.isfile(sys.argv[1]):
-			print "L'arxiu no existeix!"
-			sys.exit(1)
+		if restore_BD(cur,sys.argv[1]):
+			print "Restaurat correctament!"
 		else:
-			with open(sys.argv[1]) as f:
-				scriptsql=f.read()
-			try:
-				cur.executescript(scriptsql)
-			except sqlite3.OperationalError as e:
-				print "Error! "+str(e)
-				sys.exit(1)
+			print "No s'ha pogut restaurar!"
 
 
 	try:
