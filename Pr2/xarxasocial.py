@@ -6,8 +6,9 @@ import os
 import re
 
 def create_backup(cursor,filetxt):
-	cursor.fetchall('SELECT * from usuaris')
-	print cursor
+	data = '\n'.join(cursor.iterdump())
+	with open(filetxt,'w') as f:
+		f.write(data)
 
 def getTupleDB(txt):
 	with open(txt) as arxiu:
@@ -62,9 +63,6 @@ def findNotFriendsOf(cursor,mail):
 	;""",{'email':mail})
 	return cursor.fetchall()
 
-def addUser(email,nom,cognom,poblacio,data,contrasenya):
-	pass
-
 
 def showExecution(title,values,valuestoshow):
 	if len(values) > 0:
@@ -99,42 +97,55 @@ def checkdate(date):
 	else:
 		return False
 
-def checkTxt(txtfile):
+def checkSql(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
 		if (not i.isalpha()) & (not i.isdigit()):
 			return False
-	return txtfile[txtfile.find('.')+1:] == 'txt'
+	return txtfile[txtfile.find('.')+1:] == 'sql'
 
-def comprovaParametre(nompar,hidefield=False,funcio=None):
+def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	if not hidefield:
 		variable=raw_input("Introdueix el parametre "+nompar+": ")
 	else:
 		variable=getpass.getpass("Introdueix el "+nompar+": ")
 
-	try:
-		assert variable!= '',nompar
-	except AssertionError:
-		print "Afegeix el parametre "+nompar+" correctament"
-		return False
+	if len(variable) == 0:
+		if can_be_empty:
+			return ''
+		else:
+			return False
 	else:
 		if funcio is not None:
 			if funcio(variable):
-				return True
+				return variable
 			else:
 				return False
-		return True
+		return variable
 
 
 
-def introdueixParametre(nompar,hidefield=False,funcio=None):
-	par=comprovaParametre(nompar,hidefield,funcio)
+def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
+	par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	while not par:
-		par=comprovaParametre(nompar,hidefield,funcio)
+		if par == '':
+			break
+		par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	return par
+
+def update_row(db,cursor,email,parametertoupdate):
+	sentencesql= ''' UPDATE usuaris set '''
+	for parameter in parametertoupdate.keys():
+		sentencesql+=parameter+'='+'?'
+		if parameter != parametertoupdate.keys()[-1]:
+			sentencesql+=','
+		else:
+			sentencesql+=" where email='"+str(email)+"'"
+	print sentencesql+'\n'+str(tuple(parametertoupdate.values()))
+	cur.execute(sentencesql,tuple(parametertoupdate.values()))
+	db.commit()
+	
+
 		
-
-
-
 def menu():
 	print "1. Buscar usuaris per ciutat"
 	print "2. Visualitzar amics d'una persona"
@@ -143,7 +154,8 @@ def menu():
 	print "5. Obtenir peticions rebutjades per usuari"
 	print "6. Obtenir amics que no son amic de X persona"
 	print "7. Afegir usuari"
-	print "8. Crear copia de seguretat"
+	print "8. Editar usuari"
+	print "9. Crear copia de seguretat"
 	print "q. Sortir"
 
 def main(db,cursor):
@@ -179,48 +191,86 @@ def main(db,cursor):
 			email=introdueixParametre('email')
 			nom=introdueixParametre('nom')
 			cognom=introdueixParametre('cognom')
-			data=introdueixParametre('data',False,checkdate)
+			ciutat=introdueixParametre('ciutat')
+			data=introdueixParametre('data',False,False,checkdate)
 			password=introdueixParametre('password',True)
+			cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
+			db.commit()
 			print "Usuari afegit corretament"
-
 		elif sel == '8':
-			nomarxiu=introdueixParametre('nomarxiu',False,checkTxt)
-			if os.path.isfile(nom):
-				print "L'arxiu ja existeix! Vols continuar [s/n]"
+			infotoupdate={}
+			print "Primer introdueix el email del usuari"
+			email=introdueixParametre('email')
+			cursor.execute('SELECT * from usuaris where email = ?',(email,))
+			dades=cursor.fetchone()
+			if dades is None:
+				print "L'usuari no existeix!"
+			else:
+				print "------------------------------------------------------------------"
+				print "Si no vols modificar un paràmetre deixa el camp buit"
+				print "------------------------------------------------------------------"
+				print "Paràmetre actual de nom: "+str(dades[1])
+				nom=introdueixParametre('nom',False,True)
+				if nom != '':
+					infotoupdate['nom'] = nom
+				print "Paràmetre actual de cognom: "+str(dades[2])
+				cognom=introdueixParametre('cognom',False,True)
+				if cognom != '':
+					infotoupdate['cognom'] = cognom
+				print "Paràmetre actual de ciutat: "+str(dades[3])
+				poblacio=introdueixParametre('poblacio',False,True)
+				if poblacio != '':
+					infotoupdate['poblacio'] = poblacio
+				print "Paràmetre actual de data: "+str(dades[4])
+				dataNaixement=introdueixParametre('dataNaixement',False,True,checkdate)
+				if dataNaixement != '':
+					infotoupdate['dataNaixement'] = dataNaixement
+				print "Paràmetre actual de password: OCULT"
+				password=introdueixParametre('password',True,True)
+				if password != '':
+					infotoupdate['pwd'] = password
+				if len(infotoupdate) > 0:
+					update_row(db,cursor,email,infotoupdate)
+				else:
+					print "No has afegit parametres per editar!"
+
+		elif sel == '9':
+			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
+			if os.path.isfile(nomarxiu):
+				print "L'arxiu ja existeix! Vols continuar? [s/n]"
 				if (raw_input()) == 's':
 					create_backup(db,nomarxiu)
 			else:
 				create_backup(db,nomarxiu)
+				print "Backup guardada a "+nomarxiu+" correctament"
 
 		elif sel == 'q':
 			break
 		raw_input()
 
 if __name__=='__main__':
-	db=sqlite3.connect('xarxsoc.bd')
-	cur=db.cursor()
-
-	"""
-	CREACIO DE TAULES
 	"""
 
-	cur.executescript("""
-		CREATE TABLE IF NOT EXISTS usuaris (
-		email varchar(30) PRIMARY KEY,
-		nom varchar(10) not null,
-		cognom varchar(12),
-		poblacio varchar(12),
-		dataNaixement DATETIME,
-		pwd varchar(30) not null);
+	#CREACIO DE TAULES
+
+	# cur.executescript("""
+	#	CREATE TABLE IF NOT EXISTS usuaris (
+	#	email varchar(30) PRIMARY KEY,
+	#	nom varchar(10) not null,
+	#	cognom varchar(12),
+	#	poblacio varchar(12),
+	#	dataNaixement DATETIME,
+	#	pwd varchar(30) not null);
 
 
-		CREATE TABLE IF NOT EXISTS amistats (
-		email1 varchar(30) not null,
-		email2 varchar(30) not null,
-		estat varchar(12) not null,
-		PRIMARY KEY (email1,email2));
+	#	CREATE TABLE IF NOT EXISTS amistats (
+	#	email1 varchar(30) not null,
+	#	email2 varchar(30) not null,
+	#	estat varchar(12) not null,
+	#	PRIMARY KEY (email1,email2));
 
-		""")
+	#	""")
+	"""
 
 	#Afegint usuaris
 	cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB('usuarisbd.txt'))
@@ -228,8 +278,29 @@ if __name__=='__main__':
 	cur.executemany("INSERT OR IGNORE INTO amistats(email1,email2,estat) VALUES (?,?,?)",getTupleDB('amistatsbd.txt'))
 	db.commit()
 
-	data = '\n'.join(db.iterdump())
-	print data
+	"""
+
+
+	db=sqlite3.connect('xarxsoc.bd')
+	cur=db.cursor()
+	if len(sys.argv) == 1:
+		print "Executant en mode normal"
+
+	elif len(sys.argv) == 2:
+		print "Carregant arxiu "+sys.argv[1]
+		if not os.path.isfile(sys.argv[1]):
+			print "L'arxiu no existeix!"
+			sys.exit(1)
+		else:
+			with open(sys.argv[1]) as f:
+				scriptsql=f.read()
+			try:
+				cur.executescript(scriptsql)
+			except sqlite3.OperationalError as e:
+				print "Error! "+str(e)
+				sys.exit(1)
+
+
 	try:
 		main(db,cur)
 		db.close()
