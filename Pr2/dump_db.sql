@@ -3,7 +3,9 @@ CREATE TABLE amistats (
 	email1 varchar(30) not null,
 	email2 varchar(30) not null,
 	estat varchar(12) not null,
-	PRIMARY KEY (email1,email2));
+	PRIMARY KEY (email1,email2),
+	FOREIGN KEY(email1) REFERENCES usuaris(email),
+	FOREIGN KEY(email2) REFERENCES usuaris(email));
 INSERT INTO "amistats" VALUES('alba@email.com','berto@email.com','Acceptada');
 INSERT INTO "amistats" VALUES('berto@email.com','carles@email.com','Pendent');
 INSERT INTO "amistats" VALUES('pere@email.com','alba@email.com','Acceptada');

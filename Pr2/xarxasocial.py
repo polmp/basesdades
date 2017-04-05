@@ -161,7 +161,7 @@ def restore_BD(cursor,filetorestore):
 			print "L'arxiu no existeix!"
 			return False
 	else:
-		print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
+		print "Segur que vols restaurar (es borrarà tot el que hi havia anteriorment a la BD) [s/n]"
 		if (raw_input()) == 's':
 			#Comprovacio inicial execucio arxiu
 			if check_sql_syntax(filetorestore):
