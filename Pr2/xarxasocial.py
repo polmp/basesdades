@@ -98,7 +98,6 @@ def checkdate(date):
 
 
 def checkemail(email):
-
 	try:
 		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
 			return True
@@ -132,6 +131,20 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 				return False
 		return variable
 
+
+def check_sql_syntax(filesql):
+	with open(filesql) as f:
+		contingut_sql=f.read()
+	db_temporal=sqlite3.connect(':memory:')
+	curs=db_temporal.cursor()
+	try:
+		curs.executescript(contingut_sql)
+		return True
+	except sqlite3.OperationalError as e:
+		print "Error! "+str(e)
+		return False
+
+
 def restore_BD(cursor,filetorestore):
 	if not os.path.isfile(filetorestore):
 			print "L'arxiu no existeix!"
@@ -139,15 +152,20 @@ def restore_BD(cursor,filetorestore):
 	else:
 		print "L'arxiu ja existeix! Segur que vols restaurar (es borrarà tot el que hi havia anteriorment) [s/n]"
 		if (raw_input()) == 's':
-			cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
+			#Comprovacio inicial execucio arxiu
+			if check_sql_syntax(filetorestore):
+				cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
 					DROP TABLE IF EXISTS amistats;""")
-			with open(filetorestore) as f:
-				scriptsql=f.read()
-			try:
-				cur.executescript(scriptsql)
-				return True
-			except sqlite3.OperationalError as e:
-				print "Error! "+str(e)
+				with open(filetorestore) as f:
+					scriptsql=f.read()
+				try:
+					cur.executescript(scriptsql)
+					return True
+				except sqlite3.OperationalError as e:
+					print "Error! "+str(e)
+					return False
+			else:
+				print "Sintaxi del SQL no és correcta!"
 				return False
 		else:
 			print "Restauració cancelada"
