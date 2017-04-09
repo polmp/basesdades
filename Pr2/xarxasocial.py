@@ -153,8 +153,9 @@ def check_sql_syntax(filesql):
 		db_temporal.close()
 		return False
 
-
-
+def remove_user(db,cursor,email):
+	cursor.execute("DELETE from usuaris where email = :email",{"email":email})
+	db.commit()
 
 def restore_BD(cursor,filetorestore):
 	if not os.path.isfile(filetorestore):
@@ -222,8 +223,9 @@ def menu():
 	print "6. Obtenir amics que no son amic de X persona"
 	print "7. Afegir usuari"
 	print "8. Editar usuari"
-	print "9. Crear copia de seguretat"
-	print "10. Restaurar copia de seguretat"
+	print "9. Borrar usuari"
+	print "10. Crear copia de seguretat"
+	print "11. Restaurar copia de seguretat"
 	print "q. Sortir"
 
 def main(db,cursor):
@@ -290,6 +292,9 @@ def main(db,cursor):
 				print "------------------------------------------------------------------"
 				print "Si no vols modificar un paràmetre deixa el camp buit"
 				print "------------------------------------------------------------------"
+				emailmod=introdueixParametre('email',False,True,checkemail)
+				if emailmod != '':
+					infotoupdate['email'] = emailmod
 				print "Paràmetre actual de nom: "+str(dades[1])
 				nom=introdueixParametre('nom',False,True)
 				if nom != '':
@@ -315,8 +320,16 @@ def main(db,cursor):
 					update_row(db,cursor,email,infotoupdate)
 				else:
 					print "No has afegit parametres per editar!"
+		elif sel=='9':
+			email=introdueixParametre('email',False,False,checkemail)
+			if not email_exists_in_db(cursor,email):
+				print "L'usuari no existeix!"
+			else:
+				remove_user(db,cursor,email)
+				print "Borrat usuari "+email+" correctament"
 
-		elif sel == '9':
+
+		elif sel == '10':
 			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
 			if create_backup(db,nomarxiu):
@@ -325,7 +338,7 @@ def main(db,cursor):
 				print "No s'ha creat la còpia de seguretat"
 				
 
-		elif sel == '10':
+		elif sel == '11':
 			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
 			if restore_BD(cursor,nomarxiu):
@@ -340,6 +353,7 @@ def main(db,cursor):
 if __name__=='__main__':
 	db=sqlite3.connect('xarxsoc.bd')
 	cur=db.cursor()
+	cur.execute('pragma foreign_keys=ON') #Activem foreign key
 	if len(sys.argv) == 1:
 		print "Executant en mode normal"
 
