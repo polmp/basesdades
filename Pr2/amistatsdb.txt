@@ -1,0 +1,10 @@
+alba@email.com,berto@email.com,Acceptada
+berto@email.com,carles@email.com,Pendent
+pere@email.com,alba@email.com,Acceptada
+carles@email.com,pere@email.com,Rebutjada
+berto@email.com,pere@email.com,Acceptada
+alba@email.com,carles@email.com,Rebutjada
+antoni@email.com,berto@email.com,Acceptada
+carles@email.com,antoni@email.com,Acceptada
+antoni@email.com,alba@email.com,Rebutjada
+antoni@email.com,pere@email.com,Acceptada
