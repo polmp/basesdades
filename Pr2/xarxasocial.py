@@ -6,8 +6,23 @@ import os
 import re
 import datetime
 
-def create_backup(cursor,filetxt):
-	pass
+def create_backup(cursor,usuaris_txt,amistats_txt):
+	cursor.execute("SELECT * from usuaris")
+	data=cursor.fetchall()
+	with open(usuaris_txt,'w') as usuaristxt:
+		for row in data:
+			usuaristxt.write(row[0]+','+row[1]+','+row[2]+','+row[3]+','+row[4]+','+row[5])
+			if row != data[-1]:
+				usuaristxt.write('\n')
+
+	cursor.execute("SELECT * from amistats")
+	data=cursor.fetchall()
+	with open(amistats_txt,'w') as amistatstxt:
+		for row in data:
+			amistatstxt.write(row[0]+','+row[1]+','+row[2])
+			if row != data[-1]:
+				amistatstxt.write('\n')
+	return True
 
 def findByPlace(cursor,place):
 	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
@@ -105,11 +120,13 @@ def checkemail(email):
 	except:
 			return False
 
-def checkSql(txtfile):
+def checkTxt(txtfile):
 	for i in txtfile[:txtfile.find('.')]:
 		if (not i.isalpha()) & (not i.isdigit()) & (i!='_'):
 			return False
-	return txtfile[txtfile.find('.')+1:] == 'sql'
+
+	return txtfile[txtfile.find('.')+1:] == 'txt'
+
 
 def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	if not hidefield:
@@ -188,7 +205,6 @@ def restore_BD(db,cursor,usuaristxt,amistatstxt):
 				amistats_row=amistats.read()
 
 			try:
-				print getTupleDB(amistatstxt)
 				cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB(usuaristxt))
 				cur.executemany("INSERT OR IGNORE INTO amistats VALUES(?, ?, ?)",getTupleDB(amistatstxt))
 				db.commit()
@@ -349,21 +365,27 @@ def main(db,cursor):
 
 
 		elif sel == '10':
-			print "Introdueix el nom de la base de dades (nom.sql)"
-			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
-			if create_backup(db,nomarxiu):
-				print "Backup guardada a "+nomarxiu+" correctament"
-			else:
-				print "No s'ha creat la còpia de seguretat"
+			print "Introdueix el nom de l'arxiu on vols guardar l'informacio de la taula usuaris (*.txt)"
+			usuaris=introdueixParametre('usuaris',False,True,checkTxt)
+			if usuaris != '':
+				print "Introdueix el nom de l'arxiu on vols guardar l'informacio de la taula amistats (*.txt)"
+				amistats=introdueixParametre('amistats',False,True,checkTxt)
+				if amistats!='':
+					if create_backup(cursor,usuaris,amistats):
+						print "Copia de seguretat OK"
 				
 
 		elif sel == '11':
-			print "Introdueix el nom de la base de dades (nom.sql)"
-			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
-			if restore_BD(cursor,nomarxiu):
-				print "Restaurat correctament!"
-			else:
-				print "No s'ha pogut restaurar!"
+			print "Introdueix el nom de l'arxiu on hi ha l'informacio de la taula usuaris (*.txt)"
+			usuaris=introdueixParametre('usuaris',False,True,checkTxt)
+			if (usuaris != '') & os.path.isfile(usuaris):
+				print "Introdueix el nom de l'arxiu on hi ha l'informacio de la taula amistats (*.txt)"
+				amistats=introdueixParametre('amistats',False,True,checkTxt)
+				if (amistats!='') & os.path.isfile(amistats):
+					if restore_BD(db,cursor,usuaris,amistats):
+						print "Restaurat correctament!"
+					else:
+						print "No s'ha pogut restaurar!"
 
 		elif sel == 'q':
 			break
