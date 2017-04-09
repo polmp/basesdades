@@ -7,6 +7,10 @@ import re
 import datetime
 
 def create_backup(cursor,usuaris_txt,amistats_txt):
+	if os.path.isfile(usuaris_txt) | os.path.isfile(amistats_txt):
+		print "Algun arxiu existeix! Segur que vols continuar? (Es borrarà tot el contingut) [s/n]"
+		if (raw_input()) != 's':
+			return False
 	cursor.execute("SELECT * from usuaris")
 	data=cursor.fetchall()
 	with open(usuaris_txt,'w') as usuaristxt:
@@ -373,6 +377,8 @@ def main(db,cursor):
 				if amistats!='':
 					if create_backup(cursor,usuaris,amistats):
 						print "Copia de seguretat OK"
+					else:
+						print "No s'ha fet la copia de seguretat!"
 				
 
 		elif sel == '11':
