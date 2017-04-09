@@ -7,14 +7,7 @@ import re
 import datetime
 
 def create_backup(cursor,filetxt):
-	if os.path.isfile(filetxt):
-		print "L'arxiu existeix! Segur que vols continuar? (Es borrarà el seu contingut) [s/n]"
-		if (raw_input()) != 's':
-			return False
-	data = '\n'.join(cursor.iterdump())
-	with open(filetxt,'w') as f:
-		f.write(data)
-	return True
+	pass
 
 def findByPlace(cursor,place):
 	cursor.execute("SELECT * from usuaris where poblacio = :ciutat",{"ciutat":place})
@@ -46,7 +39,6 @@ def showUsersTable(cursor,taula):
 		return cursor.fetchall()
 	else:
 		return False
-
 
 def findTotal(cursor):
 	cursor.execute("""
@@ -139,45 +131,70 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 		return variable
 
 
-def check_sql_syntax(filesql):
-	with open(filesql) as f:
-		contingut_sql=f.read()
-	db_temporal=sqlite3.connect(':memory:')
-	curs=db_temporal.cursor()
-	try:
-		curs.executescript(contingut_sql)
-		db_temporal.close()
-		return True
-	except sqlite3.OperationalError as e:
-		print "Error! "+str(e)
-		db_temporal.close()
-		return False
-
 def remove_user(db,cursor,email):
 	cursor.execute("DELETE from usuaris where email = :email",{"email":email})
 	db.commit()
 
-def restore_BD(cursor,filetorestore):
-	if not os.path.isfile(filetorestore):
+def getTupleDB(txt):
+	with open(txt) as arxiu:
+		dades=arxiu.read()
+		getLenght=len(dades.split('\n')[0].split(','))
+		arxiu.close()
+		info=[]
+		for i in dades.split('\n'):
+			infusuari=i.split(',')
+			if len(infusuari)==getLenght:
+				info.append(tuple(infusuari))
+	return info
+
+def restore_BD(db,cursor,usuaristxt,amistatstxt):
+	if (not os.path.isfile(usuaristxt)) or (not os.path.isfile(amistatstxt)):
 			print "L'arxiu no existeix!"
 			return False
 	else:
 		print "Segur que vols restaurar (es borrarà tot el que hi havia anteriorment a la BD) [s/n]"
 		if (raw_input()) == 's':
 			#Comprovacio inicial execucio arxiu
-			if check_sql_syntax(filetorestore):
-				cur.executescript("""DROP TABLE IF EXISTS usuaris;\n
+			cursor.executescript("""DROP TABLE IF EXISTS usuaris;\n
 					DROP TABLE IF EXISTS amistats;""")
-				with open(filetorestore) as f:
-					scriptsql=f.read()
-				try:
-					cur.executescript(scriptsql)
-					return True
-				except sqlite3.OperationalError as e:
-					print "Error! "+str(e)
-					return False
-			else:
-				print "Sintaxi del SQL no és correcta!"
+
+			"""
+			Creacio de taules
+			"""
+
+			cursor.executescript("""
+				CREATE TABLE IF NOT EXISTS usuaris (
+				email varchar(30) PRIMARY KEY,
+				nom varchar(10) not null,
+				cognom varchar(12),
+				poblacio varchar(12),
+				dataNaixement DATETIME,
+				pwd varchar(30) not null);
+				
+				CREATE TABLE IF NOT EXISTS amistats (
+				email1 varchar(30) not null,
+				email2 varchar(30) not null,
+				estat varchar(12) not null,
+				PRIMARY KEY (email1,email2),
+				FOREIGN KEY(email1) REFERENCES usuaris(email) ON UPDATE CASCADE ON DELETE CASCADE,
+				FOREIGN KEY(email2) REFERENCES usuaris(email) ON UPDATE CASCADE ON DELETE CASCADE);
+			""")
+
+			db.commit()
+
+			with open(usuaristxt) as usuaris:
+				usuaris_row=usuaris.read()
+			with open(amistatstxt) as amistats:
+				amistats_row=amistats.read()
+
+			try:
+				print getTupleDB(amistatstxt)
+				cur.executemany("INSERT OR IGNORE INTO usuaris(email,nom,cognom,poblacio,dataNaixement,pwd) VALUES(?, ?, ?, ?, ?, ?)",getTupleDB(usuaristxt))
+				cur.executemany("INSERT OR IGNORE INTO amistats VALUES(?, ?, ?)",getTupleDB(amistatstxt))
+				db.commit()
+				return True
+			except sqlite3.ProgrammingError as e:
+				print "Error! "+str(e)
 				return False
 		else:
 			print "Restauració cancelada"
@@ -237,10 +254,12 @@ def main(db,cursor):
 			taula=introdueixParametre('taula')
 			result=showUsersTable(cursor,taula)
 			if not result:
-				print "La taula no existeix"
+				print "La taula no existeix o no hi ha entrades!"
 			else:
 				if taula == 'usuaris': #Hot fix
 					showExecution("Tota la taula",result,[[0,1,2,3,4]])
+				else:
+					showExecution("Tota la taula "+taula,result)
 		elif sel=='1':
 			ciutat = raw_input("Escriu la ciutat: ").title()
 			result=findByPlace(cursor,ciutat)
@@ -358,8 +377,12 @@ if __name__=='__main__':
 		print "Executant en mode normal"
 
 	elif len(sys.argv) == 2:
-		print "Carregant arxiu "+sys.argv[1]
-		if restore_BD(cur,sys.argv[1]):
+		print "Per restaurar necessites 2 txt!"
+
+	elif len(sys.argv) == 3:
+		print "Carregant arxiu "+sys.argv[1]+" i "+sys.argv[2]
+
+		if restore_BD(db,cur,sys.argv[1],sys.argv[2]):
 			print "Restaurat correctament!"
 		else:
 			print "No s'ha pogut restaurar!"
