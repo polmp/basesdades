@@ -1,5 +1,0 @@
-alba@email.com,Alba,Dominguez,Manresa,1969-05-02,passworda
-berto@email.com,Berto,Row,Manresa,1997-12-02,passwordb
-carles@email.com,Carles,Albets,Pamplona,1989-11-12,passwordc
-pere@email.com,Pere,Garcia,Russia,1945-04-5,passwordd
-antoni@email.com,Antoni,Josep,Manresa,1930-04-5,passworde
