@@ -268,7 +268,7 @@ def main(db,cursor):
 	while True:
 		menu()
 		sel=raw_input("-> ")
-		print "-----------------------------"
+		print 
 		if sel=='0':
 			print "Introdueix quina taula vols consultar"
 			print
@@ -307,7 +307,6 @@ def main(db,cursor):
 			email=introdueixParametre('email',False,False,checkemail)
 			if email_exists_in_db(cursor,email):
 				print "L'usuari ja existeix!"
-				print "-----------------------------"
 			else:
 				nom=introdueixParametre('nom')
 				cognom=introdueixParametre('cognom')
@@ -318,7 +317,6 @@ def main(db,cursor):
 				cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
 				db.commit()
 				print "Usuari afegit corretament"
-				print "-----------------------------"
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
