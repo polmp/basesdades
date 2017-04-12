@@ -81,7 +81,6 @@ def findNotFriendsOf(cursor,mail):
 	;""",{'email':mail})
 	return cursor.fetchall()
 
-
 def showExecution(title,values,valuestoshow='all'):
 	if len(values) > 0:
  		print title
@@ -114,7 +113,6 @@ def checkdate(date):
 	except ValueError:
 		return False
 
-
 def checkemail(email):
 	try:
 		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
@@ -130,7 +128,6 @@ def checkTxt(txtfile):
 			return False
 
 	return txtfile[txtfile.find('.')+1:] == 'txt'
-
 
 def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	if not hidefield:
@@ -150,7 +147,6 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 			else:
 				return False
 		return variable
-
 
 def remove_user(db,cursor,email):
 	cursor.execute("DELETE from usuaris where email = :email",{"email":email})
@@ -219,7 +215,6 @@ def restore_BD(db,cursor,usuaristxt,amistatstxt):
 		else:
 			print "Restauració cancelada"
 			return False
-
 
 def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
@@ -403,6 +398,28 @@ if __name__=='__main__':
 	cur.execute('pragma foreign_keys=ON') #Activem foreign key
 	if len(sys.argv) == 1:
 		print "Executant en mode normal"
+		cur.executescript("""
+			CREATE TABLE IF NOT EXISTS usuaris (
+	
+				email varchar(30) PRIMARY KEY,
+				nom varchar(10) not null,
+				cognom varchar(12),
+				poblacio varchar(12),
+				dataNaixement DATETIME,
+				pwd varchar(30) not null
+				);
+
+			CREATE TABLE IF NOT EXISTS amistats (
+				
+				email1 varchar(30) not null,
+				email2 varchar(30) not null,
+				estat varchar(12) not null,
+				PRIMARY KEY(email1,email2),
+				FOREIGN KEY(email1) REFERENCES usuaris(email),
+				FOREIGN KEY(email2) REFERENCES usuaris(email)
+				);
+			""")
+		db.commit()
 
 	elif len(sys.argv) == 2:
 		print "Per restaurar necessites 2 txt!"
@@ -414,6 +431,28 @@ if __name__=='__main__':
 			print "Restaurat correctament!"
 		else:
 			print "No s'ha pogut restaurar!"
+			cur.executescript("""
+				CREATE TABLE IF NOT EXISTS usuaris (
+	
+					email varchar(30) PRIMARY KEY,
+					nom varchar(10) not null,
+					cognom varchar(12),
+					poblacio varchar(12),
+					dataNaixement DATETIME,
+					pwd varchar(30) not null
+					);
+
+				CREATE TABLE IF NOT EXISTS amistats (
+				
+					email1 varchar(30) not null,
+					email2 varchar(30) not null,
+					estat varchar(12) not null,
+					PRIMARY KEY(email1,email2),
+					FOREIGN KEY(email1) REFERENCES usuaris(email),
+					FOREIGN KEY(email2) REFERENCES usuaris(email)
+					);
+			""")
+			db.commit()
 
 
 	try:
