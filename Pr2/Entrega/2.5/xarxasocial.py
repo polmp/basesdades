@@ -47,7 +47,6 @@ def showUsersTable(cursor,taula):
 	else:
 		return False
 
-
 def findTotal(cursor):
 	cursor.execute("""
 	SELECT count(estat) 
@@ -69,7 +68,6 @@ def findNotFriendsOf(cursor,mail):
 		AND usuaris.email != :email
 	;""",{'email':mail})
 	return cursor.fetchall()
-
 
 def showExecution(title,values,valuestoshow='all'):
 	if len(values) > 0:
@@ -102,7 +100,6 @@ def checkdate(date):
 		return True
 	except ValueError:
 		return False
-
 
 def checkemail(email):
 	try:
@@ -138,7 +135,6 @@ def comprovaParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 				return False
 		return variable
 
-
 def check_sql_syntax(filesql):
 	with open(filesql) as f:
 		contingut_sql=f.read()
@@ -152,9 +148,6 @@ def check_sql_syntax(filesql):
 		print "Error! "+str(e)
 		db_temporal.close()
 		return False
-
-
-
 
 def restore_BD(cursor,filetorestore):
 	if not os.path.isfile(filetorestore):
@@ -181,7 +174,6 @@ def restore_BD(cursor,filetorestore):
 		else:
 			print "Restauració cancelada"
 			return False
-
 
 def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 	par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
@@ -225,6 +217,7 @@ def menu():
 	print "9. Crear copia de seguretat"
 	print "10. Restaurar copia de seguretat"
 	print "q. Sortir"
+	print 
 
 def main(db,cursor):
 	while True:
@@ -248,22 +241,19 @@ def main(db,cursor):
 			result=findFriends(cursor,email)
 			showExecution("Amics de "+email,result,[[0,1]])
 		elif sel == '3':
+			
 			print "El nombre total de peticions rebujades és de "+str(findTotal(cursor))
-
 		elif sel == '4':
 			ciutat=raw_input("Escriu la ciutat: ")
 			result=findFriendsByPlace(cursor,ciutat)
 			showExecution("Amics que viuen a "+ciutat,result,[[4,5],[10,11]])
-
 		elif sel == '5':
 			result=findRebByUser(cursor)
 			showExecution("Total amistats rebujades",result,[[0,1]])
-
 		elif sel == '6':
 			email=raw_input("Escriu el seu email: ").lower()
 			result=findNotFriendsOf(cursor,email)
 			showExecution("Amics que no son de "+email,result,[[0]])
-
 		elif sel == '7':
 			email=introdueixParametre('email',False,False,checkemail)
 			if email_exists_in_db(cursor,email):
@@ -315,7 +305,6 @@ def main(db,cursor):
 					update_row(db,cursor,email,infotoupdate)
 				else:
 					print "No has afegit parametres per editar!"
-
 		elif sel == '9':
 			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
@@ -323,8 +312,6 @@ def main(db,cursor):
 				print "Backup guardada a "+nomarxiu+" correctament"
 			else:
 				print "No s'ha creat la còpia de seguretat"
-				
-
 		elif sel == '10':
 			print "Introdueix el nom de la base de dades (nom.sql)"
 			nomarxiu=introdueixParametre('nomarxiu',False,False,checkSql)
@@ -332,16 +319,37 @@ def main(db,cursor):
 				print "Restaurat correctament!"
 			else:
 				print "No s'ha pogut restaurar!"
-
 		elif sel == 'q':
 			break
-		raw_input()
+		#raw_input()
 
 if __name__=='__main__':
 	db=sqlite3.connect('xarxsoc.bd')
 	cur=db.cursor()
 	if len(sys.argv) == 1:
 		print "Executant en mode normal"
+		cur.executescript("""
+			CREATE TABLE IF NOT EXISTS usuaris (
+	
+				email varchar(30) PRIMARY KEY,
+				nom varchar(10) not null,
+				cognom varchar(12),
+				poblacio varchar(12),
+				dataNaixement DATETIME,
+				pwd varchar(30) not null
+				);
+
+			CREATE TABLE IF NOT EXISTS amistats (
+				
+				email1 varchar(30) not null,
+				email2 varchar(30) not null,
+				estat varchar(12) not null,
+				PRIMARY KEY(email1,email2),
+				FOREIGN KEY(email1) REFERENCES usuaris(email),
+				FOREIGN KEY(email2) REFERENCES usuaris(email)
+				);
+			""")
+		db.commit()
 
 	elif len(sys.argv) == 2:
 		print "Carregant arxiu "+sys.argv[1]
