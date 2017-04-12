@@ -357,6 +357,30 @@ if __name__=='__main__':
 			print "Restaurat correctament!"
 		else:
 			print "No s'ha pogut restaurar!"
+			print
+			print "Executant en mode normal"
+			cur.executescript("""
+				CREATE TABLE IF NOT EXISTS usuaris (
+	
+					email varchar(30) PRIMARY KEY,
+					nom varchar(10) not null,
+					cognom varchar(12),
+					poblacio varchar(12),
+					dataNaixement DATETIME,
+					pwd varchar(30) not null
+					);
+
+				CREATE TABLE IF NOT EXISTS amistats (
+				
+					email1 varchar(30) not null,
+					email2 varchar(30) not null,
+					estat varchar(12) not null,
+					PRIMARY KEY(email1,email2),
+					FOREIGN KEY(email1) REFERENCES usuaris(email),
+					FOREIGN KEY(email2) REFERENCES usuaris(email)
+					);
+			""")
+		db.commit()
 
 
 	try:
