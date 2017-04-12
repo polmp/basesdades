@@ -246,26 +246,32 @@ def email_exists_in_db(cursor,email):
 		return True
 	
 def menu():
-	print "0. Mostrar tots els usuaris"
-	print "1. Buscar usuaris per ciutat"
-	print "2. Visualitzar amics d'una persona"
-	print "3. Veure total d'amistats rebutjades"
-	print "4. Obtenir amics que viuen a una ciutat concreta"
-	print "5. Obtenir peticions rebutjades per usuari"
-	print "6. Obtenir amics que no son amic de X persona"
-	print "7. Afegir usuari"
-	print "8. Editar usuari"
-	print "9. Borrar usuari"
-	print "10. Crear copia de seguretat"
-	print "11. Restaurar copia de seguretat"
-	print "q. Sortir"
+	print
+	print "Menu d'opcions"
+	print
+	print "   0.  Mostrar tots els usuaris"
+	print "   1.  Buscar usuaris per ciutat"
+	print "   2.  Visualitzar amics d'una persona"
+	print "   3.  Veure total d'amistats rebutjades"
+	print "   4.  Obtenir amics que viuen a una ciutat concreta"
+	print "   5.  Obtenir peticions rebutjades per usuari"
+	print "   6.  Obtenir amics que no son amic de X persona"
+	print "   7.  Afegir usuari"
+	print "   8.  Editar usuari"
+	print "   9.  Borrar usuari"
+	print "   10. Crear copia de seguretat"
+	print "   11. Restaurar copia de seguretat"
+	print "   q.  Sortir"
+	print
 
 def main(db,cursor):
 	while True:
 		menu()
-		sel=raw_input()
+		sel=raw_input("-> ")
+		print "-----------------------------"
 		if sel=='0':
 			print "Introdueix quina taula vols consultar"
+			print
 			taula=introdueixParametre('taula')
 			result=showUsersTable(cursor,taula)
 			if not result:
@@ -284,26 +290,24 @@ def main(db,cursor):
 			result=findFriends(cursor,email)
 			showExecution("Amics de "+email,result,[[0,1]])
 		elif sel == '3':
+			
 			print "El nombre total de peticions rebujades és de "+str(findTotal(cursor))
-
 		elif sel == '4':
 			ciutat=raw_input("Escriu la ciutat: ")
 			result=findFriendsByPlace(cursor,ciutat)
 			showExecution("Amics que viuen a "+ciutat,result,[[4,5],[10,11]])
-
 		elif sel == '5':
 			result=findRebByUser(cursor)
 			showExecution("Total amistats rebujades",result,[[0,1]])
-
 		elif sel == '6':
 			email=raw_input("Escriu el seu email: ").lower()
 			result=findNotFriendsOf(cursor,email)
 			showExecution("Amics que no son de "+email,result,[[0]])
-
 		elif sel == '7':
 			email=introdueixParametre('email',False,False,checkemail)
 			if email_exists_in_db(cursor,email):
 				print "L'usuari ja existeix!"
+				print "-----------------------------"
 			else:
 				nom=introdueixParametre('nom')
 				cognom=introdueixParametre('cognom')
@@ -314,6 +318,7 @@ def main(db,cursor):
 				cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
 				db.commit()
 				print "Usuari afegit corretament"
+				print "-----------------------------"
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
@@ -361,8 +366,6 @@ def main(db,cursor):
 			else:
 				remove_user(db,cursor,email)
 				print "Borrat usuari "+email+" correctament"
-
-
 		elif sel == '10':
 			print "Introdueix el nom de l'arxiu on vols guardar l'informacio de la taula usuaris (*.txt)"
 			usuaris=introdueixParametre('usuaris',False,True,checkTxt)
@@ -374,8 +377,6 @@ def main(db,cursor):
 						print "Copia de seguretat OK"
 					else:
 						print "No s'ha fet la copia de seguretat!"
-				
-
 		elif sel == '11':
 			print "Introdueix el nom de l'arxiu on hi ha l'informacio de la taula usuaris (*.txt)"
 			usuaris=introdueixParametre('usuaris',False,True,checkTxt)
@@ -387,7 +388,6 @@ def main(db,cursor):
 						print "Restaurat correctament!"
 					else:
 						print "No s'ha pogut restaurar!"
-
 		elif sel == 'q':
 			break
 		raw_input()
