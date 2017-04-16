@@ -316,7 +316,7 @@ def main(db,cursor):
 				password=introdueixParametre('password',True)
 				cur.execute("""INSERT INTO "usuaris" VALUES (?,?,?,?,?,?)""",(email,nom,cognom,ciutat,data,password))
 				db.commit()
-				print "Usuari afegit corretament"
+				print "Usuari afegit corretament"			#OK
 		elif sel == '8':
 			infotoupdate={}
 			print "Primer introdueix el email del usuari"
@@ -356,14 +356,14 @@ def main(db,cursor):
 				if len(infotoupdate) > 0:
 					update_row(db,cursor,email,infotoupdate)
 				else:
-					print "No has afegit parametres per editar!"
-		elif sel=='9':
+					print "No has afegit parametres per editar!"			#OK
+		elif sel == '9':
 			email=introdueixParametre('email',False,False,checkemail)
 			if not email_exists_in_db(cursor,email):
 				print "L'usuari no existeix!"
 			else:
 				remove_user(db,cursor,email)
-				print "Borrat usuari "+email+" correctament"
+				print "Borrat usuari "+email+" correctament"			#OK
 		elif sel == '10':
 			print "Introdueix el nom de l'arxiu on vols guardar l'informacio de la taula usuaris (*.txt)"
 			usuaris=introdueixParametre('usuaris',False,True,checkTxt)
