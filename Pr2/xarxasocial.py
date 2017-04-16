@@ -275,7 +275,7 @@ def main(db,cursor):
 			taula=introdueixParametre('taula')
 			result=showUsersTable(cursor,taula)
 			if not result:
-				print "La taula no existeix o no hi ha entrades!"
+				print "No hi ha entrades!"
 			else:
 				if taula == 'usuaris': #Hot fix
 					showExecution("Tota la taula",result,[[0,1,2,3,4]])
