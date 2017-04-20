@@ -84,3 +84,14 @@ CREATE TABLE IF NOT EXISTS producte (
 );
 
 
+/*1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.*/
+SELECT e_codi,cognom,d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
+
+/*2. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats*/
+SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
+
+/*3. Mostrar, en l’esquema empresa, tots els empleats acompanyats dels clients de qui són representants.*/
+
+
+/*4. Mostrar tots els clients acompanyats de l’empleat que tenen com a representant.*/
+SELECT c_codi,c_nom,e_codi,cognom from client INNER JOIN empleats ON client.repr_codi = empleats.e_codi;

@@ -88,3 +88,4 @@ SELECT Venedors.codi,Venedors.nom,sum(unitats) as TotalUnitats from Venedors LEF
 
 /*7. Obtenir el llistat de productes inactius (no apareixen en comandes)*/
 SELECT codi,descripcio from Productes LEFT JOIN Comandes ON Productes.codi = Comandes.codiProducte WHERE Comandes.codiProducte is null GROUP BY Productes.codi;
+
