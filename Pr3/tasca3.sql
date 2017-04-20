@@ -62,10 +62,11 @@ INSERT OR IGNORE INTO Comandes VALUES (3,10001,1001,'3456FGF',date('now'),5);
 
 INSERT OR IGNORE INTO Venedors VALUES (1000,'Antoni',26,1);
 INSERT OR IGNORE INTO Venedors VALUES (1001,'Pere',22,2);
+INSERT OR IGNORE INTO Venedors VALUES (1002,'Miguel',23,2);
 
 INSERT OR IGNORE INTO Productes VALUES (10000,'Producte1',100,5);
 INSERT OR IGNORE INTO Productes VALUES (10001,'Producte2',50,10);
-
+INSERT OR IGNORE INTO Productes VALUES (10002,'Producte3',50,10);
 
 /* 1. Eliminar els productes sense stock */
 --DELETE FROM Productes where estoc = 0;
@@ -74,7 +75,7 @@ INSERT OR IGNORE INTO Productes VALUES (10001,'Producte2',50,10);
 --UPDATE clients SET descompte = 1.5 where nif in (select nif from clients LIMIT 3);
 
 /* 3. Obtenir el llistat de monitors que hi ha en estoc */
---SELECT * from Productes where descripcio='Monitor' and estoc > 0;
+SELECT * from Productes where descripcio='Monitor' and estoc > 0;
 
 /*4. Obtenir el llistat dels punts de venta assignats als venedors amb edat compresa entre 21 i 26 anys, ordenant la sortida per l’edat dels venedors*/
 SELECT Centres.codi, Centres.ciutat, Centres.zona, Venedors.nom,Venedors.edat from Centres INNER JOIN Venedors ON Venedors.codiCentre = Centres.codi where Venedors.edat BETWEEN 21 and 26 ORDER BY Venedors.edat;
@@ -83,3 +84,7 @@ SELECT Centres.codi, Centres.ciutat, Centres.zona, Venedors.nom,Venedors.edat fr
 SELECT nif,sum(preu*unitats*(1-(descompte/100))) as ImportTotal from (SELECT * from Clients INNER JOIN Comandes ON Clients.nif = Comandes.nif WHERE strftime('%Y',data) == '2017') as Client_Producte INNER JOIN Productes ON Client_Producte.codiProducte = Productes.codi GROUP BY Client_Producte.nif;
 
 /*6. Obtenir la llista dels deu primers venedors de la BD amb el total d’unitats venudes, fins i tot per a aquells venedors que no van tenir cap comanda.*/
+SELECT Venedors.codi,Venedors.nom,sum(unitats) as TotalUnitats from Venedors LEFT JOIN Comandes ON Venedors.codi == Comandes.codiVenedor GROUP BY Venedors.codi;
+
+/*7. Obtenir el llistat de productes inactius (no apareixen en comandes)*/
+SELECT codi,descripcio from Productes LEFT JOIN Comandes ON Productes.codi = Comandes.codiProducte WHERE Comandes.codiProducte is null GROUP BY Productes.codi;
