@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS producte (
 
 
 --14. Mostrar els empleats (codi i cognom) acompanyats del nombre de comandes que han gestionat, ordenats pel cognom. Inclòs els empleats que no hagin pogut gestionar cap comanda.
---SELECT e_codi,cognom,count(c_num) from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi;
+SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
 
 
 --15. 
