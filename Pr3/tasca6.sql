@@ -1,3 +1,6 @@
+.mode column
+.header on
+
 CREATE TABLE IF NOT EXISTS departament (
  	d_num	INT PRIMARY KEY,
  	d_nom	VARCHAR(14) NOT NULL UNIQUE,
@@ -31,7 +34,8 @@ INSERT OR IGNORE INTO empleats VALUES (4,'Jimenez','Director',NULL, '1981-04-02'
 INSERT OR IGNORE INTO empleats VALUES (5,'Martinez','Venedor',4, '1981-09-29', 1625.00,182000,30);
 INSERT OR IGNORE INTO empleats VALUES (11,'Alonso','Pilot',4, '1981-09-23', 1430.00,NULL,40);
 INSERT OR IGNORE INTO empleats VALUES (12,'Gil','Venedor',4, '1967-02-13', 1650,39000,30);
-
+INSERT OR IGNORE INTO empleats VALUES (13,'Negro','Empleat',4, '1975-04-15', 2000.00,182000,30);
+INSERT OR IGNORE INTO empleats VALUES (14,'Rodriguez','Director',NULL, '1965-02-12', 4000,NULL,30);
 
 CREATE TABLE IF NOT EXISTS client (
  	c_codi	INT(6) PRIMARY KEY,
@@ -61,11 +65,11 @@ CREATE TABLE IF NOT EXISTS comanda (
  	CHECK (c_tipus IN ('A','B','C',NULL))
 );
 
-INSERT OR IGNORE INTO comanda VALUES (1,'2014-12-25',NULL,100,'2014-12-30');
-INSERT OR IGNORE INTO comanda VALUES (2,'2014-04-10',NULL,101,'2014-05-12');
+INSERT OR IGNORE INTO comanda VALUES (1,'2014-12-25',NULL,1,'2014-12-30');
+INSERT OR IGNORE INTO comanda VALUES (2,'2014-04-10',NULL,2,'2014-05-12');
 INSERT OR IGNORE INTO comanda VALUES (4, '2013-06-05', 'A', 102, '2013-06-05');
 INSERT OR IGNORE INTO comanda VALUES (14, '2014-03-12', 'B', 100, '2014-03-12');
-INSERT OR IGNORE INTO comanda VALUES (5, '2014-02-01', 'C', 108, '2014-02-01');
+INSERT OR IGNORE INTO comanda VALUES (5, '2014-02-01', 'C', 3, '2014-02-01');
 INSERT OR IGNORE INTO comanda VALUES (6, '2014-02-01', 'A', 120, '2014-02-05');
 INSERT OR IGNORE INTO comanda VALUES (7, '2014-02-03', 'A', 103, '2014-02-10');
 INSERT OR IGNORE INTO comanda VALUES (8, '2014-02-22', NULL, 104, '2014-02-04');
@@ -87,7 +91,7 @@ CREATE TABLE IF NOT EXISTS producte (
 --2. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats*/
 --SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
---3. Mostrar, en l’esquema empresa, tots els empleats acompanyats dels clients de qui són representants.*/
+--3. Mostrar, en l'esquema empresa, tots els empleats acompanyats dels clients de qui són representants.*/
 
 
 --4. Mostrar tots els clients acompanyats de l’empleat que tenen com a representant.*/
@@ -108,5 +112,19 @@ CREATE TABLE IF NOT EXISTS producte (
 --SELECT cognom,ofici from empleats where ofici in (SELECT ofici from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where departament.d_nom='VENDES') and d_num=20;
 
 --10. Mostrar els empleats que efectuïn la mateixa feina que NEGRO o que tinguin un salari igual o superior al de GIL.
---SELECT * from empleats where ofici IN (SELECT ofici from empleats where cognom='NEGRO') UNION SELECT * from empleats where salari > (SELECT salari from empleats where cognom='Gil' LIMIT 1);
+--SELECT * from empleats where ofici IN (SELECT ofici from empleats where cognom='Negro') and cognom!='Negro' UNION SELECT * from empleats where salari > (SELECT salari from empleats where cognom='Gil' LIMIT 1);
 
+--11. Mostrar els empleats (codi, cognom i nom del departament) de l'empresa que tenen el rang de director i ordenats pel cognom.
+--SELECT e_codi,cognom,departament.d_nom from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where cap is null order by cognom;
+
+--12. Mostrar l'import global que cada departament assumeix anualment en concepte de nòmina dels empleats i ordenat descendentment per l'import global.
+--SELECT departament.d_nom,sum(empleats.salari) as Total_Departament from departament INNER JOIN empleats on empleats.d_num = departament.d_num GROUP BY departament.d_num ORDER BY sum(empleats.salari) DESC;
+
+--13. Mostrar els departaments ordenats ascendentment per l'antiguitat dels empleats.
+
+
+--14. Mostrar els empleats (codi i cognom) acompanyats del nombre de comandes que han gestionat, ordenats pel cognom. Inclòs els empleats que no hagin pogut gestionar cap comanda.
+--SELECT e_codi,cognom,count(c_num) from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi;
+
+
+--15. 
