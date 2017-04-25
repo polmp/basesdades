@@ -1,0 +1,125 @@
+1. SELECT e_codi,cognom,departament.d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
+e_codi      cognom      d_num       d_nom       
+----------  ----------  ----------  ------------
+1           Sanchez     20          INVESTIGACIO
+2           Arroyo      30          VENDES      
+3           Sala        30          VENDES      
+4           Jimenez     20          INVESTIGACIO
+5           Martinez    30          VENDES      
+11          Alonso      40          PRODUCCIÓ  
+12          Gil         30          VENDES      
+13          Negro       30          VENDES      
+14          Rodriguez   30          VENDES      
+
+2.SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
+d_nom         cognom      max(salari)
+------------  ----------  -----------
+INVESTIGACIO  Jimenez     3867.5     
+VENDES        Rodriguez   4000       
+PRODUCCIÓ    Alonso      1430     
+
+3.SELECT e_codi,cognom,client.c_codi,c_nom from client INNER JOIN empleats on empleats.e_codi = client.repr_codi;
+e_codi      cognom      c_codi      c_nom     
+----------  ----------  ----------  ----------
+2           Arroyo      1           Pere      
+2           Arroyo      2           Andres    
+5           Martinez    3           Maria   
+
+4.SELECT c_codi,c_nom,e_codi,cognom from client INNER JOIN empleats ON client.repr_codi = empleats.e_codi;
+c_codi      c_nom       e_codi      cognom    
+----------  ----------  ----------  ----------
+1           Pere        2           Arroyo    
+2           Andres      2           Arroyo    
+3           Maria       5           Martinez 
+
+5.SELECT e_codi,cognom,empleats.d_num,departament.d_nom from empleats INNER JOIN departament ON departament.d_num = empleats.d_num;  
+e_codi      cognom      d_num       d_nom       
+----------  ----------  ----------  ------------
+1           Sanchez     20          INVESTIGACIO
+2           Arroyo      30          VENDES      
+3           Sala        30          VENDES      
+4           Jimenez     20          INVESTIGACIO
+5           Martinez    30          VENDES      
+11          Alonso      40          PRODUCCIÓ  
+12          Gil         30          VENDES      
+13          Negro       30          VENDES      
+14          Rodriguez   30          VENDES    
+
+6.SELECT departament.d_num,departament.d_nom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;   
+d_num       d_nom         max(salari)
+----------  ------------  -----------
+20          INVESTIGACIO  3867.5     
+30          VENDES        4000       
+40          PRODUCCIÓ    1430      
+
+7.SELECT d_num,cognom,salari,avg(salari) from empleats GROUP BY d_num having salari > avg(salari);
+d_num       cognom      salari      avg(salari)
+----------  ----------  ----------  -----------
+20          Jimenez     3867.5      2453.75    
+30          Rodriguez   4000        2163.333333
+
+8.SELECT * from empleats where ofici in (SELECT ofici from empleats where cognom='Sala'); 
+e_codi      cognom      ofici       cap         data_alta   salari      comissio    d_num     
+----------  ----------  ----------  ----------  ----------  ----------  ----------  ----------
+2           Arroyo      Venedor     4           1980-02-20  2080        39000       30        
+3           Sala        Venedor     4           1981-02-22  1625        65000       30        
+5           Martinez    Venedor     4           1981-09-29  1625        182000      30        
+12          Gil         Venedor     4           1967-02-13  1650        39000       30  
+
+9.SELECT cognom,ofici from empleats where ofici in (SELECT ofici from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where departament.d_nom='VENDES') and d_num=20;      
+cognom      ofici     
+----------  ----------
+Sanchez     Empleat   
+Jimenez     Director  
+
+10.SELECT * from empleats where ofici IN (SELECT ofici from empleats where cognom='Negro') and cognom!='Negro' UNION SELECT * from empleats where salari > (SELECT salari from empleats where cognom='Gil' LIMIT 1); 
+e_codi      cognom      ofici       cap         data_alta   salari      comissio    d_num     
+----------  ----------  ----------  ----------  ----------  ----------  ----------  ----------
+1           Sanchez     Empleat     4           1980-12-17  1040                    20        
+2           Arroyo      Venedor     4           1980-02-20  2080        39000       30        
+4           Jimenez     Director                1981-04-02  3867.5                  20        
+13          Negro       Empleat     4           1975-04-15  2000        182000      30        
+14          Rodriguez   Director                1965-02-12  4000                    30      
+
+11.SELECT e_codi,cognom,departament.d_nom from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where cap is null order by cognom;  
+e_codi      cognom      d_nom       
+----------  ----------  ------------
+4           Jimenez     INVESTIGACIO
+14          Rodriguez   VENDES  
+
+12.SELECT departament.d_nom,sum(empleats.salari) as Total_Departament from departament INNER JOIN empleats on empleats.d_num = departament.d_num GROUP BY departament.d_num ORDER BY sum(empleats.salari) DESC;    
+d_nom       Total_Departament
+----------  -----------------
+VENDES      12980            
+INVESTIGAC  4907.5           
+PRODUCCIÓ  1430         
+
+14.SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
+e_codi      cognom      Total_Comandes
+----------  ----------  --------------
+11          Alonso      0             
+2           Arroyo      9             
+12          Gil         0             
+4           Jimenez     0             
+5           Martinez    3             
+13          Negro       0             
+14          Rodriguez   0             
+3           Sala        0             
+1           Sanchez     0           
+
+15.SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;   
+e_codi      cognom      Total_Comandes
+----------  ----------  --------------
+2           Arroyo      9           
+
+16.SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_tramesa) as darrera_data from comanda GROUP BY comanda.p_codi) as max_data INNER JOIN producte ON max_data.p_codi = producte.p_codi;
+p_codi      preu        darrera_data
+----------  ----------  ------------
+1           200         2016-03-03  
+2           150         2016-02-10  
+
+17.SELECT c_nom,sum(preu*quantitat),lim_cred*0.5 as Mitat_Credit from (SELECT * from client INNER JOIN comanda ON client.c_codi = comanda.c_codi where strftime('%Y',data_tramesa) = '2016') as total INNER JOIN producte ON producte.p_codi = total.p_codi group by c_codi having sum(preu*quantitat) > lim_cred*0.5;
+c_nom       sum(preu*quantitat)  Mitat_Credit
+----------  -------------------  ------------
+Pere        800                  481.785     
+Maria       600                  500.285     
