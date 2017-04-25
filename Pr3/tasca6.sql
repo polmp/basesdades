@@ -138,7 +138,7 @@ INSERT OR IGNORE INTO producte VALUES (2,4.5,'Producte 2');
 --SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
 
 --16. Mostrar tots els productes amb el preu i la data de la darrera venda.
-SELECT * from producte INNER JOIN comanda ON producte.p_codi = comanda.p_codi ORDER BY comanda.c_data LIMIT 1;
+--SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_tramesa) as darrera_data from comanda GROUP BY comanda.p_codi) as max_data INNER JOIN producte ON max_data.p_codi = producte.p_codi;
 
 --17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
 --Afegit condicional data 2016
