@@ -50,9 +50,9 @@ CREATE TABLE IF NOT EXISTS client (
  	FOREIGN KEY (repr_codi) REFERENCES empleats(e_codi)
 );
 
-INSERT OR IGNORE INTO client VALUES (1,'Pere','addr 1', 'Manresa', '08243', 666666666,963.57,'pringat',2);
-INSERT OR IGNORE INTO client VALUES (2,'Andres','addr 2', 'Manresa', '08243', 666666669,863.57,'molt pringat',2);
-INSERT OR IGNORE INTO client VALUES (3,'Maria','addr 3', 'Barcelona', '08200', 666667666,63.57,'pringada',5);
+INSERT OR IGNORE INTO client VALUES (1,'Pere','addr 1', 'Manresa', '08243', 666666666,963.57,'jeje',2);
+INSERT OR IGNORE INTO client VALUES (2,'Andres','addr 2', 'Manresa', '08243', 666666669,863.57,'juju',2);
+INSERT OR IGNORE INTO client VALUES (3,'Maria','addr 3', 'Barcelona', '08200', 666667666,63.57,'jaja',5);
 
 CREATE TABLE IF NOT EXISTS comanda (
  	c_num	INT PRIMARY KEY,
@@ -85,13 +85,14 @@ CREATE TABLE IF NOT EXISTS producte (
 );
 
 
---1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.*/
+--1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
 --SELECT e_codi,cognom,d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
 
 --2. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats*/
 --SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
---3. Mostrar, en l'esquema empresa, tots els empleats acompanyats dels clients de qui són representants.*/
+--3. Mostrar, en l'esquema empresa, tots els empleats acompanyats dels clients de qui són representants.
+--SELECT e_codi,cognom,client.c_codi,c_nom from client INNER JOIN empleats on empleats.e_codi = client.repr_codi;
 
 
 --4. Mostrar tots els clients acompanyats de l’empleat que tenen com a representant.*/
@@ -124,10 +125,15 @@ CREATE TABLE IF NOT EXISTS producte (
 
 
 --14. Mostrar els empleats (codi i cognom) acompanyats del nombre de comandes que han gestionat, ordenats pel cognom. Inclòs els empleats que no hagin pogut gestionar cap comanda.
-SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
+--SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
 
 --15. Mostrar el rànquing dels empleats (codi i cognom), segons el nombre de comandes que han gestionat, que n'hagin gestionat més de tres. 
-SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
+--SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
 
 --16. Mostrar tots els productes amb el preu i la data de la darrera venda.
+--FALTA
+
+--17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
+--Afegit condicional data 2016
+--SELECT c_codi,c_nom,telf from comanda INNER JOIN client ON comanda.c_codi = client.c_codi where sum()*0.5 GROUP BY c_codi;
 
