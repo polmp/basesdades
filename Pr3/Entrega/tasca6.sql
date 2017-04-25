@@ -62,7 +62,6 @@ CREATE TABLE IF NOT EXISTS comanda (
  	data_tramesa DATETIME,
  	p_codi INT,
  	quantitat INT,
- 	--TOTAL               DECIMAL(8,2),
  	FOREIGN KEY (c_codi) REFERENCES client(c_codi),
  	FOREIGN KEY (p_codi) REFERENCES producte(p_codi),
  	CHECK (c_tipus IN ('A','B','C',NULL))
@@ -116,7 +115,6 @@ SELECT d_num,cognom,salari,avg(salari) from empleats GROUP BY d_num having salar
 SELECT * from empleats where ofici in (SELECT ofici from empleats where cognom='Sala');
 
 --9. Mostrar els noms i oficis dels empleats del departament 20 la feina dels quals coincideixi amb la d'algun empleat del departament de 'VENDES'.
--- FALTA COMPROVAR
 SELECT cognom,ofici from empleats where ofici in (SELECT ofici from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where departament.d_nom='VENDES') and d_num=20;
 
 --10. Mostrar els empleats que efectuïn la mateixa feina que NEGRO o que tinguin un salari igual o superior al de GIL.
