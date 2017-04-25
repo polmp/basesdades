@@ -197,7 +197,7 @@ order by s1.epoch,s1.nodeid;
 --   assumptions about the frequency of missing epochs.
 
 SELECT distinct(epoch) as "Epoch lost", 
-	epoch – 
+	epoch -
 	(SELECT max(epoch) from sensors as s1 where s1.epoch<s2.epoch) as "Total epoch lost"-1
 from (SELECT epoch-1 as epoch from sensors 
 		except SELECT epoch from sensors) as s2
