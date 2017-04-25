@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS client (
 
 INSERT OR IGNORE INTO client VALUES (1,'Pere','addr 1', 'Manresa', '08243', 666666666,963.57,'jeje',2);
 INSERT OR IGNORE INTO client VALUES (2,'Andres','addr 2', 'Manresa', '08243', 666666669,863.57,'juju',2);
-INSERT OR IGNORE INTO client VALUES (3,'Maria','addr 3', 'Barcelona', '08200', 666667666,63.57,'jaja',5);
+INSERT OR IGNORE INTO client VALUES (3,'Maria','addr 3', 'Barcelona', '08200', 666667666,1000.57,'jaja',5);
 
 CREATE TABLE IF NOT EXISTS comanda (
  	c_num	INT PRIMARY KEY,
@@ -70,16 +70,16 @@ CREATE TABLE IF NOT EXISTS comanda (
 
 INSERT OR IGNORE INTO comanda VALUES (1,'2014-12-25',NULL,1,'2014-12-30',1,3);
 INSERT OR IGNORE INTO comanda VALUES (2,'2014-04-10',NULL,2,'2014-05-12',1,2);
-INSERT OR IGNORE INTO comanda VALUES (4, '2013-06-05', 'A', 102, '2013-06-05',2,1);
-INSERT OR IGNORE INTO comanda VALUES (14, '2014-03-12', 'B', 100, '2014-03-12',1,1);
+INSERT OR IGNORE INTO comanda VALUES (4, '2013-06-05', 'A', 1, '2013-06-05',2,1);
+INSERT OR IGNORE INTO comanda VALUES (14, '2014-03-12', 'B', 2, '2014-03-12',1,1);
 INSERT OR IGNORE INTO comanda VALUES (5, '2014-02-01', 'C', 3, '2014-02-01',2,3);
-INSERT OR IGNORE INTO comanda VALUES (6, '2014-02-01', 'A', 120, '2014-02-05',1,1);
-INSERT OR IGNORE INTO comanda VALUES (7, '2014-02-03', 'A', 103, '2014-02-10',2,4);
-INSERT OR IGNORE INTO comanda VALUES (8, '2014-02-22', NULL, 104, '2014-02-04',1,2);
-INSERT OR IGNORE INTO comanda VALUES (10, '2014-02-05', NULL, 104, '2014-03-03',1,3);
-INSERT OR IGNORE INTO comanda VALUES (11, '2014-02-01', 'C', 107, '2014-02-06',2,1);
-INSERT OR IGNORE INTO comanda VALUES (12, '2014-02-15', 'A', 102, '2014-03-06',1,1);
-INSERT OR IGNORE INTO comanda VALUES (13, '2014-03-15', 'A', 100, '2014-01-01',2,3);
+INSERT OR IGNORE INTO comanda VALUES (6, '2016-02-01', 'A', 1, '2016-02-05',1,1);
+INSERT OR IGNORE INTO comanda VALUES (7, '2016-02-03', 'A', 3, '2016-02-10',2,4);
+INSERT OR IGNORE INTO comanda VALUES (8, '2014-02-22', NULL, 2, '2014-02-04',1,2);
+INSERT OR IGNORE INTO comanda VALUES (10, '2016-02-05', NULL, 1, '2016-03-03',1,3);
+INSERT OR IGNORE INTO comanda VALUES (11, '2014-02-01', 'C', 3, '2014-02-06',2,1);
+INSERT OR IGNORE INTO comanda VALUES (12, '2014-02-15', 'A', 2, '2014-03-06',1,1);
+INSERT OR IGNORE INTO comanda VALUES (13, '2014-03-15', 'A', 2, '2014-01-01',2,3);
 
 
 CREATE TABLE IF NOT EXISTS producte (
@@ -88,8 +88,8 @@ CREATE TABLE IF NOT EXISTS producte (
 	descrip	TEXT
 );
 
-INSERT OR IGNORE INTO producte VALUES (1,3,'Producte 1');
-INSERT OR IGNORE INTO producte VALUES (2,4.5,'Producte 2');
+INSERT OR IGNORE INTO producte VALUES (1,200,'Producte 1');
+INSERT OR IGNORE INTO producte VALUES (2,150,'Producte 2');
 
 --1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
 --SELECT e_codi,cognom,d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
@@ -141,6 +141,5 @@ INSERT OR IGNORE INTO producte VALUES (2,4.5,'Producte 2');
 --SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_tramesa) as darrera_data from comanda GROUP BY comanda.p_codi) as max_data INNER JOIN producte ON max_data.p_codi = producte.p_codi;
 
 --17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
---Afegit condicional data 2016
---SELECT c_codi,c_nom,telf from comanda INNER JOIN client ON comanda.c_codi = client.c_codi where sum()*0.5 GROUP BY c_codi;
+--SELECT c_nom,sum(preu*quantitat),lim_cred*0.5 as Mitat_Credit from (SELECT * from client INNER JOIN comanda ON client.c_codi = comanda.c_codi where strftime('%Y',data_tramesa) = '2016') as total INNER JOIN producte ON producte.p_codi = total.p_codi group by c_codi having sum(preu*quantitat) > lim_cred*0.5;
 
