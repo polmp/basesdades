@@ -60,30 +60,36 @@ CREATE TABLE IF NOT EXISTS comanda (
  	c_tipus VARCHAR(1),--NULL
  	c_codi INT NOT NULL,
  	data_tramesa DATETIME,
+ 	p_codi INT,
+ 	quantitat INT,
  	--TOTAL               DECIMAL(8,2),
  	FOREIGN KEY (c_codi) REFERENCES client(c_codi),
+ 	FOREIGN KEY (p_codi) REFERENCES producte(p_codi),
  	CHECK (c_tipus IN ('A','B','C',NULL))
 );
 
-INSERT OR IGNORE INTO comanda VALUES (1,'2014-12-25',NULL,1,'2014-12-30');
-INSERT OR IGNORE INTO comanda VALUES (2,'2014-04-10',NULL,2,'2014-05-12');
-INSERT OR IGNORE INTO comanda VALUES (4, '2013-06-05', 'A', 102, '2013-06-05');
-INSERT OR IGNORE INTO comanda VALUES (14, '2014-03-12', 'B', 100, '2014-03-12');
-INSERT OR IGNORE INTO comanda VALUES (5, '2014-02-01', 'C', 3, '2014-02-01');
-INSERT OR IGNORE INTO comanda VALUES (6, '2014-02-01', 'A', 120, '2014-02-05');
-INSERT OR IGNORE INTO comanda VALUES (7, '2014-02-03', 'A', 103, '2014-02-10');
-INSERT OR IGNORE INTO comanda VALUES (8, '2014-02-22', NULL, 104, '2014-02-04');
-INSERT OR IGNORE INTO comanda VALUES (10, '2014-02-05', NULL, 104, '2014-03-03');
-INSERT OR IGNORE INTO comanda VALUES (11, '2014-02-01', 'C', 107, '2014-02-06');
-INSERT OR IGNORE INTO comanda VALUES (12, '2014-02-15', 'A', 102, '2014-03-06');
-INSERT OR IGNORE INTO comanda VALUES (13, '2014-03-15', 'A', 100, '2014-01-01');
+INSERT OR IGNORE INTO comanda VALUES (1,'2014-12-25',NULL,1,'2014-12-30',1,3);
+INSERT OR IGNORE INTO comanda VALUES (2,'2014-04-10',NULL,2,'2014-05-12',1,2);
+INSERT OR IGNORE INTO comanda VALUES (4, '2013-06-05', 'A', 102, '2013-06-05',2,1);
+INSERT OR IGNORE INTO comanda VALUES (14, '2014-03-12', 'B', 100, '2014-03-12',1,1);
+INSERT OR IGNORE INTO comanda VALUES (5, '2014-02-01', 'C', 3, '2014-02-01',2,3);
+INSERT OR IGNORE INTO comanda VALUES (6, '2014-02-01', 'A', 120, '2014-02-05',1,1);
+INSERT OR IGNORE INTO comanda VALUES (7, '2014-02-03', 'A', 103, '2014-02-10',2,4);
+INSERT OR IGNORE INTO comanda VALUES (8, '2014-02-22', NULL, 104, '2014-02-04',1,2);
+INSERT OR IGNORE INTO comanda VALUES (10, '2014-02-05', NULL, 104, '2014-03-03',1,3);
+INSERT OR IGNORE INTO comanda VALUES (11, '2014-02-01', 'C', 107, '2014-02-06',2,1);
+INSERT OR IGNORE INTO comanda VALUES (12, '2014-02-15', 'A', 102, '2014-03-06',1,1);
+INSERT OR IGNORE INTO comanda VALUES (13, '2014-03-15', 'A', 100, '2014-01-01',2,3);
 
 
 CREATE TABLE IF NOT EXISTS producte (
 	p_codi  INT (6) PRIMARY KEY,
+	preu INT,
 	descrip	TEXT
 );
 
+INSERT OR IGNORE INTO producte VALUES (1,3,'Producte 1');
+INSERT OR IGNORE INTO producte VALUES (2,4.5,'Producte 2');
 
 --1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
 --SELECT e_codi,cognom,d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
@@ -94,13 +100,13 @@ CREATE TABLE IF NOT EXISTS producte (
 --3. Mostrar, en l'esquema empresa, tots els empleats acompanyats dels clients de qui són representants.
 --SELECT e_codi,cognom,client.c_codi,c_nom from client INNER JOIN empleats on empleats.e_codi = client.repr_codi;
 
-
 --4. Mostrar tots els clients acompanyats de l’empleat que tenen com a representant.*/
 --SELECT c_codi,c_nom,e_codi,cognom from client INNER JOIN empleats ON client.repr_codi = empleats.e_codi;
 
 --5. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
+--SELECT e_codi,cognom,empleats.d_num,departament.d_nom from empleats INNER JOIN departament ON departament.d_num = empleats.d_num;
 
---6. Mostrar tots els departaments (codi i descripció) acompanyats del salari m ́es alt dels seus empleats.
+--6. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats.
 --SELECT departament.d_num,departament.d_nom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
 --7. Mostrar els empleats de cada departament que tenen un salari major que el salari mitjà del mateix departament.
@@ -132,7 +138,7 @@ CREATE TABLE IF NOT EXISTS producte (
 --SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
 
 --16. Mostrar tots els productes amb el preu i la data de la darrera venda.
---FALTA
+SELECT * from producte INNER JOIN comanda ON producte.p_codi = comanda.p_codi ORDER BY comanda.c_data LIMIT 1;
 
 --17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
 --Afegit condicional data 2016
