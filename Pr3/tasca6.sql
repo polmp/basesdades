@@ -92,54 +92,54 @@ INSERT OR IGNORE INTO producte VALUES (1,200,'Producte 1');
 INSERT OR IGNORE INTO producte VALUES (2,150,'Producte 2');
 
 --1. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
---SELECT e_codi,cognom,d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
+SELECT e_codi,cognom,departament.d_num,d_nom from departament INNER JOIN empleats ON departament.d_num = empleats.d_num;
 
 --2. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats*/
---SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
+SELECT d_nom,cognom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
 --3. Mostrar, en l'esquema empresa, tots els empleats acompanyats dels clients de qui són representants.
---SELECT e_codi,cognom,client.c_codi,c_nom from client INNER JOIN empleats on empleats.e_codi = client.repr_codi;
+SELECT e_codi,cognom,client.c_codi,c_nom from client INNER JOIN empleats on empleats.e_codi = client.repr_codi;
 
 --4. Mostrar tots els clients acompanyats de l’empleat que tenen com a representant.*/
---SELECT c_codi,c_nom,e_codi,cognom from client INNER JOIN empleats ON client.repr_codi = empleats.e_codi;
+SELECT c_codi,c_nom,e_codi,cognom from client INNER JOIN empleats ON client.repr_codi = empleats.e_codi;
 
 --5. Mostrar els empleats (codi i cognom) juntament amb el codi i nom del departament al qual pertanyen.
---SELECT e_codi,cognom,empleats.d_num,departament.d_nom from empleats INNER JOIN departament ON departament.d_num = empleats.d_num;
+SELECT e_codi,cognom,empleats.d_num,departament.d_nom from empleats INNER JOIN departament ON departament.d_num = empleats.d_num;
 
 --6. Mostrar tots els departaments (codi i descripció) acompanyats del salari més alt dels seus empleats.
---SELECT departament.d_num,departament.d_nom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
+SELECT departament.d_num,departament.d_nom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
 --7. Mostrar els empleats de cada departament que tenen un salari major que el salari mitjà del mateix departament.
---SELECT d_num,cognom,salari,avg(salari) from empleats GROUP BY d_num having salari > avg(salari) ;
+SELECT d_num,cognom,salari,avg(salari) from empleats GROUP BY d_num having salari > avg(salari);
 
 --8. Mostrar els empleats que tenen el mateix ofici que l’ofici que té l'empleat de cognom SALA.
---SELECT * from empleats where ofici in (SELECT ofici from empleats where cognom='Sala');
+SELECT * from empleats where ofici in (SELECT ofici from empleats where cognom='Sala');
 
 --9. Mostrar els noms i oficis dels empleats del departament 20 la feina dels quals coincideixi amb la d'algun empleat del departament de 'VENDES'.
 -- FALTA COMPROVAR
---SELECT cognom,ofici from empleats where ofici in (SELECT ofici from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where departament.d_nom='VENDES') and d_num=20;
+SELECT cognom,ofici from empleats where ofici in (SELECT ofici from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where departament.d_nom='VENDES') and d_num=20;
 
 --10. Mostrar els empleats que efectuïn la mateixa feina que NEGRO o que tinguin un salari igual o superior al de GIL.
---SELECT * from empleats where ofici IN (SELECT ofici from empleats where cognom='Negro') and cognom!='Negro' UNION SELECT * from empleats where salari > (SELECT salari from empleats where cognom='Gil' LIMIT 1);
+SELECT * from empleats where ofici IN (SELECT ofici from empleats where cognom='Negro') and cognom!='Negro' UNION SELECT * from empleats where salari > (SELECT salari from empleats where cognom='Gil' LIMIT 1);
 
 --11. Mostrar els empleats (codi, cognom i nom del departament) de l'empresa que tenen el rang de director i ordenats pel cognom.
---SELECT e_codi,cognom,departament.d_nom from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where cap is null order by cognom;
+SELECT e_codi,cognom,departament.d_nom from empleats INNER JOIN departament ON empleats.d_num = departament.d_num where cap is null order by cognom;
 
 --12. Mostrar l'import global que cada departament assumeix anualment en concepte de nòmina dels empleats i ordenat descendentment per l'import global.
---SELECT departament.d_nom,sum(empleats.salari) as Total_Departament from departament INNER JOIN empleats on empleats.d_num = departament.d_num GROUP BY departament.d_num ORDER BY sum(empleats.salari) DESC;
+SELECT departament.d_nom,sum(empleats.salari) as Total_Departament from departament INNER JOIN empleats on empleats.d_num = departament.d_num GROUP BY departament.d_num ORDER BY sum(empleats.salari) DESC;
 
 --13. Mostrar els departaments ordenats ascendentment per l'antiguitat dels empleats.
 
 
 --14. Mostrar els empleats (codi i cognom) acompanyats del nombre de comandes que han gestionat, ordenats pel cognom. Inclòs els empleats que no hagin pogut gestionar cap comanda.
---SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
+SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi ORDER BY cognom;
 
 --15. Mostrar el rànquing dels empleats (codi i cognom), segons el nombre de comandes que han gestionat, que n'hagin gestionat més de tres. 
---SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
+SELECT e_codi,cognom,count(c_num) as Total_Comandes from (SELECT * from empleats LEFT JOIN client ON repr_codi = e_codi) as Taula LEFT JOIN comanda ON Taula.c_codi=comanda.c_codi GROUP BY e_codi HAVING count(c_num)>3 ORDER BY count(c_num) DESC;
 
 --16. Mostrar tots els productes amb el preu i la data de la darrera venda.
---SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_tramesa) as darrera_data from comanda GROUP BY comanda.p_codi) as max_data INNER JOIN producte ON max_data.p_codi = producte.p_codi;
+SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_tramesa) as darrera_data from comanda GROUP BY comanda.p_codi) as max_data INNER JOIN producte ON max_data.p_codi = producte.p_codi;
 
 --17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
---SELECT c_nom,sum(preu*quantitat),lim_cred*0.5 as Mitat_Credit from (SELECT * from client INNER JOIN comanda ON client.c_codi = comanda.c_codi where strftime('%Y',data_tramesa) = '2016') as total INNER JOIN producte ON producte.p_codi = total.p_codi group by c_codi having sum(preu*quantitat) > lim_cred*0.5;
+SELECT c_nom,sum(preu*quantitat),lim_cred*0.5 as Mitat_Credit from (SELECT * from client INNER JOIN comanda ON client.c_codi = comanda.c_codi where strftime('%Y',data_tramesa) = '2016') as total INNER JOIN producte ON producte.p_codi = total.p_codi group by c_codi having sum(preu*quantitat) > lim_cred*0.5;
 
