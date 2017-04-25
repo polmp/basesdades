@@ -196,9 +196,7 @@ order by s1.epoch,s1.nodeid;
 --   results. Note that this is a deceptively hard query to write – you may need to make some
 --   assumptions about the frequency of missing epochs.
 
-SELECT distinct(epoch) as "Epoch lost", 
-	epoch -
-	(SELECT max(epoch) from sensors as s1 where s1.epoch<s2.epoch) as "Total epoch lost"-1
-from (SELECT epoch-1 as epoch from sensors 
-		except SELECT epoch from sensors) as s2
+SELECT distinct(epoch) as "Epoch lost", (epoch-(SELECT max(epoch) from sensors as s1 where s1.epoch<s2.epoch)) as "epoch lost early"
+from (SELECT epoch-1 as epoch from sensors except SELECT epoch from sensors) as s2
 where epoch < (SELECT min(epoch) from sensors);
+
