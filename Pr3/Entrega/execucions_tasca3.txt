@@ -1,0 +1,33 @@
+1. Eliminar els productes sense stock
+DELETE FROM Productes where estoc = 0;
+
+2. Modificar els tres primers clients de la base de dades, que rebran una bonificació de l’1.5 per cent en les seves compres
+UPDATE clients SET descompte = 1.5 where nif in (select nif from clients LIMIT 3);
+
+3.SELECT * from Productes where descripcio='Monitor' and estoc > 0;
+
+
+4.SELECT Centres.codi, Centres.ciutat, Centres.zona, Venedors.nom,Venedors.edat from Centres INNER JOIN Venedors ON Venedors.codiCentre = Centres.codi where Venedors.edat BETWEEN 21 and 26 ORDER BY Venedors.edat;
+codi        ciutat      zona        nom         edat      
+----------  ----------  ----------  ----------  ----------
+2           Manresa     Cal Gravat  Pere        22        
+2           Manresa     Cal Gravat  Miguel      23        
+1           Manresa     Viladordis  Antoni      26   
+
+5.SELECT nif,sum(preu*unitats*(1-(descompte/100))) as ImportTotal from (SELECT * from Clients INNER JOIN Comandes ON Clients.nif = Comandes.nif WHERE strftime('%Y',data) == '2017') as Client_Producte INNER JOIN Productes ON Client_Producte.codiProducte = Productes.codi GROUP BY Client_Producte.nif;
+nif         ImportTotal
+----------  -----------
+1234ABC     270.0      
+3456FGF     712.5  
+
+6.SELECT Venedors.codi,Venedors.nom,sum(unitats) as TotalUnitats from Venedors LEFT JOIN Comandes ON Venedors.codi == Comandes.codiVenedor GROUP BY Venedors.codi;    
+codi        nom         TotalUnitats
+----------  ----------  ------------
+1000        Antoni      8           
+1001        Pere        5           
+1002        Miguel     
+
+7. SELECT codi,descripcio from Productes LEFT JOIN Comandes ON Productes.codi = Comandes.codiProducte WHERE Comandes.codiProducte is null GROUP BY Productes.codi;             
+codi        descripcio
+----------  ----------
+10002       Producte3 
