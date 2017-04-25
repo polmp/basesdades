@@ -67,6 +67,7 @@ INSERT INTO sensors (result_time,epoch,nodeid,light,temp,voltage) VALUES ('2015-
 
 CREATE TABLE calib_temp as select temp, avg(temp)+temp as calib from sensors group by temp;
 CREATE TABLE calib_light as select light, avg(light)+light as calib from sensors group by light;
+
 /*
 SELECT * FROM calib_light;
 SELECT * FROM calib_temp;
@@ -127,20 +128,20 @@ SELECT avg(light), avg(temp), nodeid from sensors WHERE ((( (cast( (strftime('%H
 -- answer should consist of 4 rows of calibrated temperatures.)
 --SELECT *, light,temp, nodeid, voltage from sensors WHERE ((( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20) OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00));
 
-
-SELECT strftime("%H",result_time),temp,avg(temp)+temp,/*calib_temp.calib*/nodeid from sensors--,calib_temp 
-			where ( nodeid = 2 and 
+/*
+SELECT strftime("%H",result_time),temp,avg(temp)+temp,/*calib_temp.calib*//*nodeid from sensors*/--,calib_temp 
+/*			where ( nodeid = 2 and 
 				--time(result_time) between "18" and "21" 
 
 				(( (cast( (strftime('%H',result_time)) as int)) BETWEEN 18 AND 20)
 							OR ((cast( (strftime('%H',result_time)) as int)) = 21 AND (cast( (strftime('%M',result_time)) as int)) = 0) AND (cast( (strftime('%S',result_time)) as int)) = 00)
 
 				) group by strftime("%H",result_time);
-
+/*
 --5. Write a query that computes all the epochs during which the results from sensors 1 and 2 arrived more than 1 second apart. 
 --Show the query and the result.
 
-
+/*
 SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors as s1, sensors as s2 
 	where s1.nodeid != s2.nodeid 
 		and s1.epoch == s2.epoch 
@@ -154,9 +155,50 @@ SELECT s1.nodeid,s2.nodeid,s1.result_time,s2.result_time,s1.epoch from sensors a
 --You may wish to use a nested query – that is, a SELECT statement within the FROM clause of another SELECT statement.
 
 SELECT epoch,nodeid,light,temp from sensors group by epoch having count(epoch) < 3;
+*/
 
 
 
+--7. Write a query that produces a temperature reading for each of the three sensors during
+--   any epoch in which any sensor produced a reading. If a sensor is missing a value during a
+--   given epoch, your result should report the value of this sensor as the most recent previously
+--   reported value. If there is no such value (e.g., the first value for a particular sensor is
+--   missing), you should return the special value ’null’. You may wish to read about the CASE
+--   and OUTER JOIN SQL statements.
+/*
+SELECT s1.nodeid, s1.epoch,
+	(CASE when s1.temp is null then
+			(SELECT temp from sensors where epoch = (SELECT max(epoch) from sensors where epoch<s1.epoch and nodeid=s1.nodeid) and nodeid = s2.nodeid)
+ 		else 
+ 			s1.temp
+ 	end
+ 	)
+from sensors as s1
+left join sensors s2 using(nodeid)
+union all
+select s1.nodeid,s1.epoch,
+SELECT s1.nodeid,s1.epoch,
+	(CASE when s1.temp is null then
+			(SELECT temp from sensors where epoch = (SELECT max(epoch) from sensors where epoch<s1.epoch and nodeid=s1.nodeid) and nodeid = s2.nodeid)
+ 		else 
+ 			s1.temp
+ 	end
+ 	)
+from sensors s2
+left join sensors s1 using(nodeid)
+SELECT nodeid,epoch from 
+	(SELECT distinct epoch from sensors) as s1,
+	(SELECT distinct epoch from sensors) as s2 
+	on (s1.nodeid = s2.nodeid and s1.epoch = s2.epoch)
+order by s1.epoch,s1.nodeid;
+*/
+--8. Write a query that determines epochs during which all three sensors did not return any
+--   results. Note that this is a deceptively hard query to write – you may need to make some
+--   assumptions about the frequency of missing epochs.
 
-
-
+SELECT distinct(epoch) as "Epoch lost", 
+	epoch – 
+	(SELECT max(epoch) from sensors as s1 where s1.epoch<s2.epoch) as "Total epoch lost"-1
+from (SELECT epoch-1 as epoch from sensors 
+		except SELECT epoch from sensors) as s2
+where epoch < (SELECT min(epoch) from sensors);
