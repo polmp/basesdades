@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS producte (
 --SELECT departament.d_num,departament.d_nom,max(salari) from empleats INNER JOIN departament ON empleats.d_num = departament.d_num GROUP BY departament.d_num;
 
 --7. Mostrar els empleats de cada departament que tenen un salari major que el salari mitjà del mateix departament.
+--SELECT d_num,cognom,salari,avg(salari) from empleats GROUP BY d_num having salari > avg(salari) ;
 
 --8. Mostrar els empleats que tenen el mateix ofici que l’ofici que té l'empleat de cognom SALA.
 --SELECT * from empleats where ofici in (SELECT ofici from empleats where cognom='Sala');
