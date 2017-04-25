@@ -123,3 +123,27 @@ c_nom       sum(preu*quantitat)  Mitat_Credit
 ----------  -------------------  ------------
 Pere        800                  481.785     
 Maria       600                  500.285     
+
+
+———————Comandes extres
+18. SELECT c_nom,c_data,p_codi,quantitat from client INNER JOIN comanda ON client.c_codi = comanda.c_codi;
+c_nom       c_data      p_codi      quantitat 
+----------  ----------  ----------  ----------
+Pere        2014-12-25  1           3         
+Andres      2014-04-10  1           2         
+Pere        2013-06-05  2           1         
+Andres      2014-03-12  1           1         
+Maria       2014-02-01  2           3         
+Pere        2016-02-01  1           1         
+Maria       2016-02-03  2           4         
+Andres      2014-02-22  1           2         
+Pere        2016-02-05  1           3         
+Maria       2014-02-01  2           1         
+Andres      2014-02-15  1           1         
+Andres      2014-03-15  2           3     
+
+19. SELECT c_nom,addr,ciutat from client LEFT JOIN comanda on comanda.c_codi = client.c_codi where comanda.c_codi is null;
+c_nom       addr        ciutat    
+----------  ----------  ----------
+Josep       addr 3      Madrid    
+

@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS client (
 INSERT OR IGNORE INTO client VALUES (1,'Pere','addr 1', 'Manresa', '08243', 666666666,963.57,'jeje',2);
 INSERT OR IGNORE INTO client VALUES (2,'Andres','addr 2', 'Manresa', '08243', 666666669,863.57,'juju',2);
 INSERT OR IGNORE INTO client VALUES (3,'Maria','addr 3', 'Barcelona', '08200', 666667666,1000.57,'jaja',5);
-
+INSERT OR IGNORE INTO client VALUES (4,'Josep','addr 3', 'Madrid', '08642', 666667662,500,'jaja',5);
 CREATE TABLE IF NOT EXISTS comanda (
  	c_num	INT PRIMARY KEY,
 	c_data 	DATETIME,
@@ -143,3 +143,10 @@ SELECT max_data.p_codi,producte.preu,darrera_data from (SELECT p_codi,max(data_t
 --17. Mostrar els clients que l'any 2016 van efectuar comandes per un import total que supera el 50 per cent del seu crèdit.
 SELECT c_nom,sum(preu*quantitat),lim_cred*0.5 as Mitat_Credit from (SELECT * from client INNER JOIN comanda ON client.c_codi = comanda.c_codi where strftime('%Y',data_tramesa) = '2016') as total INNER JOIN producte ON producte.p_codi = total.p_codi group by c_codi having sum(preu*quantitat) > lim_cred*0.5;
 
+-- COMANDES EXTRES
+
+-- Mostrar els clients i les seves comandes
+SELECT c_nom,c_data,p_codi,quantitat from client INNER JOIN comanda ON client.c_codi = comanda.c_codi;
+
+-- Mostrar clients que han fet alguna comanda
+SELECT c_nom,addr,ciutat from client LEFT JOIN comanda on comanda.c_codi = client.c_codi where comanda.c_codi is null;
