@@ -26,15 +26,15 @@ CREATE TABLE IF NOT EXISTS cobertura_mobil(
 );
 
 CREATE TABLE IF NOT EXISTS long_lat (
-	Comunidad varchar(50),
-	Provincia varchar(50),
-	Población varchar(50),
-	Latitud real,
-	Longitud real,
-	Altitud real,
-	Habitantes int,
-	Hombres int,
-	Mujeres int
+	comunitat varchar(50),
+	provincia varchar(50),
+	poblacio varchar(50),
+	latitud real,
+	longitud real,
+	altitud real,
+	habitants int,
+	homes int,
+	dones int
 );
 
 .mode csv
@@ -44,6 +44,6 @@ CREATE TABLE IF NOT EXISTS long_lat (
 
 DELETE from cobertura_mobil where cid like '%cid%';
 
-DELETE from long_lat where Longitud like '%Longitud%';
+DELETE from long_lat where longitud like '%Longitud%';
 
 
