@@ -1,0 +1,323 @@
+CODI_DIVADM;PAISCOD;PAISDESC;NRE_HOMES;NRE_DONES
+D-01;32;Argentina;1;3
+D-01;;;30;27
+D-01;68;Bolivia;5;14
+D-01;76;Brasil;1;2
+D-01;100;Bulgaria;10;10
+D-01;120;Camerún;4;3
+D-01;152;Chile;0;2
+D-01;156;China;16;11
+D-01;170;Colombia;3;2
+D-01;188;Costa Rica;0;1
+D-01;192;Cuba;0;2
+D-01;208;Dinamarca;1;1
+D-01;214;República Dominicana;4;2
+D-01;218;Ecuador;6;4
+D-01;226;Guinea Ecuatorial;0;1
+D-01;250;Francia;2;3
+D-01;270;Gambia;1;0
+D-01;276;Alemania;1;2
+D-01;288;Ghana;3;0
+D-01;324;Guinea;5;2
+D-01;340;Honduras;1;0
+D-01;356;India;4;3
+D-01;380;Italia;2;1
+D-01;440;Lituania;2;1
+D-01;484;México;0;2
+D-01;498;Moldova;0;1
+D-01;504;Marruecos;280;188
+D-01;528;Países Bajos;1;0
+D-01;566;Nigeria;9;7
+D-01;586;Pakistán;4;4
+D-01;600;Paraguay;0;1
+D-01;604;Perú;2;0
+D-01;616;Polonia;5;2
+D-01;620;Portugal;3;0
+D-01;624;Guinea-Bissau;1;0
+D-01;686;Senegal;11;4
+D-01;705;Eslovenia;1;1
+D-01;724;España;646;662
+D-01;804;Ucrania;2;1
+D-01;818;Egipto;1;0
+D-01;840;Estados Unidos de América;0;1
+D-01;858;Uruguay;1;0
+D-01;862;VENEÇUELA;1;1
+D-01;50;Bangladesh;2;4
+D-02;788;Túnez;1;0
+D-02;792;Turquía;0;2
+D-02;804;Ucrania;20;29
+D-02;840;Estados Unidos de América;6;9
+D-02;858;Uruguay;2;6
+D-02;862;VENEÇUELA;7;14
+D-02;;;250;271
+D-02;20;Andorra;1;1
+D-02;32;Argentina;8;28
+D-02;36;Australia;1;0
+D-02;40;Austria;1;2
+D-02;51;Armenia;4;7
+D-02;56;Bélgica;0;3
+D-02;68;Bolivia;43;51
+D-02;76;Brasil;20;33
+D-02;90;Islas Solomón;1;0
+D-02;100;Bulgaria;8;7
+D-02;104;Myanmar;0;1
+D-02;120;Camerún;2;1
+D-02;144;Sri Lanka;1;0
+D-02;152;Chile;15;27
+D-02;156;China;88;77
+D-02;170;Colombia;32;26
+D-02;178;Congo;1;2
+D-02;188;Costa Rica;1;2
+D-02;191;Croacia;0;1
+D-02;192;Cuba;20;21
+D-02;203;República Checa;2;4
+D-02;208;Dinamarca;0;1
+D-02;214;República Dominicana;20;22
+D-02;218;Ecuador;44;45
+D-02;222;El Salvador;0;2
+D-02;226;Guinea Ecuatorial;0;3
+D-02;246;Finlandia;4;1
+D-02;250;Francia;14;5
+D-02;268;Georgia;7;9
+D-02;270;Gambia;8;2
+D-02;276;Alemania;4;7
+D-02;288;Ghana;11;4
+D-02;300;Grecia;0;1
+D-02;324;Guinea;20;19
+D-02;340;Honduras;10;26
+D-02;352;Islandia;1;0
+D-02;356;India;9;6
+D-02;360;Indonesia;1;1
+D-02;372;Irlanda;0;1
+D-02;380;Italia;39;19
+D-02;392;Japón;0;4
+D-02;428;Letonia;1;2
+D-02;440;Lituania;0;1
+D-02;466;Mali;11;4
+D-02;484;México;6;8
+D-02;498;Moldova;6;11
+D-02;504;Marruecos;744;673
+D-02;508;Mozambique;1;0
+D-02;528;Países Bajos;1;4
+D-02;558;Nicaragua;2;2
+D-02;566;Nigeria;23;12
+D-02;586;Pakistán;31;13
+D-02;600;Paraguay;0;9
+D-02;604;Perú;21;14
+D-02;616;Polonia;39;27
+D-02;620;Portugal;13;6
+D-02;624;Guinea-Bissau;2;0
+D-02;646;Ruanda;1;2
+D-02;686;Senegal;148;44
+D-02;703;Eslovaquia;1;2
+D-02;705;Eslovenia;0;1
+D-02;724;España;8846;9746
+D-02;752;Suecia;2;1
+D-02;756;Suiza;0;1
+D-03;32;Argentina;6;8
+D-03;40;Austria;1;0
+D-03;50;Bangladesh;1;0
+D-03;68;Bolivia;25;25
+D-03;76;Brasil;6;11
+D-03;100;Bulgaria;1;1
+D-03;120;Camerún;2;3
+D-03;124;Canadá;1;0
+D-03;152;Chile;5;5
+D-03;156;China;84;57
+D-03;170;Colombia;8;13
+D-03;192;Cuba;9;8
+D-03;203;República Checa;0;1
+D-03;208;Dinamarca;1;1
+D-03;214;República Dominicana;8;9
+D-03;218;Ecuador;16;21
+D-03;226;Guinea Ecuatorial;2;1
+D-03;250;Francia;2;2
+D-03;268;Georgia;5;6
+D-03;270;Gambia;1;0
+D-03;276;Alemania;3;3
+D-03;288;Ghana;4;0
+D-03;300;Grecia;0;1
+D-03;324;Guinea;7;5
+D-03;340;Honduras;7;16
+D-03;380;Italia;8;5
+D-03;440;Lituania;1;0
+D-03;450;Madagascar;0;1
+D-03;466;Mali;1;0
+D-03;484;México;2;1
+D-03;498;Moldova;3;3
+D-03;504;Marruecos;466;373
+D-03;528;Países Bajos;1;1
+D-03;566;Nigeria;8;7
+D-03;586;Pakistán;8;6
+D-03;600;Paraguay;2;2
+D-03;604;Perú;7;12
+D-03;616;Polonia;16;24
+D-03;620;Portugal;3;3
+D-03;624;Guinea-Bissau;1;0
+D-03;686;Senegal;45;17
+D-03;724;España;2547;2750
+D-03;756;Suiza;1;1
+D-03;788;Túnez;1;1
+D-03;792;Turquía;0;1
+D-03;804;Ucrania;18;16
+D-03;818;Egipto;0;1
+D-03;858;Uruguay;1;0
+D-03;862;VENEÇUELA;4;7
+D-03;;;110;92
+D-04;862;VENEÇUELA;10;18
+D-04;;;241;257
+D-04;20;Andorra;0;1
+D-04;32;Argentina;17;18
+D-04;50;Bangladesh;1;1
+D-04;56;Bélgica;0;1
+D-04;68;Bolivia;32;54
+D-04;76;Brasil;10;19
+D-04;100;Bulgaria;9;7
+D-04;120;Camerún;10;1
+D-04;152;Chile;7;7
+D-04;156;China;105;100
+D-04;170;Colombia;22;29
+D-04;188;Costa Rica;3;1
+D-04;192;Cuba;7;13
+D-04;203;República Checa;1;1
+D-04;214;República Dominicana;23;19
+D-04;218;Ecuador;47;34
+D-04;222;El Salvador;0;1
+D-04;226;Guinea Ecuatorial;1;1
+D-04;233;Estonia;0;1
+D-04;250;Francia;6;6
+D-04;268;Georgia;8;4
+D-04;270;Gambia;7;4
+D-04;276;Alemania;0;5
+D-04;288;Ghana;32;16
+D-04;300;Grecia;1;1
+D-04;324;Guinea;12;8
+D-04;340;Honduras;7;17
+D-04;348;Hungría;3;1
+D-04;356;India;27;17
+D-04;380;Italia;32;20
+D-04;388;Jamaica;1;0
+D-04;392;Japón;0;1
+D-04;404;Kenia;1;0
+D-04;422;Líbano;1;1
+D-04;440;Lituania;2;0
+D-04;466;Mali;3;5
+D-04;478;Mauritania;1;0
+D-04;484;México;0;2
+D-04;498;Moldova;7;6
+D-04;504;Marruecos;649;523
+D-04;508;Mozambique;0;1
+D-04;524;Nepal;1;0
+D-04;528;Países Bajos;0;1
+D-04;558;Nicaragua;1;1
+D-04;562;Níger;1;0
+D-04;566;Nigeria;27;21
+D-04;586;Pakistán;15;5
+D-04;600;Paraguay;1;7
+D-04;604;Perú;24;17
+D-04;616;Polonia;38;44
+D-04;620;Portugal;13;14
+D-04;624;Guinea-Bissau;1;0
+D-04;686;Senegal;66;27
+D-04;703;Eslovaquia;1;0
+D-04;705;Eslovenia;0;1
+D-04;724;España;8548;9323
+D-04;752;Suecia;2;0
+D-04;764;Tailandia;0;1
+D-04;792;Turquía;0;2
+D-04;804;Ucrania;33;37
+D-04;840;Estados Unidos de América;5;6
+D-04;854;Burkina Faso;1;0
+D-04;858;Uruguay;6;5
+D-04;860;Uzbekistán;3;3
+D-05;854;Burkina Faso;2;1
+D-05;858;Uruguay;7;7
+D-05;862;VENEÇUELA;12;12
+D-05;;;186;181
+D-05;20;Andorra;0;2
+D-05;32;Argentina;7;5
+D-05;36;Australia;1;0
+D-05;50;Bangladesh;1;0
+D-05;51;Armenia;5;2
+D-05;68;Bolivia;18;39
+D-05;76;Brasil;6;13
+D-05;100;Bulgaria;13;13
+D-05;120;Camerún;7;6
+D-05;124;Canadá;1;1
+D-05;152;Chile;6;12
+D-05;156;China;50;34
+D-05;170;Colombia;22;29
+D-05;178;Congo;1;1
+D-05;188;Costa Rica;2;2
+D-05;192;Cuba;18;22
+D-05;203;República Checa;0;4
+D-05;204;Benin;1;2
+D-05;214;República Dominicana;7;10
+D-05;218;Ecuador;49;38
+D-05;222;El Salvador;1;1
+D-05;226;Guinea Ecuatorial;3;1
+D-05;250;Francia;2;2
+D-05;268;Georgia;10;13
+D-05;270;Gambia;14;15
+D-05;276;Alemania;5;3
+D-05;288;Ghana;25;8
+D-05;320;Guatemala;0;1
+D-05;324;Guinea;29;19
+D-05;332;Haití;1;0
+D-05;340;Honduras;10;21
+D-05;356;India;28;16
+D-05;372;Irlanda;0;1
+D-05;376;Israel;1;1
+D-05;380;Italia;22;9
+D-05;428;Letonia;2;1
+D-05;440;Lituania;1;8
+D-05;466;Mali;4;0
+D-05;478;Mauritania;2;1
+D-05;484;México;3;6
+D-05;498;Moldova;7;9
+D-05;504;Marruecos;793;715
+D-05;524;Nepal;3;2
+D-05;528;Países Bajos;4;3
+D-05;558;Nicaragua;0;2
+D-05;566;Nigeria;8;7
+D-05;578;Noruega;0;1
+D-05;586;Pakistán;28;10
+D-05;591;Panamá;2;0
+D-05;600;Paraguay;0;7
+D-05;604;Perú;8;13
+D-05;608;Filipinas;1;2
+D-05;616;Polonia;42;25
+D-05;620;Portugal;5;4
+D-05;624;Guinea-Bissau;1;0
+D-05;686;Senegal;93;45
+D-05;704;Vietnam;0;1
+D-05;724;España;8885;9417
+D-05;752;Suecia;0;1
+D-05;756;Suiza;1;0
+D-05;764;Tailandia;0;2
+D-05;804;Ucrania;22;22
+D-05;818;Egipto;3;1
+D-05;840;Estados Unidos de América;2;1
+D-06;20;Andorra;0;1
+D-06;;;3;4
+D-06;50;Bangladesh;0;1
+D-06;100;Bulgaria;1;0
+D-06;152;Chile;1;0
+D-06;170;Colombia;1;1
+D-06;214;República Dominicana;1;2
+D-06;218;Ecuador;2;0
+D-06;250;Francia;1;1
+D-06;270;Gambia;3;3
+D-06;276;Alemania;1;0
+D-06;300;Grecia;2;0
+D-06;340;Honduras;1;1
+D-06;380;Italia;1;0
+D-06;504;Marruecos;67;65
+D-06;586;Pakistán;0;2
+D-06;620;Portugal;1;0
+D-06;686;Senegal;7;1
+D-06;705;Eslovenia;1;0
+D-06;724;España;872;853
+D-06;804;Ucrania;3;1
+D-06;840;Estados Unidos de América;1;0
+D-06;32;Argentina;1;0
