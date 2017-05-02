@@ -1,0 +1,11 @@
+Primer trobarem una relació entre els punts de cobertura i la seva ciutat.
+Mirarem a quina distància està el punt de cobertura i ho compararem entre tots els pobles/ciutats de Catalunya per a saber on està situat. Ho farem amb la següent sentència: 
+
+SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC;
+
+LAT_COB     LONG_COB    fullCarrier  net_type    signal_avg  speed       poblacio    LAT_POB     LONG_POB    Distancia           
+----------  ----------  -----------  ----------  ----------  ----------  ----------  ----------  ----------  --------------------
+41.69846    0.59563     orange       4G          29          2.0         Rosselló   41.69844    0.5957855   0.000175499999999218
+41.62961    0.78096     orange       4G          4           13.7        Bell-lloc   41.6294     0.7808905   0.000279500000002653
+41.69816    0.59595     orange       4G          17          1.3         Rosselló   41.69844    0.5957855   0.000444499999996517
+
