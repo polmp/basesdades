@@ -50,9 +50,12 @@ DELETE from cobertura_mobil where cid like '%cid%';
 DELETE from long_lat where longitud like '%Longitud%';
 UPDATE long_lat SET latitud = CAST(replace(latitud, ',', '.') AS REAL) WHERE latitud LIKE '%,%';
 UPDATE long_lat SET longitud = CAST(replace(longitud, ',', '.') AS REAL) WHERE longitud LIKE '%,%';
-CREATE VIEW cb as SELECT lat AS LAT_COB,lng AS LONG_COB FROM cobertura_mobil order by time_stamp limit 500;
+CREATE VIEW cb as SELECT lat AS LAT_COB,lng AS LONG_COB,fullCarrier,net_type,signal_avg,speed FROM cobertura_mobil limit 500;
 CREATE VIEW pob as SELECT poblacio,latitud AS LAT_POB,longitud AS LONG_POB FROM long_lat WHERE comunitat like "catalu%";
 SELECT *,abs(cb.LAT_COB-pob.LAT_POB) as distancialat,abs(cb.LONG_COB-pob.LONG_POB) as distancialong,abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB)) as Distancia from cb,pob order by Distancia;
---SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)-abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC;
-SELECT * from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC);
+--SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC;
+-- Marquem un llindar de 0.010 (quan la distància sigui més gran no el considerarem que pertany al poble/ciutat)
+SELECT * from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10;
 
+-- Buscar velocitat mitjana
+SELECT poblacio,avg(speed),count(speed) from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10 group by poblacio;

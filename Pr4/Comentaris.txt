@@ -9,3 +9,27 @@ LAT_COB     LONG_COB    fullCarrier  net_type    signal_avg  speed       poblaci
 41.62961    0.78096     orange       4G          4           13.7        Bell-lloc   41.6294     0.7808905   0.000279500000002653
 41.69816    0.59595     orange       4G          17          1.3         Rosselló   41.69844    0.5957855   0.000444499999996517
 
+Podem mostrar les velocitat mitjanes per població:
+
+SELECT * from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10;
+
+poblacio    avg(speed)  count(speed)
+----------  ----------  ------------
+Abrera      97.1        1           
+Agramunt    4.37333333  15          
+Alamús (E  74.48       5           
+Alcoletge   49.0909090  11          
+Ametlla de  41.775      4           
+Anglesola   69.7666666  3           
+Badalona    2.98461538  13          
+Barcelona   5.18289473  76          
+Bell-lloc   45.4692307  13          
+Bellpuig    55.0        2           
+Besalú     0.97368421  19          
+Bigues i R  19.6333333  9           
+Blanes      11.0333333  3           
+Cabó       0.15        16          
+
+
+On count(speed) són els punts de cobertura que s’han analitzat
+
