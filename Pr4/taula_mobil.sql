@@ -48,9 +48,10 @@ CREATE TABLE IF NOT EXISTS long_lat (
 DELETE from cobertura_mobil where cid like '%cid%';
 
 DELETE from long_lat where longitud like '%Longitud%';
+UPDATE long_lat SET latitud = CAST(replace(latitud, ',', '.') AS REAL) WHERE latitud LIKE '%,%';
+UPDATE long_lat SET longitud = CAST(replace(longitud, ',', '.') AS REAL) WHERE longitud LIKE '%,%';
 CREATE VIEW cb as SELECT lat AS LAT_COB,lng AS LONG_COB FROM cobertura_mobil order by time_stamp limit 5;
 CREATE VIEW pob as SELECT poblacio,latitud AS LAT_POB,longitud AS LONG_POB FROM long_lat WHERE comunitat like "catalu%";
-
-SELECT *,abs(abs(cb.LAT_COB-pob.LAT_POB)-abs(cb.LONG_COB-pob.LONG_POB)) as Distancia from cb,pob order by Distancia;
+SELECT *,cb.LAT_COB-pob.LAT_POB as distancialat,cb.LONG_COB-pob.LONG_POB as distancialong,abs(abs(cb.LAT_COB-pob.LAT_POB)-abs(cb.LONG_COB-pob.LONG_POB)) as Distancia from cb,pob order by Distancia;
 SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)-abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC;
 
