@@ -1,3 +1,0 @@
-SELECT distinct comunitat,provincia,poblacio,fullCarrier,avg(speed),count(fullCarrier) as num_companyies from cobertura_mobil INNER JOIN long_lat on abs(cobertura_mobil.lat -long_lat.latitud) < 0.05 and abs(cobertura_mobil.lng - long_lat.longitud) < 0.05 GROUP BY long_lat.poblacio;
-
-SELECT distinct comunitat,provincia,poblacio,fullCarrier as num_companyies from cobertura_mobil INNER JOIN long_lat on abs(cobertura_mobil.lat -long_lat.latitud) < 0.08 and abs(cobertura_mobil.lng - long_lat.longitud) < 0.08;
