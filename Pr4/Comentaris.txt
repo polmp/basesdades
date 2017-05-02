@@ -33,3 +33,4 @@ Cabó       0.15        16
 
 On count(speed) són els punts de cobertura que s’han analitzat
 
+
