@@ -57,6 +57,8 @@ CREATE VIEW pob as SELECT poblacio,latitud AS LAT_POB,longitud AS LONG_POB FROM 
 -- Càlcul per saber zona cobertura-població
 SELECT *,abs(cb.LAT_COB-pob.LAT_POB) as distancialat,abs(cb.LONG_COB-pob.LONG_POB) as distancialong,abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB)) as Distancia from cb,pob order by Distancia;
 -- Marquem un llindar de 0.010 (quan la distància sigui més gran no el considerarem que pertany al poble/ciutat)
-SELECT * from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10;
+SELECT * from (SELECT *,net_type as companyia,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10;
 -- Buscar velocitat mitjana de les diferents poblacions
 SELECT poblacio,avg(speed),count(speed) from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10 group by poblacio;
+-- Buscar les companyies més i menys distribuïdes en una població
+SELECT poblacio,max(fullCarrier),min(fullCarrier) from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10 group by poblacio;

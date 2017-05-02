@@ -1,3 +1,5 @@
+Fàrem l’anàlisi de la cobertura mòbil que hi ha a Catalunya.
+Hem limitat les mostres a 500.
 Primer trobarem una relació entre els punts de cobertura i la seva ciutat.
 Mirarem a quina distància està el punt de cobertura i ho compararem entre tots els pobles/ciutats de Catalunya per a saber on està situat. Ho farem amb la següent sentència: 
 
@@ -31,6 +33,49 @@ Blanes      11.0333333  3
 Cabó       0.15        16          
 
 
-On count(speed) són els punts de cobertura que s’han analitzat
+On count(speed) són els punts de cobertura que s’han analitzat.
 
+Podem veure també quina companyia predomina en cada zona i quina és la menys utilitzada:
 
+SELECT poblacio,max(fullCarrier),min(fullCarrier) from (SELECT *,min(abs(abs(cb.LAT_COB-pob.LAT_POB)+abs(cb.LONG_COB-pob.LONG_POB))) as Distancia from cb,pob group by cb.LAT_COB,cb.LONG_COB order by Distancia ASC) where Distancia < 0.10 group by poblacio;
+
+Abrera|orange|orange
+Agramunt|orange|movistar
+Alamús (Els)|orange|movistar
+Alcoletge|orange|movistar
+Ametlla del Vallès (L')|orange|orange
+Anglesola|orange|movistar
+Badalona|orange|
+Barcelona|vodafone|
+Bell-lloc d'Urgell|orange|movistar
+Bellpuig|orange|orange
+Besalú|movistar|movistar
+Bigues i Riells|orange|orange
+Blanes|orange|orange
+Cabó|movistar|movistar
+Cardedeu|movistar|movistar
+Castellvell del Camp|orange|orange
+Castellví de Rosanes|orange|orange
+Cubelles|yoigo|yoigo
+Esplugues de Llobregat|vodafone|
+Figueres|orange|orange
+Fondarella|orange|movistar
+Franqueses del Vallès (Les)|orange|orange
+Gavà|orange|orange
+Girona|vodafone|vodafone
+Golmés|orange|orange
+Hospitalet de Llobregat (L')|vodafone|vodafone
+Hostalets de Pierola (Els)|vodafone|vodafone
+Llacuna (La)|vodafone|movistar
+Llagosta (La)|orange|orange
+Lleida|orange|orange
+Llinars del Vallès|movistar|movistar
+Maldà|movistar|movistar
+Malgrat de Mar|orange|orange
+Manresa|movistar|movistar
+Martorell|orange|orange
+Molins de Rei|vodafone|orange
+Mollerussa|orange|movistar
+Montblanc|vodafone|vodafone
+
+Si els valors son iguals vol dir que només hi ha aquella companyia (o que no tenim les mostres suficients)
