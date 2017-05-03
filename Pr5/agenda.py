@@ -5,7 +5,8 @@ import getpass
 import os
 import re
 
-def create_backup(cursor,contacte_txt,amistats_txt):
+
+def create_backup(cursor,contacte_txt):
 	if os.path.isfile(contacte_txt) | os.path.isfile(amistats_txt):
 		print "Algun arxiu existeix! Segur que vols continuar? (Es borrarà tot el contingut) [s/n]"
 		if (raw_input()) != 's':
@@ -18,17 +19,10 @@ def create_backup(cursor,contacte_txt,amistats_txt):
 			if row != data[-1]:
 				contactetxt.write('\n')
 
-	cursor.execute("SELECT * from telefons_contacte")
-	data=cursor.fetchall()
-	with open(amistats_txt,'w') as amistatstxt:
-		for row in data:
-			amistatstxt.write(row[0]+','+row[1])
-			if row != data[-1]:
-				amistatstxt.write('\n')
-	return True
 
-def restore_BD(db,cursor,contactetxt,amistatstxt):
-	if (not os.path.isfile(contactetxt)) or (not os.path.isfile(amistatstxt)):
+
+def restore_BD(db,cursor,contactetxt):
+	if (not os.path.isfile(contactetxt)):
 			print "L'arxiu no existeix!"
 			return False
 	else:
@@ -37,7 +31,6 @@ def restore_BD(db,cursor,contactetxt,amistatstxt):
 			#Comprovacio inicial execucio arxiu
 			cursor.executescript("""
 				DROP TABLE IF EXISTS contacte;\n
-				DROP TABLE IF EXISTS telefons_contacte;
 			""")
 
 			cursor.executescript("""
@@ -46,28 +39,18 @@ def restore_BD(db,cursor,contactetxt,amistatstxt):
 					nom varchar(20),
 					telefon INT
 				);
-
-				CREATE TABLE IF NOT EXISTS telefons_contacte(
-					id_c1 INTEGER,
-					id_c2 INTEGER,
-					PRIMRY KEY (id_c1,id_c2)
-					FOREIGN KEY (id_c1) REFERENCES contacte(id),
-					FOREIGN KEY (id_c2) REFERENCES contacte(id),
-				);
 			""")
 
 			db.commit()
 
 			with open(contactetxt) as contactes:
 				contacte_row=contacte.read()
-			with open(amistatstxt) as amistats:
-				amistats_row=amistats.read()
 
 			try:
 				cur.executemany("INSERT OR IGNORE INTO contacte(id,nom,telefon) VALUES(?, ?, ?)",getTupleDB(contactetxt))
-				cur.executemany("INSERT OR IGNORE INTO amistats VALUES(?, ?)",getTupleDB(amistatstxt))
 				db.commit()
 				return True
+				
 			except sqlite3.ProgrammingError as e:
 				print "Error! "+str(e)
 				return False
@@ -83,6 +66,21 @@ def introdueixParametre(nompar,hidefield=False,can_be_empty=False,funcio=None):
 		par=comprovaParametre(nompar,hidefield,can_be_empty,funcio)
 	return par
 
+#Buscar telefon a partir del nom de contacte
+def comprovaContacte_Telefon():
+
+#Buscar contacte a partir del numero de telefon
+def comprovaTelefon_Contacte():
+
+#Comprovar quins contactes tenen un numero concret a l'agenda
+def comprovaTelefon_Contactes():
+
+#Comprovar quins contactes no tenen un numero concret a l'agenda
+def comprovaNoTelefon_Contactes():
+
+
+
+
 
 
 
@@ -92,6 +90,7 @@ if __name__=='__main__':
 	db=sqlite3.connect('agenda.bd')
 	cur=db.cursor()
 	cur.execute('pragma foreign_keys=ON') #Activem foreign key
+	
 	if len(sys.argv) == 1:
 		print "Executant en mode normal"
 		cur.executescript("""
@@ -100,24 +99,13 @@ if __name__=='__main__':
 				nom varchar(20),
 				telefon INT
 			);
-
-			CREATE TABLE IF NOT EXISTS telefons_contacte(
-				id_c1 INTEGER,
-				id_c2 INTEGER,
-				PRIMARY KEY (id_c1,id_c2),
-				FOREIGN KEY (id_c1) REFERENCES contacte(id),
-				FOREIGN KEY (id_c2) REFERENCES contacte(id)
-			);
 		""")
 		db.commit()
 
 	elif len(sys.argv) == 2:
-		print "Per restaurar necessites 2 txt!"
+		print "Carregant arxiu "+sys.argv[1]
 
-	elif len(sys.argv) == 3:
-		print "Carregant arxiu "+sys.argv[1]+" i "+sys.argv[2]
-
-		if restore_BD(db,cur,sys.argv[1],sys.argv[2]):
+		if restore_BD(db,cur,sys.argv[1]):
 			print "Restaurat correctament!"
 		else:
 			print "No s'ha pogut restaurar!"
@@ -127,17 +115,11 @@ if __name__=='__main__':
 					nom varchar(20),
 					telefon INT
 				);
-
-				CREATE TABLE IF NOT EXISTS telefons_contacte(
-					id_c1 INTEGER,
-					id_c2 INTEGER,
-					PRIMRY KEY (id_c1,id_c2)
-					FOREIGN KEY (id_c1) REFERENCES contacte(id),
-					FOREIGN KEY (id_c2) REFERENCES contacte(id),
-				);
 			""")
 			db.commit()
 
+	elif len(sys.argv) == 3:
+		print "Per restaurar necessites 1 txt!"
 
 	try:
 		main(db,cur)

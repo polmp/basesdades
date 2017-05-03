@@ -165,9 +165,10 @@ SELECT epoch,nodeid,light,temp from sensors group by epoch having count(epoch) <
 --   reported value. If there is no such value (e.g., the first value for a particular sensor is
 --   missing), you should return the special value ’null’. You may wish to read about the CASE
 --   and OUTER JOIN SQL statements.
-/*
+
 SELECT s1.nodeid, s1.epoch,
-	(CASE when s1.temp is null then
+	(CASE s1.temp 
+		when s1.temp=null then
 			(SELECT temp from sensors where epoch = (SELECT max(epoch) from sensors where epoch<s1.epoch and nodeid=s1.nodeid) and nodeid = s2.nodeid)
  		else 
  			s1.temp
@@ -178,7 +179,7 @@ left join sensors s2 using(nodeid)
 union all
 select s1.nodeid,s1.epoch,
 SELECT s1.nodeid,s1.epoch,
-	(CASE when s1.temp is null then
+	(CASE s1.temp when s1.temp=null then
 			(SELECT temp from sensors where epoch = (SELECT max(epoch) from sensors where epoch<s1.epoch and nodeid=s1.nodeid) and nodeid = s2.nodeid)
  		else 
  			s1.temp
@@ -191,12 +192,12 @@ SELECT nodeid,epoch from
 	(SELECT distinct epoch from sensors) as s2 
 	on (s1.nodeid = s2.nodeid and s1.epoch = s2.epoch)
 order by s1.epoch,s1.nodeid;
-*/
+
 --8. Write a query that determines epochs during which all three sensors did not return any
 --   results. Note that this is a deceptively hard query to write – you may need to make some
 --   assumptions about the frequency of missing epochs.
-
+/*
 SELECT distinct(epoch) as "Epoch lost", (epoch-(SELECT max(epoch) from sensors as s1 where s1.epoch<s2.epoch)) as "epoch lost early"
 from (SELECT epoch-1 as epoch from sensors except SELECT epoch from sensors) as s2
 where epoch < (SELECT min(epoch) from sensors);
-
+*/
