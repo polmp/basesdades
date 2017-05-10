@@ -29,7 +29,7 @@ class App(object):
 		entry_telefon=Entry(nou_registre)
 		entry_telefon.grid(row=1,column=1)
 
-		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue")
+		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command= lambda: self.afegeix_contacte(entry_telefon))
 		button_afegir_contacte.grid(row=2,column=1,sticky=E)
 
 		mostar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue")
@@ -39,17 +39,16 @@ class App(object):
 		missatge_error_confirmacio.grid(sticky=W,row=3,column=1)
 
 		agenda_contactes=Treeview(self.frame,columns=["nom","tel"],show="headings")
-		
 		agenda_contactes.heading("nom", text="Nom")
 		agenda_contactes.heading("tel",text="Telefon")
-		agenda_contactes.column("#0",minwidth=0,width=200,stretch=NO,anchor=E)
+		agenda_contactes.column("nom",minwidth=0,width=200,stretch=NO)
 		agenda_contactes.column("tel",minwidth=0,width=200,stretch=NO)
 		agenda_contactes.grid(row=4,column=0,padx=0,columnspan=2)
 		
 		#stretch NO not working
 		
-		agenda_contactes.insert('', 'end',text='Hola',values=['Hola','Adeu'])
-
+		agenda_contactes.insert('', 'end',values=['Hola',666346464])
+		agenda_contactes.insert('', 'end',values=['prova',674835355])
 		elimina_seleccionat = Button(self.frame,text="Eliminar seleccionat",fg="Blue")
 		elimina_seleccionat.grid(row=5,column=0,sticky=W)
 
@@ -57,12 +56,21 @@ class App(object):
 		modificar_seleccionat.grid(row=5,column=1,sticky=W)
 		sortir = Button(self.frame,text="Sortir",fg="Blue",command=self.frame.quit)
 		sortir.grid(row=5,column=2,sticky=E)
-		
-	
 
+		
+	def afegeix_contacte(self,tel):
+		try:
+			int(tel.get())
+		except:
+			print "El telefon no es correcte"
+		else:
+			print tel.get()
 
 root = Tk()
 root.wm_title("Dipse Gestor de Contactes")
 app=App(root)
 root.mainloop()
-root.destroy()
+try:
+	root.destroy()
+except:
+	pass
