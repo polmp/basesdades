@@ -100,3 +100,24 @@ END;
 i B i C són amics, aleshores B i C no poden ser amics. Per tant cal eliminar la relació d'amistat en els 2 sentits (B,C) i (C,B).*/
 
 
+CREATE TRIGGER IF NOT EXISTS borra_amics_preferencia BEFORE UPDATE ON preferencies BEGIN
+DELETE FROM amistats where (ID1=OLD.ID2 and ID2=NEW.ID2) OR (ID1=NEW.ID2 and ID2=OLD.ID2);
+END;
+
+/*Prova 6*/
+/*
+INSERT INTO amistats VALUES (1709,1641);
+SELECT * from amistats where ID1=1641 and ID2=1709;
+SELECT * from amistats;
+SELECT 'END';
+
+UPDATE preferencies set ID2=1641 where ID1=1689 and ID2=1709;
+
+SELECT * from amistats;
+*/
+
+
+
+
+
+
