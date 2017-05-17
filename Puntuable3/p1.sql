@@ -82,7 +82,11 @@ INSERT INTO liniesComandes VALUES
 (3,1,1),
 (3,2,1),
 (4,4,1),
-(5,5,1);
+(5,5,1),
+(1,12,1),
+(3,12,2),
+(2,12,3)
+;
 
 /*
 SELECT * FROM productes;
@@ -115,15 +119,58 @@ foreign key (idProdRegalat) references productes(idProducte)
  
 --CREAR TRIGGER WHEN INSERT
  INSERT INTO regals VALUES
- (12,103),(1,102),(2,101),(3,101),(5,103),(7,101),(10,103),(9,103),(11,102);
+ (12,103),(12,101),(1,102),(2,101),(3,101),(5,103),(7,101),(10,103),(9,103),(11,102);
 
 
 --SELECT idProdComprat,P1.nom as nomProdComprat, P1.preu as preuProdComp (
- SELECT * FROM regals
+/* SELECT * FROM regals
 INNER JOIN 
 (SELECT * FROM productes) AS P1
 ON P1.idProducte = regals.idProdComprat
 
 --)
 ;
+*/
+
+
+SELECT SUM(QxP) FROM (
+
+SELECT numComanda,idProdComprat,midaComprat,quantitat,idNomComp,idProdRegalat,NomRegal,preuRegal,
+	quantitat*preuRegal AS QxP FROM liniesComandes
+
+INNER JOIN (
+
+SELECT idProdComprat,midaComprat,idNomComp,preuComprat,idProdRegalat,
+		REG.nom as NomRegal, REG.preu as preuRegal FROM (
+-- ***************
+SELECT idProdComprat,r.mida as midaComprat,r.nom as idNomComp,r.preu as preuComprat,idProdRegalat 
+	FROM productes
+INNER JOIN 
+
+(
+SELECT * FROM regals
+INNER JOIN 
+(SELECT * FROM productes) AS P1
+ON P1.idProducte = regals.idProdComprat) AS r
+
+ON  productes.idProducte = r.idProducte) as t1
+-- ***************
+INNER JOIN
+(SELECT * FROM productes) AS REG
+ON  t1.idProdRegalat = REG.idProducte
+
+) AS t2
+
+ON liniesComandes.idProducte = t2.idProdComprat
+
+WHERE idProducte = 12
+)
+;
+
+
+
+
+--SELECT * FROM liniesComandes;
+
+
 
