@@ -21,15 +21,15 @@ class App(object):
 
 		text_nom = Label(nou_registre,text="Nom:",fg="Blue")
 		text_nom.grid(row=0,column=0,sticky=W)
-		entry_nom = Entry(nou_registre)
-		entry_nom.grid(row=0,column=1,sticky=W)
+		self.entry_nom = Entry(nou_registre)
+		self.entry_nom.grid(row=0,column=1,sticky=W)
 
 		text_telefon = Label(nou_registre,text="Telèfon: ",fg="Blue")
 		text_telefon.grid(row=1,column=0)
-		entry_telefon=Entry(nou_registre)
-		entry_telefon.grid(row=1,column=1)
+		self.entry_telefon=Entry(nou_registre)
+		self.entry_telefon.grid(row=1,column=1)
 
-		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command= lambda: self.afegeix_contacte(entry_telefon))
+		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command=self.afegeix_contacte)
 		button_afegir_contacte.grid(row=2,column=1,sticky=E)
 
 		mostar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue")
@@ -58,13 +58,16 @@ class App(object):
 		sortir.grid(row=5,column=2,sticky=E)
 
 		
-	def afegeix_contacte(self,tel):
+	def afegeix_contacte(self):
 		try:
-			int(tel.get())
+			Nom = self.entry_nom.get()
+			Telef = int(self.entry_telefon.get())
+
 		except:
 			print "El telefon no es correcte"
 		else:
-			print tel.get()
+			pass
+			print "Afegir entrada de BD"
 
 root = Tk()
 root.wm_title("Dipse Gestor de Contactes")
