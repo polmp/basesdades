@@ -13,15 +13,21 @@ create table productes (
 );
 
 INSERT INTO productes VALUES 
-(1,"Carbonara",10,12),
-(2,"Carbonara",12,15),
-(3,"Carbonara",15,18),
-(4,"Bbq",10,12),
-(5,"Bbq",12,15),
-(6,"Bbq",15,18),
-(7,"Tropical",10,12),
-(8,"Tropical",12,15),
-(9,"Tropical",15,18)
+(1,"Carbonara",12,'12cm'),
+(2,"Carbonara",15,'15cm'),
+(3,"Carbonara",18,'18cm'),
+(4,"Bbq",10,'12cm'),
+(5,"Bbq",12,'15cm'),
+(6,"Bbq",15,'18cm'),
+(7,"Tropical",10,'12cm'),
+(8,"Tropical",12,'15cm'),
+(9,"Tropical",15,'18cm'),
+(10,"Napolitana",13,'12cm'),
+(11,"Napolitana",15,'15cm'),
+(12,"Napolitana",20,'18cm'),
+(101, "Joguina 1", 3, ''),
+(102, "Joguina 2", 3, ''),
+(103, "Joguina 3", 8, '')
 ;
 
 create table domicilis(
@@ -98,4 +104,26 @@ WHERE comandes.import <= 10
 
 --EX3
 
+CREATE TABLE regals(
+idProdComprat char(9),
+idProdRegalat char(9),
+primary key (idProdComprat,idProdRegalat),
+foreign key (idProdComprat) references productes(idProducte),
+foreign key (idProdRegalat) references productes(idProducte)
+);
+
+ 
+--CREAR TRIGGER WHEN INSERT
+ INSERT INTO regals VALUES
+ (12,103),(1,102),(2,101),(3,101),(5,103),(7,101),(10,103),(9,103),(11,102);
+
+
+--SELECT idProdComprat,P1.nom as nomProdComprat, P1.preu as preuProdComp (
+ SELECT * FROM regals
+INNER JOIN 
+(SELECT * FROM productes) AS P1
+ON P1.idProducte = regals.idProdComprat
+
+--)
+;
 
