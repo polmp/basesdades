@@ -1,17 +1,12 @@
-.mode column
-.header on
-
 create table CONTACTES(
 	nom VARCHAR(20),
 	telf int,
 	email varchar(50),
-	foto text, --NPI DEL FORMAT
+	foto varchar(50), --NPI DEL FORMAT
 	check (telf > 100000000 and telf <1000000000)
 
 );
 
-
---AVOID DUPLICATES
 CREATE TRIGGER DUPLICATES 
 BEFORE INSERT ON CONTACTES
 for each row 
@@ -20,7 +15,6 @@ BEGIN
 	SELECT raise(ignore);
 END;
 
---TASCA 7 DE ELIMINAR TOTS ELS USUARIS QUE TENEN EL NOM DE *
 CREATE TRIGGER ERASE
 AFTER DELETE ON CONTACTES
 FOR EACH ROW
@@ -29,29 +23,13 @@ BEGIN
 		WHERE contactes.nom = old.nom;
 END;
 
-insert into CONTACTES values ('Marc', 666666666,'','')
-	,('Albert', 666666667,'','')
-	,('Maria', 666666669,'','')
-	,('Rosa', 666666656,'','')
-	,('Pol', 666266666,'','')
-	,('David', 666566667,'','')
-	,('Eric', 666656669,'','')
-	,('Alex', 666656656,'','')
-	,('Marc',777777777,'','')
+insert into CONTACTES values ('Marc', 666666666,'marc@email.com','')
+	,('Albert', 666666667,'albert@email.com','')
+	,('Maria', 666666669,'maria@email.com','')
+	,('Rosa', 666666656,'rosa@email.com','')
+	,('Pol', 666266666,'pol@email.com','')
+	,('David', 666566667,'david@email.com','')
+	,('Eric', 666656669,'eric@email.com','')
+	,('Alex', 666656656,'alex@email.com','')
+	,('Marc',777777777,'marc2@email.com','')
 	;
-
-SELECT * FROM CONTACTES ORDER BY nom;
-
-insert into CONTACTES values ('Marc', 666666666,'','');
-
-SELECT * FROM CONTACTES ORDER BY nom; --ORDENAT PER NOM DE CONTACTE
-
-DELETE FROM CONTACTES WHERE NOM = 'Marc';
-
-SELECT * FROM CONTACTES ORDER BY nom; --ORDENAT PER NOM DE CONTACTE
-
-
---TASCA 8
-UPDATE CONTACTES
-	SET telf = 123456789 --VALOR A CANVIAR
-		WHERE nom = '???' and telf = 741852963; --I MISSATGE... CONTACTE MODIFICAT!
