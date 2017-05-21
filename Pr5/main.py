@@ -112,11 +112,16 @@ class App(object):
 		except:
 			self.missatge_error_confirmacio.set("Introdueix les dades correctament!")
 		else:
-			self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom,Telef,Email))
-			self.db.commit()
-			self.insert_contacts_treeview()
-			self.missatge_error_confirmacio.set("Afegit contacte correctament")
-			print "Afegir entrada de BD"
+			try:
+				self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom,Telef,Email))
+				self.db.commit()
+			except sqlite3.IntegrityError:
+				self.missatge_error_confirmacio.set("Contacte ja existent!")
+
+			else:
+				self.insert_contacts_treeview()
+				self.missatge_error_confirmacio.set("Afegit contacte correctament")
+			
 
 if __name__=='__main__':
 	if not os.path.isfile('agenda.bd'):
@@ -128,7 +133,6 @@ if __name__=='__main__':
 	else:
 		db=sqlite3.connect('agenda.bd')
 		cur=db.cursor()
-	cur.execute('pragma foreign_keys=ON') #Activem foreign key
 	root = Tk()
 	root.wm_title("Dipse Gestor de Contactes")
 	app=App(root,cur,db)

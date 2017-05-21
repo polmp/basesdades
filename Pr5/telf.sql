@@ -1,12 +1,12 @@
 create table CONTACTES(
 	nom VARCHAR(20),
-	telf int,
+	telf int PRIMARY KEY,
 	email varchar(50),
 	foto varchar(50), --NPI DEL FORMAT
 	check (telf > 100000000 and telf <1000000000)
 
 );
-
+/*
 CREATE TRIGGER DUPLICATES 
 BEFORE INSERT ON CONTACTES
 for each row 
@@ -15,6 +15,7 @@ BEGIN
 	SELECT raise(ignore);
 END;
 
+
 CREATE TRIGGER ERASE
 AFTER DELETE ON CONTACTES
 FOR EACH ROW
@@ -22,7 +23,7 @@ BEGIN
 	DELETE FROM CONTACTES
 		WHERE contactes.nom = old.nom;
 END;
-
+*/
 insert into CONTACTES values ('Marc', 666666666,'marc@email.com','')
 	,('Albert', 666666667,'albert@email.com','')
 	,('Maria', 666666669,'maria@email.com','')
