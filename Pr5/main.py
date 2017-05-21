@@ -95,29 +95,39 @@ class App(object):
 		if t:
 			self.edit_image(imatge_label,t)
 
-	def modificar_contacte(self,dades_usuari,email_nou,telefon_nou):
+	def modificar_contacte(self,entries_fixed,entries_variable,treeview_seleccionat):
 		#print dades_usuari
-		print "VALORS: "+str(email_nou)+" "+str(telefon_nou)
-		if email_nou != '':
+		nom_fixed = entries_fixed[0]
+		telefon_fixed = entries_fixed[1]
+		email_fixed = entries_fixed[2]
+
+		telefon_variable=entries_variable[0]
+		email_variable=entries_variable[1]
+
+		if email_variable.get() != '':
 			try:
-				self.check_email(email_nou)
+				self.check_email(email_variable.get())
 			except:
 				self.missatge_error_confirmacio.set("El mail no és correcte!")
 			else:
-				self.cursor.execute("UPDATE CONTACTES SET email=:email where nom=:nom and telf=:telf",{'email':email_nou,'nom':dades_usuari[0],'telf':str(dades_usuari[1])})
-		if telefon_nou!='':
+				self.cursor.execute("UPDATE CONTACTES SET email=:email where nom=:nom and telf=:telf",{'email':email_variable.get(),'nom':nom_fixed.get(),'telf':str(telefon_fixed.get())})
+				email_fixed.delete(0,END)
+    			email_fixed.insert(0,email_variable.get())
+
+		if telefon_variable.get()!='':
 			try:
-				print "ENTRO?"
-				assert int(telefon_nou) >= 600000000
+				assert int(telefon_variable.get()) >= 600000000
 			except:
 				self.missatge_error_confirmacio.set("Error en el telefon!")
 			else:
-				print "ENTRO?"
 				try:
-					self.cursor.execute("UPDATE CONTACTES SET telf=:nou_telf where nom=:nom and telf=:telf",{'nou_telf':telefon_nou,'nom':dades_usuari[0],'telf':str(dades_usuari[1])})
+					self.cursor.execute("UPDATE CONTACTES SET telf=:nou_telf where nom=:nom and telf=:telf",{'nou_telf':telefon_variable.get(),'nom':nom_fixed.get(),'telf':str(telefon_fixed.get())})
 				except sqlite3.IntegrityError:
 					self.missatge_error_confirmacio.set("El telèfon ja està registrat!")
 				else:
+					self.agenda_contactes.item(treeview_seleccionat,values=(entry_nom_antic.get(),telefon_variable.get()))
+					telefon_fixed.delete(0,END)
+					telefon_fixed.insert(0,telefon_variable.get())
 					self.missatge_error_confirmacio.set("Telefon modificat correctament!")
 		self.db.commit()
 
@@ -165,7 +175,7 @@ class App(object):
 
 		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.demana_imatge(label_imatge))
 		selecciona_imatge.grid(row=5)
-		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=lambda: self.modificar_contacte(dades,entry_email_nou.get(),entry_telefon_nou.get()))
+		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=lambda: self.modificar_contacte([entry_nom,entry_telefon,entry_email],[entry_telefon_nou,entry_email_nou],element_a_modificar))
 		button_modifica_contacte.grid(row=6,column=1,sticky=E)
 
 
