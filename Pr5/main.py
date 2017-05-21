@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from Tkinter import Frame,Tk,Label,W,LabelFrame,Entry,Button,E,StringVar,NO,Toplevel
+from Tkinter import Frame,Tk,Label,W,LabelFrame,Entry,Button,E,StringVar,NO,Toplevel,N,END,S
 from ttk import Treeview
+
+import tkFileDialog
 from PIL import Image, ImageTk
 import Image
 import os
@@ -76,14 +78,57 @@ class App(object):
 		self.agenda_contactes.delete(*self.agenda_contactes.get_children())
 		for i in self.cursor.fetchall():
 			self.agenda_contactes.insert('', 'end',values=i[:2])
+
+	def edita_imatge(self,imatge_label):
+		t=tkFileDialog.askopenfilename(title = "Select file",filetypes = (("jpg files","*.jpg"),("jpeg files","*.jpeg"),("all files","*.*")))
+		if (t != '') & os.path.isfile(t):
+			image = Image.open(t)
+			image = image.resize((120, 120), Image.ANTIALIAS)
+			photo = ImageTk.PhotoImage(image)
+			imatge_label.configure(image = photo)
+			imatge_label.image = photo
+		
 	def modifica_contacte(self):
 		t = Toplevel()
-		image = Image.open("photo.jpg")
-		image = image.resize((250, 250), Image.ANTIALIAS)
+		image = Image.open("avatar.jpeg")
+		image = image.resize((120, 120), Image.ANTIALIAS)
 		photo = ImageTk.PhotoImage(image)
-		label = Label(t,text="HOLA")
-		label.grid(row=0,column=0,sticky=W)
+		label_imatge = Label(t,image=photo)
+		label_imatge.pack(side="left", fill="both", expand=True)
+		#label_imatge.grid(row=0,column=0,padx=10,sticky=W)
+		label_imatge.image = photo # keep a reference!
+		frame_info = Frame(t)
+		frame_info.pack(side="right",fill="both",expand=False)
+		label_nom = Label(frame_info,text="Nom: ")
+		label_nom.grid(row=0,column=0)
+		entry_nom = Entry(frame_info,textvariable=StringVar(frame_info,value='NOMM'),width=20,state='disabled')
+		entry_nom.grid(row=0,column=1)
+		label_telefon = Label(frame_info,text="Telefon antic: ")
+		label_telefon.grid(row=1,column=0)
+		entry_telefon = Entry(frame_info,textvariable=StringVar(frame_info,value='6485848'),width=20,state='disabled')
+		entry_telefon.grid(row=1,column=1)
 
+		label_telefon_nou = Label(frame_info,text="Telefon nou: ")
+		label_telefon_nou.grid(row=2,column=0)
+		entry_telefon_nou = Entry(frame_info,width=20)
+		entry_telefon_nou.grid(row=2,column=1)
+
+		label_email = Label(frame_info,text="Email: ")
+		label_email.grid(row=3,column=0)
+		text_email = StringVar(frame_info, value='email_antic') #-----
+		entry_email = Entry(frame_info, width=20, textvariable=text_email,state='disabled')
+		entry_email.grid(row=3,column=1)
+		label_email_nou = Label(frame_info,text="Email nou:")
+		label_email_nou.grid(row=4,column=0)
+		entry_email_nou = Entry(frame_info,width=20)
+		entry_email_nou.grid(row=4,column=1)
+
+		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.edita_imatge(label_imatge))
+		selecciona_imatge.grid(row=5)
+		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=self.modifica_contacte)
+		button_modifica_contacte.grid(row=6,column=1,sticky=E)
+		
+		
 
 	def check_email(self,email):
 		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
@@ -103,11 +148,6 @@ class App(object):
 		else:
 			self.missatge_error_confirmacio.set("Selecciona un usuari!")
 			print "Selecciona element"
-
-		
-		#print self.agenda_contactes.item(curItem)
-		#selected_item=self.agenda_contactes.selection()[0]
-		#self.agenda_contactes.delete(selected_item)
 
 	def afegeix_contacte(self):
 		try:
