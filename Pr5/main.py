@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import Image
 import os
 import sqlite3
+import re
 
 class App(object):
 	def __init__(self,root,cursor,db):
@@ -84,6 +85,11 @@ class App(object):
 		label.grid(row=0,column=0,sticky=W)
 
 
+	def check_email(self,email):
+		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
+			return True
+		else:
+			raise "Mail no vàlid!"
 	def elimina_contacte(self):
 		element_seleccionat = self.agenda_contactes.focus()
 		if element_seleccionat != '':
@@ -106,8 +112,10 @@ class App(object):
 	def afegeix_contacte(self):
 		try:
 			Nom = self.entry_nom.get()
+			assert Nom != ''
 			Telef = int(self.entry_telefon.get())
-			Email = self.entry_email.get()
+			assert Telef > 600000000
+			Email = self.check_email(self.entry_email.get())
 
 		except:
 			self.missatge_error_confirmacio.set("Introdueix les dades correctament!")
