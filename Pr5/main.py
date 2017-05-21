@@ -14,6 +14,7 @@ import re
 class App(object):
 	def __init__(self,root,cursor,db):
 		self.frame = Frame(root)
+		self.list_toplevel = {}
 		self.cursor = cursor
 		self.db=db
 		self.frame.pack()
@@ -44,8 +45,8 @@ class App(object):
 		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command=self.afegeix_contacte)
 		button_afegir_contacte.grid(row=3,column=1,sticky=E)
 
-		mostar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue")
-		mostar_contactes.grid(sticky=W,row=3)
+		mostrar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue",command=self.mostra_contactes)
+		mostrar_contactes.grid(sticky=W,row=3)
 
 		self.missatge_error_confirmacio = StringVar()
 
@@ -61,9 +62,6 @@ class App(object):
 
 		self.insert_contacts_treeview()
 		#self.agenda_contactes.bind('<ButtonRelease-1>', self.treeview_select)
-		
-		
-		
 		elimina_seleccionat = Button(self.frame,text="Eliminar seleccionat",command=self.elimina_contacte,fg="Blue")
 		elimina_seleccionat.grid(row=5,column=0,sticky=W)
 
@@ -72,40 +70,82 @@ class App(object):
 		sortir = Button(self.frame,text="Sortir",fg="Blue",command=self.frame.quit)
 		sortir.grid(row=5,column=2,sticky=E)
 
+	def mostra_contactes(self):
+		print self.frame.winfo_children()
 	def insert_contacts_treeview(self):
 		self.cursor.execute("select * from CONTACTES order by nom;")
-		self.db.commit()
 		self.agenda_contactes.delete(*self.agenda_contactes.get_children())
 		for i in self.cursor.fetchall():
 			self.agenda_contactes.insert('', 'end',values=i[:2])
 
-	def edita_imatge(self,imatge_label):
-		t=tkFileDialog.askopenfilename(title = "Select file",filetypes = (("jpg files","*.jpg"),("jpeg files","*.jpeg"),("all files","*.*")))
-		if (t != '') & os.path.isfile(t):
-			image = Image.open(t)
-			image = image.resize((120, 120), Image.ANTIALIAS)
-			photo = ImageTk.PhotoImage(image)
-			imatge_label.configure(image = photo)
-			imatge_label.image = photo
-		
-	def modifica_contacte(self):
-		t = Toplevel()
-		image = Image.open("avatar.jpeg")
+	def edit_image(self,imatge_label,path_imatge):
+		path_per_default = 'avatar.jpeg'
+		if os.path.isfile(path_imatge):
+			image = Image.open(path_imatge)
+		else:
+			image = Image.open(path_per_default)
 		image = image.resize((120, 120), Image.ANTIALIAS)
 		photo = ImageTk.PhotoImage(image)
-		label_imatge = Label(t,image=photo)
+		imatge_label.configure(image = photo)
+		imatge_label.image = photo
+
+	
+	def demana_imatge(self,imatge_label):
+		t=tkFileDialog.askopenfilename(title = "Selecciona foto",filetypes = (("jpg files","*.jpg"),("jpeg files","*.jpeg"),("all files","*.*")))
+		if t:
+			self.edit_image(imatge_label,t)
+
+	def modificar_contacte(self,dades_usuari,email_nou,telefon_nou):
+		#print dades_usuari
+		print "VALORS: "+str(email_nou)+" "+str(telefon_nou)
+		if email_nou != '':
+			try:
+				self.check_email(email_nou)
+			except:
+				self.missatge_error_confirmacio.set("El mail no és correcte!")
+			else:
+				self.cursor.execute("UPDATE CONTACTES SET email=:email where nom=:nom and telf=:telf",{'email':email_nou,'nom':dades_usuari[0],'telf':str(dades_usuari[1])})
+		if telefon_nou!='':
+			try:
+				print "ENTRO?"
+				assert int(telefon_nou) >= 600000000
+			except:
+				self.missatge_error_confirmacio.set("Error en el telefon!")
+			else:
+				print "ENTRO?"
+				try:
+					self.cursor.execute("UPDATE CONTACTES SET telf=:nou_telf where nom=:nom and telf=:telf",{'nou_telf':telefon_nou,'nom':dades_usuari[0],'telf':str(dades_usuari[1])})
+				except sqlite3.IntegrityError:
+					self.missatge_error_confirmacio.set("El telèfon ja està registrat!")
+				else:
+					self.missatge_error_confirmacio.set("Telefon modificat correctament!")
+		self.db.commit()
+
+
+
+			
+		
+	def modifica_contacte(self):
+		element_a_modificar = self.agenda_contactes.focus()
+		valor_usuari = self.agenda_contactes.item(element_a_modificar)['values']
+		self.cursor.execute("select * from CONTACTES where nom=? and telf=?;",tuple(valor_usuari))
+		dades=self.cursor.fetchone()
+		t = Toplevel()
+
+		label_imatge = Label(t)
 		label_imatge.pack(side="left", fill="both", expand=True)
+		self.edit_image(label_imatge,dades[2])
 		#label_imatge.grid(row=0,column=0,padx=10,sticky=W)
-		label_imatge.image = photo # keep a reference!
+		#label_imatge.image = photo # keep a reference!
 		frame_info = Frame(t)
 		frame_info.pack(side="right",fill="both",expand=False)
 		label_nom = Label(frame_info,text="Nom: ")
 		label_nom.grid(row=0,column=0)
-		entry_nom = Entry(frame_info,textvariable=StringVar(frame_info,value='NOMM'),width=20,state='disabled')
+		entry_nom = Entry(frame_info,textvariable=StringVar(frame_info,value=dades[0]),width=20,state='disabled')
 		entry_nom.grid(row=0,column=1)
 		label_telefon = Label(frame_info,text="Telefon antic: ")
 		label_telefon.grid(row=1,column=0)
-		entry_telefon = Entry(frame_info,textvariable=StringVar(frame_info,value='6485848'),width=20,state='disabled')
+		entry_telefon = Entry(frame_info,textvariable=StringVar(frame_info,value=dades[1]),width=20,state='disabled')
 		entry_telefon.grid(row=1,column=1)
 
 		label_telefon_nou = Label(frame_info,text="Telefon nou: ")
@@ -115,7 +155,7 @@ class App(object):
 
 		label_email = Label(frame_info,text="Email: ")
 		label_email.grid(row=3,column=0)
-		text_email = StringVar(frame_info, value='email_antic') #-----
+		text_email = StringVar(frame_info, value=dades[2]) #-----
 		entry_email = Entry(frame_info, width=20, textvariable=text_email,state='disabled')
 		entry_email.grid(row=3,column=1)
 		label_email_nou = Label(frame_info,text="Email nou:")
@@ -123,12 +163,11 @@ class App(object):
 		entry_email_nou = Entry(frame_info,width=20)
 		entry_email_nou.grid(row=4,column=1)
 
-		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.edita_imatge(label_imatge))
+		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.demana_imatge(label_imatge))
 		selecciona_imatge.grid(row=5)
-		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=self.modifica_contacte)
+		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=lambda: self.modificar_contacte(dades,entry_email_nou.get(),entry_telefon_nou.get()))
 		button_modifica_contacte.grid(row=6,column=1,sticky=E)
-		
-		
+
 
 	def check_email(self,email):
 		if re.match("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
