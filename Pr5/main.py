@@ -17,6 +17,7 @@ class App(object):
 		self.list_toplevel = {}
 		self.cursor = cursor
 		self.db=db
+		self.child_toplevel = None
 		self.frame.pack()
 		image = Image.open("photo.jpg")
 		image = image.resize((250, 250), Image.ANTIALIAS)
@@ -45,7 +46,7 @@ class App(object):
 		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command=self.afegeix_contacte)
 		button_afegir_contacte.grid(row=3,column=1,sticky=E)
 
-		mostrar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue",command=self.mostra_contactes)
+		mostrar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue",command=self.insert_contacts_treeview)
 		mostrar_contactes.grid(sticky=W,row=3)
 
 		self.missatge_error_confirmacio = StringVar()
@@ -137,6 +138,8 @@ class App(object):
 		valor_text_telefon_antic = entries_fixed[3]
 		valor_text_email_antic = entries_fixed[4]
 
+		changed_email = False
+		changed_tel = False
 		if email_variable.get() != '':
 			try:
 				self.check_email(email_variable.get())
@@ -145,6 +148,7 @@ class App(object):
 			else:
 				self.cursor.execute("UPDATE CONTACTES SET email=:email where nom=:nom and telf=:telf",{'email':email_variable.get(),'nom':nom_fixed.get(),'telf':str(telefon_fixed.get())})
 				valor_text_email_antic.set(email_variable.get())
+				changed_email = True
 
 		if telefon_variable.get()!='':
 			try:
@@ -157,22 +161,32 @@ class App(object):
 				except sqlite3.IntegrityError:
 					self.missatge_error_confirmacio.set("El telèfon ja està registrat!")
 				else:
+					changed_tel=True
 					self.agenda_contactes.item(treeview_seleccionat,values=(nom_fixed.get(),telefon_variable.get()))
 					valor_text_telefon_antic.set(telefon_variable.get())
-					self.missatge_error_confirmacio.set("Telefon modificat correctament!")
+					
 		self.db.commit()
-
+		if changed_email & changed_tel:
+			self.missatge_error_confirmacio.set("Dades modificades correctament!")
+		elif changed_email:
+			self.missatge_error_confirmacio.set("Email modificat correctament!")
+		elif changed_tel:
+			self.missatge_error_confirmacio.set("Telefon modificat correctament!")
 
 
 			
 		
 	def modifica_contacte(self):
+		if self.child_toplevel is not None:
+			self.child_toplevel.destroy()
+
 		element_a_modificar = self.agenda_contactes.focus()
 		valor_usuari = self.agenda_contactes.item(element_a_modificar)['values']
 		self.cursor.execute("select * from CONTACTES where nom=? and telf=?;",tuple(valor_usuari))
 		dades=self.cursor.fetchone()
 		t = Toplevel()
-
+		self.child_toplevel=t
+	
 		label_imatge = Label(t)
 		label_imatge.pack(side="left", fill="both", expand=True)
 		self.show_image(label_imatge,dades[3])
@@ -224,6 +238,8 @@ class App(object):
 			self.db.commit()
 			self.agenda_contactes.delete(element_seleccionat)
 			self.missatge_error_confirmacio.set("Borrat correctament")
+			if self.child_toplevel is not None:
+				self.child_toplevel.destroy()
 			#print self.agenda_contactes.focus()
 			#print self.agenda_contactes.selection()
 		else:
