@@ -78,22 +78,52 @@ class App(object):
 		for i in self.cursor.fetchall():
 			self.agenda_contactes.insert('', 'end',values=i[:2])
 
-	def edit_image(self,imatge_label,path_imatge):
-		path_per_default = 'avatar.jpeg'
-		if os.path.isfile(path_imatge):
-			image = Image.open(path_imatge)
+	def show_image(self,imatge_label,path_imatge=''):
+		file_per_default = 'avatar.jpeg'
+		if path_imatge=='':
+			
+			image=Image.open(file_per_default)
 		else:
-			image = Image.open(path_per_default)
+			if os.path.exists(path_imatge):
+				try:
+					image = Image.open(path_imatge)
+				except:
+					print "Error al mostrar imatge!"
+					return False
+			else:
+				image=Image.open(file_per_default)
+	
 		image = image.resize((120, 120), Image.ANTIALIAS)
 		photo = ImageTk.PhotoImage(image)
 		imatge_label.configure(image = photo)
 		imatge_label.image = photo
+		return True
+
+	def edit_image(self,imatge_label,path_imatge,nom,telefon):
+		if os.path.isfile(path_imatge):
+			try:
+				image = Image.open(path_imatge)
+			except:
+				self.missatge_error_confirmacio.set("Imatge incorrecte!")
+
+			else:
+				try:
+					self.cursor.execute("UPDATE CONTACTES SET foto=:pathfoto where nom=:nom and telf=:telf",{'pathfoto':path_imatge,'nom':nom,'telf':str(telefon)})
+					self.db.commit()
+				except:
+					self.missatge_error_confirmacio.set("Error actualitzant la imatge!")
+					return False
+	
+		self.show_image(imatge_label,path_imatge)
+
+		
+			
 
 	
-	def demana_imatge(self,imatge_label):
+	def demana_imatge(self,imatge_label,nom,telefon):
 		t=tkFileDialog.askopenfilename(title = "Selecciona foto",filetypes = (("jpg files","*.jpg"),("jpeg files","*.jpeg"),("all files","*.*")))
 		if t:
-			self.edit_image(imatge_label,t)
+			self.edit_image(imatge_label,t,nom,telefon)
 
 	def modificar_contacte(self,entries_fixed,entries_variable,treeview_seleccionat):
 		#print dades_usuari
@@ -145,7 +175,7 @@ class App(object):
 
 		label_imatge = Label(t)
 		label_imatge.pack(side="left", fill="both", expand=True)
-		self.edit_image(label_imatge,dades[2])
+		self.show_image(label_imatge,dades[3])
 		#label_imatge.grid(row=0,column=0,padx=10,sticky=W)
 		#label_imatge.image = photo # keep a reference!
 		frame_info = Frame(t)
@@ -175,7 +205,7 @@ class App(object):
 		entry_email_nou = Entry(frame_info,width=20)
 		entry_email_nou.grid(row=4,column=1)
 
-		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.demana_imatge(label_imatge))
+		selecciona_imatge = Button(frame_info,text="Edita foto",command=lambda: self.demana_imatge(label_imatge,dades[0],text_telefon.get()))
 		selecciona_imatge.grid(row=5)
 		button_modifica_contacte = Button(frame_info,text="Modificar contacte",fg="Blue",command=lambda: self.modificar_contacte([entry_nom,entry_telefon,entry_email,text_telefon,text_email],[entry_telefon_nou,entry_email_nou],element_a_modificar))
 		button_modifica_contacte.grid(row=6,column=1,sticky=E)
