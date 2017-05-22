@@ -62,7 +62,6 @@ class App(object):
 		self.agenda_contactes.grid(row=4,column=0,padx=0,columnspan=2)
 
 		self.insert_contacts_treeview()
-		#self.agenda_contactes.bind('<ButtonRelease-1>', self.treeview_select)
 		elimina_seleccionat = Button(self.frame,text="Eliminar seleccionat",command=self.elimina_contacte,fg="Blue")
 		elimina_seleccionat.grid(row=5,column=0,sticky=W)
 
@@ -117,10 +116,6 @@ class App(object):
 	
 		self.show_image(imatge_label,path_imatge)
 
-		
-			
-
-	
 	def demana_imatge(self,imatge_label,nom,telefon):
 		t=tkFileDialog.askopenfilename(title = "Selecciona foto",filetypes = (("jpg files","*.jpg"),("jpeg files","*.jpeg"),("all files","*.*")))
 		if t:
@@ -190,8 +185,6 @@ class App(object):
 		label_imatge = Label(t)
 		label_imatge.pack(side="left", fill="both", expand=True)
 		self.show_image(label_imatge,dades[3])
-		#label_imatge.grid(row=0,column=0,padx=10,sticky=W)
-		#label_imatge.image = photo # keep a reference!
 		frame_info = Frame(t)
 		frame_info.pack(side="right",fill="both",expand=False)
 		label_nom = Label(frame_info,text="Nom: ")

@@ -1,8 +1,8 @@
 create table CONTACTES(
-	nom VARCHAR(20),
+	nom VARCHAR(20) not null,
 	telf int PRIMARY KEY,
-	email varchar(50),
-	foto varchar(50), --NPI DEL FORMAT
+	email varchar(50) not null,
+	foto varchar(50),
 	check (telf > 100000000 and telf <1000000000)
 
 );
