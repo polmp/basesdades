@@ -6,6 +6,16 @@ create table CONTACTES(
 	check (telf > 100000000 and telf <1000000000)
 
 );
+
+create table HISTORIC(
+	nom VARCHAR(20) not null,
+	telf int,
+	email varchar(50) not null,
+	foto varchar(50),
+	accio varchar(15) CHECK (accio IN ('Afegit','Modificat','Borrat')),
+	data DATETIME DEFAULT CURRENT_TIMESTAMP,
+	check (telf > 100000000 and telf <1000000000)
+);
 /*
 CREATE TRIGGER DUPLICATES 
 BEFORE INSERT ON CONTACTES
@@ -24,6 +34,20 @@ BEGIN
 		WHERE contactes.nom = old.nom;
 END;
 */
+
+CREATE TRIGGER IF NOT EXISTS CREA_HISTORIC AFTER INSERT ON CONTACTES FOR EACH ROW BEGIN
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (NEW.nom,NEW.telf,NEW.email,NEW.foto,'Afegit',CURRENT_TIMESTAMP);
+END;
+
+CREATE TRIGGER IF NOT EXISTS MODIFICA_HISTORIC AFTER UPDATE ON CONTACTES FOR EACH ROW BEGIN
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (OLD.nom,OLD.telf,OLD.email,OLD.foto,'Modificat',CURRENT_TIMESTAMP);
+END;
+
+CREATE TRIGGER IF NOT EXISTS BORRA_HISTORIC AFTER DELETE ON CONTACTES FOR EACH ROW BEGIN
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (OLD.nom,OLD.telf,OLD.email,OLD.foto,'Borrat',CURRENT_TIMESTAMP);
+END;
+
+
 insert into CONTACTES values ('Marc', 666666666,'marc@email.com','')
 	,('Albert', 666666667,'albert@email.com','')
 	,('Maria', 666666669,'maria@email.com','')

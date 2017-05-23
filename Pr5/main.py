@@ -278,4 +278,4 @@ if __name__=='__main__':
 	try:
 		root.destroy()
 	except:
-		pass
+		root.destroy()
