@@ -100,7 +100,7 @@ class App(object):
 	def mostra_contactes(self):
 		print self.frame.winfo_children()
 	def insert_contacts_treeview(self):
-		self.cursor.execute("select * from CONTACTES order by nom;")
+		self.cursor.execute("select * from CONTACTES order by nom ASC;")
 		self.agenda_contactes.delete(*self.agenda_contactes.get_children())
 		for i in self.cursor.fetchall():
 			self.agenda_contactes.insert('', 'end',values=i[:2])
@@ -278,7 +278,7 @@ class App(object):
 			self.missatge_error_confirmacio.set("Introdueix les dades correctament!")
 		else:
 			try:
-				self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom,Telef,self.entry_email.get()))
+				self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom.title(),Telef,self.entry_email.get()))
 				self.db.commit()
 			except sqlite3.IntegrityError:
 				self.missatge_error_confirmacio.set("Contacte ja existent!")
