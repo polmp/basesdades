@@ -29,7 +29,7 @@ class App(object):
 		nou_registre.grid(row=0,column=1,padx=15,sticky=W)
 
 		text_nom = Label(nou_registre,text="Nom:",fg="Blue")
-		text_nom.grid(row=0,column=0,sticky=W)
+		text_nom.grid(row=0,column=0)
 		self.entry_nom = Entry(nou_registre)
 		self.entry_nom.grid(row=0,column=1,sticky=W)
 
@@ -45,6 +45,9 @@ class App(object):
 
 		button_afegir_contacte = Button(nou_registre,text="Afegir contacte",fg="Blue",command=self.afegeix_contacte)
 		button_afegir_contacte.grid(row=3,column=1,sticky=E)
+
+		button_mostra_historic = Button(nou_registre,text="Mostra historic",fg="Blue",command=self.mostra_historic)
+		button_mostra_historic.grid(row=4,column=0,sticky=W)
 
 		mostrar_contactes = Button(self.frame,text="Mostrar contactes",fg="Blue",command=self.insert_contacts_treeview)
 		mostrar_contactes.grid(sticky=W,row=3)
@@ -69,6 +72,30 @@ class App(object):
 		self.modificar_seleccionat.grid(row=5,column=1,sticky=W)
 		sortir = Button(self.frame,text="Sortir",fg="Blue",command=self.frame.quit)
 		sortir.grid(row=5,column=2,sticky=E)
+
+	def mostra_historic(self):
+		popup=Toplevel()
+		agenda_historic=Treeview(popup,columns=["nom","tel","email","path","accio","data"],show="headings")
+		agenda_historic.heading("nom", text="Nom")
+		agenda_historic.heading("tel",text="Telefon")
+		agenda_historic.heading("email",text="Email")
+		agenda_historic.heading("path",text="Path")
+		agenda_historic.heading("accio",text="Acció")
+		agenda_historic.heading("data",text="Data")
+		agenda_historic.column("nom",minwidth=0,width=150,stretch=True,anchor="c")
+		agenda_historic.column("tel",minwidth=0,width=100,stretch=True,anchor="c")
+		agenda_historic.column("email",minwidth=0,width=150,stretch=True,anchor="c")
+		agenda_historic.column("path",minwidth=0,width=200,stretch=True,anchor="c")
+		agenda_historic.column("accio",minwidth=0,width=100,stretch=True,anchor="c")
+		agenda_historic.column("data",minwidth=0,width=150,stretch=True,anchor="c")
+		agenda_historic.grid(row=0,column=0,padx=5,pady=5)
+		self.cursor.execute("select * from HISTORIC ORDER BY data DESC;")
+		dades=self.cursor.fetchall()
+		for data_usuari in dades:
+			agenda_historic.insert('', 'end',values=data_usuari)
+
+
+		
 
 	def mostra_contactes(self):
 		print self.frame.winfo_children()
@@ -251,7 +278,7 @@ class App(object):
 			self.missatge_error_confirmacio.set("Introdueix les dades correctament!")
 		else:
 			try:
-				self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom,Telef,Email))
+				self.cursor.execute("""INSERT INTO CONTACTES values (?,?,?,'');""",(Nom,Telef,self.entry_email.get()))
 				self.db.commit()
 			except sqlite3.IntegrityError:
 				self.missatge_error_confirmacio.set("Contacte ja existent!")
@@ -278,4 +305,4 @@ if __name__=='__main__':
 	try:
 		root.destroy()
 	except:
-		root.destroy()
+		pass
