@@ -14,6 +14,7 @@ import re
 class App(object):
 	def __init__(self,root,cursor,db):
 		self.frame = Frame(root)
+		self.frame.configure(background='white')
 		self.list_toplevel = {}
 		self.cursor = cursor
 		self.db=db
@@ -26,19 +27,23 @@ class App(object):
 		label.grid(row=0,column=0,sticky=W)
 		label.image = photo # keep a reference!
 		nou_registre = LabelFrame(self.frame, text="Nou registre", fg="Blue",padx=5, pady=5)
+		nou_registre.configure(background='white')
 		nou_registre.grid(row=0,column=1,padx=15,sticky=W)
 
 		text_nom = Label(nou_registre,text="Nom:",fg="Blue")
+		text_nom.configure(background='white')
 		text_nom.grid(row=0,column=0)
 		self.entry_nom = Entry(nou_registre)
 		self.entry_nom.grid(row=0,column=1,sticky=W)
 
 		text_telefon = Label(nou_registre,text="Telèfon: ",fg="Blue")
+		text_telefon.configure(background='white')
 		text_telefon.grid(row=1,column=0)
 		self.entry_telefon=Entry(nou_registre)
 		self.entry_telefon.grid(row=1,column=1)
 
 		text_email = Label(nou_registre,text="Email: ",fg="Blue")
+		text_email.configure(background='white')
 		text_email.grid(row=2,column=0)
 		self.entry_email=Entry(nou_registre)
 		self.entry_email.grid(row=2,column=1)
@@ -55,6 +60,7 @@ class App(object):
 		self.missatge_error_confirmacio = StringVar()
 
 		self.label_error_confirmacio = Label(self.frame,textvariable=self.missatge_error_confirmacio,fg="Red")
+		self.label_error_confirmacio.configure(background='white')
 		self.label_error_confirmacio.grid(sticky=W,row=3,column=1)
 
 		self.agenda_contactes=Treeview(self.frame,columns=["nom","tel"],show="headings")
