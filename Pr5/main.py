@@ -94,11 +94,6 @@ class App(object):
 		for data_usuari in dades:
 			agenda_historic.insert('', 'end',values=data_usuari)
 
-
-		
-
-	def mostra_contactes(self):
-		print self.frame.winfo_children()
 	def insert_contacts_treeview(self):
 		self.cursor.execute("select * from CONTACTES order by nom ASC;")
 		self.agenda_contactes.delete(*self.agenda_contactes.get_children())
