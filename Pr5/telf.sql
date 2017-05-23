@@ -16,35 +16,18 @@ create table HISTORIC(
 	data DATETIME DEFAULT CURRENT_TIMESTAMP,
 	check (telf > 100000000 and telf <1000000000)
 );
-/*
-CREATE TRIGGER DUPLICATES 
-BEFORE INSERT ON CONTACTES
-for each row 
-WHEN EXISTS (SELECT * FROM CONTACTES WHERE contactes.telf = New.telf and contactes.nom = New.nom)
-BEGIN
-	SELECT raise(ignore);
-END;
 
-
-CREATE TRIGGER ERASE
-AFTER DELETE ON CONTACTES
-FOR EACH ROW
-BEGIN
-	DELETE FROM CONTACTES
-		WHERE contactes.nom = old.nom;
-END;
-*/
 
 CREATE TRIGGER IF NOT EXISTS CREA_HISTORIC AFTER INSERT ON CONTACTES FOR EACH ROW BEGIN
-	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (NEW.nom,NEW.telf,NEW.email,NEW.foto,'Afegit',CURRENT_TIMESTAMP);
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (NEW.nom,NEW.telf,NEW.email,NEW.foto,'Afegit',datetime(CURRENT_TIMESTAMP, 'localtime'));
 END;
 
 CREATE TRIGGER IF NOT EXISTS MODIFICA_HISTORIC AFTER UPDATE ON CONTACTES FOR EACH ROW BEGIN
-	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (NEW.nom,NEW.telf,NEW.email,NEW.foto,'Modificat',CURRENT_TIMESTAMP);
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (NEW.nom,NEW.telf,NEW.email,NEW.foto,'Modificat',datetime(CURRENT_TIMESTAMP, 'localtime'));
 END;
 
 CREATE TRIGGER IF NOT EXISTS BORRA_HISTORIC AFTER DELETE ON CONTACTES FOR EACH ROW BEGIN
-	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (OLD.nom,OLD.telf,OLD.email,OLD.foto,'Borrat',CURRENT_TIMESTAMP);
+	INSERT INTO HISTORIC (nom,telf,email,foto,accio,data) VALUES (OLD.nom,OLD.telf,OLD.email,OLD.foto,'Borrat',datetime(CURRENT_TIMESTAMP, 'localtime'));
 END;
 
 
