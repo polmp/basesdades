@@ -14,6 +14,8 @@ CREATE TRIGGER IF NOT EXISTS modificar_sou BEFORE UPDATE ON empleat FOR EACH ROW
 SELECT RAISE(ABORT,'No hi ha suficients usuaris o el sou es massa baix!') WHERE ((SELECT count(*) from EMPLEAT) < 2) or (new.sou < 100);
 END;
 
+UPDATE empleat set sou=50 where nom='Guillem';
+
 /*Exercici b) */
 
-UPDATE empleat set sou=50 where nom='Guillem';
+

@@ -170,7 +170,7 @@ WHERE idProducte = 12
 SELECT nom_producte,mida_pizza,idProdComprat,sum(preu) from (SELECT nom as nom_producte,mida as mida_pizza,idProdComprat,idProdRegalat from regals,productes where idProdComprat=idProducte and nom='Napolitana' and mida='18cm') INNER JOIN productes ON idProdRegalat=idProducte GROUP BY idProdComprat;
 
 
---SELECT * FROM liniesComandes;
+
 
 
 
