@@ -1,8 +1,6 @@
 .mode column
 .header on
 
-drop table if exists productes;
-
 create table productes (
 	idProducte char(9),
 	nom char(20), 
