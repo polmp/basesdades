@@ -13,21 +13,27 @@ INSERT INTO empleat VALUES (1,'Guillem',1000),(2,'Pau',1500);
 
 SELECT * FROM empleat;
 
+
+/*2a*/
 CREATE TRIGGER trig_2a BEFORE UPDATE ON empleat
 BEGIN 
-	SELECT RAISE(IGNORE) WHERE (SELECT COUNT(*) FROM empleat) < 3;-- <200
+	SELECT RAISE(ABORT,'No hi ha suficients usuaris')  
+		WHERE (SELECT COUNT(*) FROM empleat) < 3;-- (SEGONS ENUNCIAT.. ->) < 200 
 END;
 
 
+/*2b*/
 CREATE TRIGGER trig_2b BEFORE UPDATE ON empleat
 BEGIN 
-	SELECT RAISE(IGNORE) WHERE new.sou <= 100;
+	SELECT RAISE(ABORT,'El sou es massa baix!') 
+		WHERE new.sou <= 100;
 END;
-	
+
+
 
 
 UPDATE empleat
-	SET sou = 2000; --NO FA UPDATE A 200 PQE SON 2 EMPLEATS :)
+	SET sou = 2000; --NO FA UPDATE A 2000 PQE SON 2 EMPLEATS :)
 SELECT * FROM empleat;
 
 
@@ -59,45 +65,32 @@ SELECT * FROM empleat;
 
 
 
-CREATE TABLE tuplesEsborrades
-(
-dataHora timestamp PRIMARY KEY,
-numTuples int
+/*2c*/
+
+CREATE TABLE IF NOT EXISTS tuplesEsborrades(
+	dataihora DATETIME,
+	numTuples INTEGER
 );
 
-
-
-CREATE TRIGGER trig_2c BEFORE DELETE ON empleat
+CREATE TRIGGER crea_nou BEFORE DELETE ON empleat 
+FOR EACH ROW WHEN EXISTS 
+	(SELECT dataihora from tuplesEsborrades WHERE dataihora=CURRENT_TIMESTAMP) 
 BEGIN
-	INSERT  OR IGNORE INTO tuplesEsborrades VALUES ((select strftime("%Y-%m-%d %H:%M:%f", "now")), (SELECT changes() FROM empleat));
+	UPDATE tuplesEsborrades set numTuples=numTuples+1 where dataihora=CURRENT_TIMESTAMP;
 END;
 
-SELECT * FROM tuplesEsborrades;
 
-DELETE FROM empleat;
+CREATE TRIGGER actualitza_nou BEFORE DELETE ON empleat 
+FOR EACH ROW WHEN NOT EXISTS 
+	(SELECT dataihora from tuplesEsborrades WHERE dataihora=CURRENT_TIMESTAMP) 
+BEGIN
+	INSERT INTO tuplesEsborrades VALUES (CURRENT_TIMESTAMP,0);
+END;
 
-SELECT * FROM tuplesEsborrades;
 
-
-INSERT INTO empleat VALUES (1,'Guillem',1000),(2,'Pau',1500);
-
+DELETE FROM empleat where sou=5000;
 SELECT * FROM empleat;
+SELECT * FROM tuplesEsborrades;
+DELETE FROM empleat;
+SELECT * FROM tuplesEsborrades;
 
-/*
-
-dataHora                 numTuples 
------------------------  ----------
-2017-05-23 15:20:39.272  3         
-nemp        nom         sou       
-----------  ----------  ----------
-1           Guillem     1000      
-2           Pau         1500      
-sqlite> DELETE FROM empleat;
-sqlite> 
-sqlite> SELECT * FROM tuplesEsborrades;
-dataHora                 numTuples 
------------------------  ----------
-2017-05-23 15:20:39.272  3         
-2017-05-23 15:20:41.476  2         
-
-*/

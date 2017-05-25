@@ -41,7 +41,8 @@ INSERT INTO domicilis VALUES
 (777888999,"c/ QWERTY", 15, 9, 1),
 (666777889,"c/ ZXCVB", 40, '', ''),
 (666778888,"c/ POIUYT", 1, 3, 2),
-(666779888,"c/ ÑLKJH", 10, 6, '')
+(666779888,"c/ ÑLKJH", 10, 6, ''),
+(999999999,"c/ SENSE COMANDA", 99, 99, 'B')
 ;
 
 create table comandes(
@@ -86,13 +87,13 @@ INSERT INTO liniesComandes VALUES
 (2,12,3)
 ;
 
-/*
+
 SELECT * FROM productes;
 SELECT * FROM domicilis;
 SELECT * FROM comandes;
 SELECT * FROM liniesComandes; 
-*/
---EX1: OBTENIR QUANTITAT DE CARRERS ON SHAN SERVIT COMANDES NO DE NO MES DE 10 EUROS
+
+-- EX1a: OBTENIR QUANTITAT DE CARRERS ON SHAN SERVIT COMANDES NO DE NO MES DE 10 EUROS
 
 SELECT COUNT(*) FROM (
 SELECT comandes.numTelf,comandes.import FROM comandes
@@ -102,9 +103,20 @@ ON D.numTelf = comandes.numTelf
 WHERE comandes.import <= 10
 );
 
---EX2 (WTF..)
 
---EX3
+-- EX1b 
+
+--a) QLC -> no es repeteixen gracies a les primary keys
+
+--b) QP * QD * QC * QLC ->  No es repeteixen ja que es barejen tots amb tots.
+
+--c) QLC -> Si es repeteixen en el moment que hi hagi mes de un prod a una mateixa comanda.
+
+--d) QC -> No repetits ja que nomes amb les comandes sera diferent.
+
+
+
+/*EX 1c*/
 
 CREATE TABLE regals(
 idProdComprat char(9),
@@ -115,20 +127,13 @@ foreign key (idProdRegalat) references productes(idProducte)
 );
 
  
---CREAR TRIGGER WHEN INSERT
  INSERT INTO regals VALUES
  (12,103),(12,101),(1,102),(2,101),(3,101),(5,103),(7,101),(10,103),(9,103),(11,102);
 
+SELECT * FROM regals;
 
---SELECT idProdComprat,P1.nom as nomProdComprat, P1.preu as preuProdComp (
-/* SELECT * FROM regals
-INNER JOIN 
-(SELECT * FROM productes) AS P1
-ON P1.idProducte = regals.idProdComprat
 
---)
-;
-*/
+--QUERY ->
 
 
 SELECT SUM(QxP) FROM (
@@ -161,16 +166,10 @@ ON  t1.idProdRegalat = REG.idProducte
 
 ON liniesComandes.idProducte = t2.idProdComprat
 
-WHERE idProducte = 12
+WHERE idProducte = 
+	(SELECT idProducte from productes where nom = 'Napolitana' and mida = '18cm')
 )
 ;
 
-
-/* EX 1c */
-SELECT nom_producte,mida_pizza,idProdComprat,sum(preu) from (SELECT nom as nom_producte,mida as mida_pizza,idProdComprat,idProdRegalat from regals,productes where idProdComprat=idProducte and nom='Napolitana' and mida='18cm') INNER JOIN productes ON idProdRegalat=idProducte GROUP BY idProdComprat;
-
-
-
-
-
-
+-- QUAN ES COMPRA LA NAPOLITANA GRAN, ES REGALEN 2 COSES: 103 (8€) i 101 (3€)
+-- PER TANT... 8*(3+2+1) + 3*(3+2+1) = 66
